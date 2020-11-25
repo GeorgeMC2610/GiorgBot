@@ -1,0 +1,2 @@
+py giorgobot.py
+pause
