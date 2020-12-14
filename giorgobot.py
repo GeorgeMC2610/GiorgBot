@@ -175,10 +175,13 @@ async def on_message(message):
     GeorgeMC2610      = client.get_user(250721113729007617)
     Sotiris168        = client.get_user(250973577761783808)
 
+    #και όλοι οι συμμετέχοντες
+    all_members = await server.fetch_members().flatten()
+
     #Μετατρέπουμε κάθε μήνυμα σε πεζά γράμματα.
     message.content = message.content.lower()
     respondable_messages = ["!ping", "!help", "-p", "-play", "-s", "-skip", "-ping", "-leave", "-l", "-help"]
-    admin_commands = ["!prune"]
+    admin_commands = ["!prune", "!display users", "!secret santa"]
 
     #                    ------ OI ENTOLES -------
 
@@ -194,9 +197,39 @@ async def on_message(message):
             msg_to_send = "Καλή προσπάθεια, " + message.author.mention + "! Αυτή είναι εντολή διαχειριστή. Θα 'ταν κρίμα αν το μάθαιναν οι " + metzi_tou_neoukti.mention + "..."
             await message.channel.send(msg_to_send)
             return
+        #Αν έχουμε φτάσει μέχρι και αυτό το σημείο, σημαίνει ότι μόνο διαχειριστές θα εκτελούν εντολές. Οπότε τις εκτελούμε.
         else:
             if message.content.startswith(admin_commands[0]):
                 return
+            elif message.content == admin_commands[1]:
+                #φτιάξε μια λίστα με τα αναγνώσιμα ονόματα των μελών του σέρβερ
+                all_member_names = []
+                #βάλε τα ονόματα στη λίστα
+                for member in all_members:
+                    all_member_names.append(member.name)
+                #στείλε το μήνυμα με όλα τα ονόματα στη λίστα
+                all_member_names.sort()
+                await message.channel.send(all_member_names)
+                return
+
+            elif message.content == admin_commands[2]:
+                #βάλε στη λίστα με τους secret santa μόνο όσους είναι από pcmci και πάνω
+                not_me_meson_members = []
+                for member in all_members:
+                    if member.top_role == metzi_tou_neoukti or member.top_role == pcmci:
+                        not_me_meson_members.append(member)
+                
+                #φτιάξε μια ακριβώς ίδια λίστα με την προηγούμενη, αλλά ανακάτεψέ την (για να είναι τυχαίος ο secret santa)
+                secret_santas = not_me_meson_members.copy()
+                random.shuffle(secret_santas)
+
+                #στείλε μήνυμα σε αυτόν που πρέπει και αποκάλυψέ του σε ποιόν πρέπει να κάνει δώρο
+                for i in range(len(not_me_meson_members)):
+                    msg = not_me_meson_members[i].name + " --> " + secret_santas[i].name
+                    await message.channel.send(msg)
+                return
+                    
+                
   
     #                                                                  Εκτέλεση εντολών κοινής χρήσης
     if message.content in respondable_messages and message.content not in admin_commands:
