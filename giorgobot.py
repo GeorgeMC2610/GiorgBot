@@ -200,7 +200,7 @@ async def on_message(message):
 
         #Αν έχουμε φτάσει μέχρι και αυτό το σημείο, σημαίνει ότι μόνο διαχειριστές θα εκτελούν εντολές. Οπότε τις εκτελούμε.
         else:
-            if message.content == admin_commands[1]:
+            if message.content == admin_commands[0]:
                 #φτιάξε μια λίστα με τα αναγνώσιμα ονόματα των μελών του σέρβερ
                 all_member_names = []
                 #βάλε τα ονόματα στη λίστα
@@ -211,7 +211,7 @@ async def on_message(message):
                 await message.channel.send(all_member_names)
                 return
 
-            elif message.content == admin_commands[2]:
+            elif message.content == admin_commands[1]:
                 #βάλε στη λίστα με τους secret santa μόνο όσους είναι από pcmci και πάνω
                 not_me_meson_members = []
                 for member in all_members:
