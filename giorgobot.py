@@ -159,7 +159,7 @@ async def on_raw_reaction_remove(payload):
 
 @client.event
 async def on_message(message):
-    print(message.author, "says:", message.content)
+    print(message.author, "in", message.channel, "says:", message.content)
 
     server = client.get_guild(322050982747963392)
 
@@ -301,7 +301,7 @@ async def on_message(message):
             return
 
         if message.content == respondable_messages[1]:
-            help_message = "Αυτήν τη στιγμή, δεν έχω κάποια ιδιαίτερα commands να κάνω. Κυρίως κάνω εκκαθαρίσεις και **δίνω ρόλους, στο " + acquire_role.mention + " ** και βοηθάω τον " + GeorgeMC2610.mention + " να εξασκείται στον προγραμματισμό. \n\nΑν ποτέ ασχοληθεί αυτός ο μαλάκας μαζί μου, θα σου δείξω και τα υπόλοιπα commands που έχω να προσφέρω."
+            help_message = "**ΔΙΚΕΣ ΜΟΥ ΕΝΤΟΛΕΣ:** \n `!help` --> Δείχνει το παρόν μενού.\n `!ping` --> ανταπόκριση του μποτ με 'Pong!'.\n\n **ΕΝΤΟΛΕΣ ΔΙΑΧΕΙΡΙΣΤΗ:**\n `!display users` --> Προβολή όλων των μελών του σέρβερ.\n `!prune <αριθμός 1-50>` --> Σβήσιμο όλων των προηγούμενων μηνυμάτων\n `!secret santa` --> Νέα κλήρωση για secret santa."
             await message.channel.send(help_message)
             return
             
