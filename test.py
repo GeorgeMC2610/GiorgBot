@@ -1,4 +1,4 @@
-f = open("pinakides.txt", "w")
+'''f = open("pinakides.txt", "w")
 
 letters = "ABEZHIKMNOPTYX"
 
@@ -10,4 +10,7 @@ for letter_a in letters:
                 f.write(letter_a + letter_b + letter_c + " - " + str(i))
                 print(letter_a + letter_b + letter_c + " - " + str(i))
 
-f.close()
+f.close()'''
+
+string1 = "!prune 15"
+print(string1.startswith("!prune"))
