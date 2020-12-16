@@ -165,6 +165,7 @@ async def on_message(message):
     bot_requests      = server.get_channel(518904659461668868)
     geniki_sizitisi   = server.get_channel(518905389811630087)
     acquire_role      = server.get_channel(760736083544637511)
+    secret_santa      = server.get_channel(787998456131354625)
 
     #οι ρόλοι που αναπαρίστανται στον σέρβερ
     metzi_tou_neoukti = server.get_role(488730147894198273)
@@ -212,11 +213,15 @@ async def on_message(message):
                 return
 
             elif message.content == admin_commands[1]:
-                #βάλε στη λίστα με τους secret santa μόνο όσους είναι από pcmci και πάνω
-                not_me_meson_members = []
-                for member in all_members:
+                #με αυτόν τον χρονοβόρο τρόπο, παίρνουμε το μήνυμα και το reaction στο οποίο θα δουλέψει το secret santa
+                secret_santa_message   = await secret_santa.fetch_message(787999972544741397)
+                secret_santa_reactions = secret_santa_message.reactions
+
+                #ύστερα, αυτή είναι η λίστα με την οποία θα δουλέψει το secret santa
+                not_me_meson_members = await secret_santa_reactions[0].users().flatten()
+                '''for member in all_members:
                     if member.top_role == metzi_tou_neoukti or member.top_role == pcmci:
-                        not_me_meson_members.append(member)
+                        not_me_meson_members.append(member)'''
                 
                 #φτιάξε μια ακριβώς ίδια λίστα με την προηγούμενη, αλλά ανακάτεψέ την (για να είναι τυχαίος ο secret santa)
                 secret_santas = not_me_meson_members.copy()
@@ -236,7 +241,7 @@ async def on_message(message):
                     await message.channel.send(msg)
                 return
     # ξεχωριστή περίπτωση για το prune
-    elif message.content.startswith("!prune") and message.author == GeorgeMC2610 or message.author == Sotiris168:
+    elif message.content.startswith("!prune") and (message.author == GeorgeMC2610 or message.author == Sotiris168):
         #χωρίζουμε το μήνυμα ανά κενό, ώστε να πάρουμε τις φορές που πρέπει να σβήσουμε το μήνυμα.
         message_content_by_space = message.content.split(" ")
 
