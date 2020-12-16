@@ -159,6 +159,8 @@ async def on_raw_reaction_remove(payload):
 
 @client.event
 async def on_message(message):
+    print(message.author, "says:", message.content)
+
     server = client.get_guild(322050982747963392)
 
     #τα κανάλια του σέρβερ
@@ -179,7 +181,6 @@ async def on_message(message):
     #και όλοι οι συμμετέχοντες
     all_members = await server.fetch_members().flatten()
 
-    print(GeorgeMC2610, Sotiris168, message.content)
     #Μετατρέπουμε κάθε μήνυμα σε πεζά γράμματα.
     message.content = message.content.lower()
     respondable_messages = ["!ping", "!help", "-p", "-play", "-s", "-skip", "-ping", "-leave", "-l", "-help"]
