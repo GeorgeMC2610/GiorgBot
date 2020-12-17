@@ -34,51 +34,61 @@ async def on_raw_reaction_add(payload):
             role = rainbow_six_siege
             if reactor is not None and role is not None:
                 await reactor.add_roles(role)
+            return
         
         if payload.emoji.name == "rocket_league":
             role = rocket_league
             if reactor is not None and role is not None:
                 await reactor.add_roles(role)
+            return
 
         if payload.emoji.name == "minecraft":
             role = minecraft
             if reactor is not None and role is not None:
                 await reactor.add_roles(role)
+            return
         
         if payload.emoji.name == "forza_horizon4":
             role = forza_horizon4
             if reactor is not None and role is not None:
                 await reactor.add_roles(role)
+            return
 
         if payload.emoji.name == "among_us":
             role = among_us
             if reactor is not None and role is not None:
                 await reactor.add_roles(role)
+            return
         
         if payload.emoji.name == "league_of_legends":
             role = league_of_legends
             if reactor is not None and role is not None:
                 await reactor.add_roles(role)
+            return
 
         if payload.emoji.name == "euro_truck_sim2":
             role = euro_truck_sim2
             if reactor is not None and role is not None:
                 await reactor.add_roles(role)
+            return
 
         if payload.emoji.name == "wow":
             role = world_of_warcraft
             if reactor is not None and role is not None:
                 await reactor.add_roles(role)
+            return
 
         if payload.emoji.name == "sea_of_thieves":
             role = sea_of_thieves
             if reactor is not None and role is not None:
                 await reactor.add_roles(role)
+            return
 
         if payload.emoji.name == "phasmophobia":
             role = phasmophobia
             if reactor is not None and role is not None:
                 await reactor.add_roles(role)
+            return
 
 @client.event
 async def on_raw_reaction_remove(payload):
@@ -108,53 +118,63 @@ async def on_raw_reaction_remove(payload):
         #και μετά ελέγχουμε κάθε πιθανό σενάριο
         if payload.emoji.name == "rainbow_six_siege":
             role    = rainbow_six_siege
-            if role is not None:
+            if reactor is not None and role is not None:
                 await reactor.remove_roles(role)
+            return
         
         if payload.emoji.name == "rocket_league":
             role = rocket_league
             if reactor is not None and role is not None:
                 await reactor.remove_roles(role)
+            return
 
         if payload.emoji.name == "minecraft":
             role = minecraft
             if reactor is not None and role is not None:
                 await reactor.remove_roles(role)
+            return
         
         if payload.emoji.name == "forza_horizon4":
             role = forza_horizon4
             if reactor is not None and role is not None:
                 await reactor.remove_roles(role)
+            return
 
         if payload.emoji.name == "among_us":
             role = among_us
             if reactor is not None and role is not None:
                 await reactor.remove_roles(role)
+            return
         
         if payload.emoji.name == "league_of_legends":
             role = league_of_legends
             if reactor is not None and role is not None:
                 await reactor.remove_roles(role)
+            return
 
         if payload.emoji.name == "euro_truck_sim2":
             role = euro_truck_sim2
             if reactor is not None and role is not None:
                 await reactor.remove_roles(role)
+            return
         
         if payload.emoji.name == "wow":
             role = world_of_warcraft
             if reactor is not None and role is not None:
                 await reactor.remove_roles(role)
+            return
         
         if payload.emoji.name == "sea_of_thieves":
             role = sea_of_thieves
             if reactor is not None and role is not None:
                 await reactor.remove_roles(role)
+            return
 
         if payload.emoji.name == "phasmophobia":
             role = phasmophobia
             if reactor is not None and role is not None:
                 await reactor.remove_roles(role)
+            return
         
 
 @client.event
@@ -236,8 +256,8 @@ async def on_message(message):
                 #στείλε μήνυμα σε αυτόν που πρέπει και αποκάλυψέ του σε ποιόν πρέπει να κάνει δώρο
                 for i in range(len(not_me_meson_members)):
                     try:
-                        user_msg = "Έχε υπομονή. Ο μαλάκας ο Γιώργος τεστάρει ακόμη κάποια πράγματα."
-                        await not_me_meson_members[i].send(user_msg)
+                        user_msg_to_send = "Είσαι ο secret santa του " + secret_santas[i].name + "."
+                        await not_me_meson_members[i].send(user_msg_to_send)
                     except:
                         print("unable to send message to user", not_me_meson_members[i])
                 return
