@@ -220,9 +220,6 @@ async def on_message(message):
 
                 #ύστερα, αυτή είναι η λίστα με την οποία θα δουλέψει το secret santa
                 not_me_meson_members = await secret_santa_reactions[0].users().flatten()
-                '''for member in all_members:
-                    if member.top_role == metzi_tou_neoukti or member.top_role == pcmci:
-                        not_me_meson_members.append(member)'''
                 
                 #φτιάξε μια ακριβώς ίδια λίστα με την προηγούμενη, αλλά ανακάτεψέ την (για να είναι τυχαίος ο secret santa)
                 secret_santas = not_me_meson_members.copy()
@@ -238,8 +235,11 @@ async def on_message(message):
 
                 #στείλε μήνυμα σε αυτόν που πρέπει και αποκάλυψέ του σε ποιόν πρέπει να κάνει δώρο
                 for i in range(len(not_me_meson_members)):
-                    msg = not_me_meson_members[i].name + " --> " + secret_santas[i].name
-                    await message.channel.send(msg)
+                    try:
+                        user_msg = "Έχε υπομονή. Ο μαλάκας ο Γιώργος τεστάρει ακόμη κάποια πράγματα."
+                        await not_me_meson_members[i].send(user_msg)
+                    except:
+                        print("unable to send message to user", not_me_meson_members[i])
                 return
     # ξεχωριστή περίπτωση για το prune
     elif message.content.startswith("!prune") and (message.author == GeorgeMC2610 or message.author == Sotiris168):
