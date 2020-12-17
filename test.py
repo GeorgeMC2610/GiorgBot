@@ -12,5 +12,7 @@ for letter_a in letters:
 
 f.close()'''
 
-string1 = "!prune 15"
-print(string1.startswith("!prune"))
+f = open('token.txt', 'r')
+token = f.read()
+print(token)
+f.close()

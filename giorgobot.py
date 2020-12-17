@@ -2,6 +2,11 @@ import discord
 import random
 from discord.ext import commands, tasks
 
+#Εφ' όσον το repository θέλουμε να 'ναι public, πρέπει να αποθηκεύσουμε το token σε ένα ξεχωριστό αρχείο, το οποίο δεν θα συμπεριληφθεί στο repository.
+f = open('token.txt', 'r')
+token = f.read()
+f.close()
+
 client = discord.Client()
 
 #Το μέρος, όπου οι χρήστες παίρνουν ρόλο βάσει των reactions τους.
@@ -325,7 +330,6 @@ async def on_message(message):
             await message.channel.send(help_message)
             return
             
-
     #                                               Εδώ ελέγχουμε αν έχει σταλεί κάποιο μήνυμα σε library χωρίς φωτογραφία
     if message.channel.category_id == 749958245203836939:
         if not message.attachments:
@@ -341,5 +345,4 @@ async def on_message(message):
             await message.channel.send(denying_messages[random_selection], delete_after=8.0)
             return
 
-
-client.run('NjQwNjA1ODM3MTAyMDIyNjk2.Xb8Quw.M12QOPtcvnhjlJciPG2fMFyXTEU')
+client.run(token)
