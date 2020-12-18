@@ -267,7 +267,14 @@ async def on_message(message):
                         print("unable to send message to user", not_me_meson_members[i])
                 return
     # ξεχωριστή περίπτωση για το prune
-    elif message.content.startswith("!prune") and (message.author == GeorgeMC2610 or message.author == Sotiris168):
+    elif message.content.startswith("!prune"):
+
+        #Κι αυτή είναι εντολή διαχειριστή, οπότε θέλουμε κι αυτή να αποκαλύπτει τον παραβιαστή της
+        if message.author.top_role != metzi_tou_neoukti:
+            msg_to_send = "Καλή προσπάθεια, " + message.author.mention + "! Αυτή είναι εντολή διαχειριστή. Θα 'ταν κρίμα αν το μάθαιναν οι " + metzi_tou_neoukti.mention + "..."
+            await message.channel.send(msg_to_send)
+            return
+
         #χωρίζουμε το μήνυμα ανά κενό, ώστε να πάρουμε τις φορές που πρέπει να σβήσουμε το μήνυμα.
         message_content_by_space = message.content.split(" ")
 
