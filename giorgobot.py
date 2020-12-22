@@ -201,7 +201,7 @@ async def on_message(message):
 
     #οι admin
     GeorgeMC2610      = client.get_user(250721113729007617)
-    Sotiris168        = client.get_user(250973577761783808)
+    Sotiris168        = await server.fetch_member(250973577761783808)
 
     #και όλοι οι συμμετέχοντες
     all_members = await server.fetch_members().flatten()
@@ -240,11 +240,25 @@ async def on_message(message):
 
             elif message.content == admin_commands[1]:
                 #με αυτόν τον χρονοβόρο τρόπο, παίρνουμε το μήνυμα και το reaction στο οποίο θα δουλέψει το secret santa
-                secret_santa_message   = await secret_santa.fetch_message(787999972544741397)
-                secret_santa_reactions = secret_santa_message.reactions
+                nickzouk = client.get_user(155441474861924355)
+                provatas = client.get_user(172499322259243009)
+                aimilios = client.get_user(206905752613421056)
+                fotis    = client.get_user(232563110790168576)
+                lefteris = client.get_user(371263663748939779)
+                xanthos  = client.get_user(665585845167718426)
+                jason    = client.get_user(693124188785082399)
 
                 #ύστερα, αυτή είναι η λίστα με την οποία θα δουλέψει το secret santa
-                not_me_meson_members = await secret_santa_reactions[0].users().flatten()
+                not_me_meson_members = []
+                not_me_meson_members.append(nickzouk)
+                not_me_meson_members.append(provatas)
+                not_me_meson_members.append(aimilios)
+                not_me_meson_members.append(fotis)
+                not_me_meson_members.append(lefteris)
+                not_me_meson_members.append(xanthos)
+                not_me_meson_members.append(jason)
+                not_me_meson_members.append(GeorgeMC2610)
+                not_me_meson_members.append(Sotiris168)
                 
                 #φτιάξε μια ακριβώς ίδια λίστα με την προηγούμενη, αλλά ανακάτεψέ την (για να είναι τυχαίος ο secret santa)
                 secret_santas = not_me_meson_members.copy()
@@ -258,13 +272,16 @@ async def on_message(message):
                     else:
                         i += 1
 
+                i = 0
                 #στείλε μήνυμα σε αυτόν που πρέπει και αποκάλυψέ του σε ποιόν πρέπει να κάνει δώρο
-                for i in range(len(not_me_meson_members)):
+                for member in not_me_meson_members:
                     try:
                         user_msg_to_send = "Είσαι ο secret santa του " + secret_santas[i].name + "."
                         await not_me_meson_members[i].send(user_msg_to_send)
-                    except:
-                        print("unable to send message to user", not_me_meson_members[i])
+                    except Exception as e:
+                        print("unable to send message to user", member, "Exception:", e)
+                    
+                    i += 1
                 return
     # ξεχωριστή περίπτωση για το prune
     elif message.content.startswith("!prune"):
