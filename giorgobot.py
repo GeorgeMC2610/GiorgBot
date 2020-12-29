@@ -184,7 +184,12 @@ async def on_raw_reaction_remove(payload):
 
 @client.event
 async def on_message(message):
+    #log του μηνύματος.
     print(message.author, "in", message.channel, "says:", message.content)
+
+    #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα.
+    if (message.channel.type == discord.ChannelType.private):
+        return
 
     server = client.get_guild(322050982747963392)
 
@@ -246,19 +251,21 @@ async def on_message(message):
                 fotis    = client.get_user(232563110790168576)
                 lefteris = client.get_user(371263663748939779)
                 xanthos  = client.get_user(665585845167718426)
+                aggelos  = client.get_user(476839396293738506)
                 jason    = client.get_user(693124188785082399)
+                vassilis = client.get_user(377389900338823188)
 
                 #ύστερα, αυτή είναι η λίστα με την οποία θα δουλέψει το secret santa
                 not_me_meson_members = []
-                not_me_meson_members.append(nickzouk)
-                not_me_meson_members.append(provatas)
-                not_me_meson_members.append(aimilios)
                 not_me_meson_members.append(fotis)
-                not_me_meson_members.append(lefteris)
-                not_me_meson_members.append(xanthos)
-                not_me_meson_members.append(jason)
+                not_me_meson_members.append(aimilios)
                 not_me_meson_members.append(GeorgeMC2610)
                 not_me_meson_members.append(Sotiris168)
+                not_me_meson_members.append(lefteris)
+                not_me_meson_members.append(aggelos)
+                not_me_meson_members.append(xanthos)
+                not_me_meson_members.append(nickzouk)
+                not_me_meson_members.append(vassilis)
                 
                 #φτιάξε μια ακριβώς ίδια λίστα με την προηγούμενη, αλλά ανακάτεψέ την (για να είναι τυχαίος ο secret santa)
                 secret_santas = not_me_meson_members.copy()
@@ -276,8 +283,8 @@ async def on_message(message):
                 #στείλε μήνυμα σε αυτόν που πρέπει και αποκάλυψέ του σε ποιόν πρέπει να κάνει δώρο
                 for member in not_me_meson_members:
                     try:
-                        user_msg_to_send = "Είσαι ο secret santa του " + secret_santas[i].name + "."
-                        await not_me_meson_members[i].send(user_msg_to_send)
+                        user_msg_to_send = "Όπως όλα δείχνουν, το event θα λάβει μέρος στις 01/01, λογικά ώρα 23.00. Οπότε να ετοιμάζεις σιγά-σιγά την **πιστωτική σου**, φίλε."
+                        await member.send(user_msg_to_send)
                     except Exception as e:
                         print("unable to send message to user", member, "Exception:", e)
                     
