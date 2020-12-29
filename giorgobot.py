@@ -273,7 +273,8 @@ async def on_message(message):
 
                 i = 0
                 while (i < len(not_me_meson_members)):
-                    if not_me_meson_members[i] == secret_santas[i]:
+                    duplicate = (not_me_meson_members[i] == nickzouk and secret_santas[i] == xanthos) or (not_me_meson_members[i] == aimilios and secret_santas[i] == nickzouk) or (not_me_meson_members[i] == xanthos and secret_santas[i] == lefteris) or (not_me_meson_members[i] == GeorgeMC2610 and secret_santas[i] == fotis) or (not_me_meson_members[i] == Sotiris168 and secret_santas[i] == aimilios)
+                    if (not_me_meson_members[i] == secret_santas[i]) or duplicate:
                         random.shuffle(secret_santas)
                         i = 0
                     else:
@@ -283,7 +284,7 @@ async def on_message(message):
                 #στείλε μήνυμα σε αυτόν που πρέπει και αποκάλυψέ του σε ποιόν πρέπει να κάνει δώρο
                 for member in not_me_meson_members:
                     try:
-                        user_msg_to_send = "Όπως όλα δείχνουν, το event θα λάβει μέρος στις 01/01, λογικά ώρα 23.00. Οπότε να ετοιμάζεις σιγά-σιγά την **πιστωτική σου**, φίλε."
+                        user_msg_to_send = "**Δεν είσαι, πλέον,** ο secret santa του προηγούμενου.\nΕίσαι ο __**καινούργιος**__ secret santa του " + secret_santas[i].name + "."
                         await member.send(user_msg_to_send)
                     except Exception as e:
                         print("unable to send message to user", member, "Exception:", e)
