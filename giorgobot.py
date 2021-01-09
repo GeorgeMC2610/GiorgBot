@@ -287,7 +287,7 @@ async def on_message(message):
                         user_msg_to_send = "**Δεν είσαι, πλέον,** ο secret santa του προηγούμενου.\nΕίσαι ο __**καινούργιος**__ secret santa του " + secret_santas[i].name + "."
                         await member.send(user_msg_to_send)
                     except Exception as e:
-                        print("unable to send message to user", member, "Exception:", e)
+                        print("unable to send message to user", member, ". Exception:", e)
                     
                     i += 1
                 return
