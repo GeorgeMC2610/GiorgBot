@@ -1,5 +1,6 @@
 import discord
 import random
+import datetime
 from discord.ext import commands, tasks
 
 #Εφ' όσον το repository θέλουμε να 'ναι public, πρέπει να αποθηκεύσουμε το token σε ένα ξεχωριστό αρχείο, το οποίο δεν θα συμπεριληφθεί στο repository.
@@ -12,12 +13,12 @@ client = discord.Client()
 async def give_role(member, role):
     if member is not None and role is not None:
         await member.add_roles(role)
-        print("Successfully gave role", role.name, "to member", member.name)
+        print("[" + str(datetime.datetime.now()) + "]: Successfully gave role", role.name, "to member", member.name)
 
 async def remove_role(member, role):
     if member is not None and role is not None:
         await member.remove_roles(role)
-        print("Successfully removed role", role.name, "to member", member.name)
+        print("[" + str(datetime.datetime.now()) + "]: Successfully removed role", role.name, "to member", member.name)
             
 
 #Το μέρος, όπου οι χρήστες παίρνουν ρόλο βάσει των reactions τους.
@@ -74,84 +75,46 @@ async def on_raw_reaction_remove(payload):
         return
 
     #αλλιώς ξέρουμε σε κάθε περίπτωση ότι είναι ακριβώς το μήνυμα που θέλουμε
-    else:
-        server   = client.get_guild(payload.guild_id)            #αποθηκεύουμε σε μεταβλητή τον σέρβερ μας
-        reactor  = await server.fetch_member(payload.user_id)    #σημαντική σημείωση: ΔΕΝ δουλεύει το payload.member όπως με πάνω, κι έτσι, πρέπει να χρησιμοποιήσουμε το coroutine.
+    #αποθηκεύουμε σε μεταβλητή τον σέρβερ μας
+    server  = client.get_guild(payload.guild_id)
 
+    #είναι διαφορετικός ο τρόπος, σε σχέση με πάνω, που παίρνουμε τον reactor.   
+    reactor = await server.fetch_member(payload.user_id)
 
-        #αποθηκεύουμε σε μεταβλητές τους ρόλους που θέλουμε να κάνουμε assign
-        rainbow_six_siege = server.get_role(760755925535031357)
-        rocket_league     = server.get_role(760839558655901767)
-        minecraft         = server.get_role(761471771450015755)
-        forza_horizon4    = server.get_role(761471931631009792)
-        among_us          = server.get_role(761472151152230411)
-        league_of_legends = server.get_role(761472271239217183)
-        euro_truck_sim2   = server.get_role(761472440395497493)
-        world_of_warcraft = server.get_role(770018540618907669)
-        sea_of_thieves    = server.get_role(778608259925803009)
-        phasmophobia      = server.get_role(780112959811616788)
+    #και μετά ελέγχουμε κάθε πιθανό σενάριο
+    if payload.emoji.name == "rainbow_six_siege":
+        role = server.get_role(760755925535031357)
+    
+    elif payload.emoji.name == "rocket_league":
+        role = server.get_role(760839558655901767)
 
+    elif payload.emoji.name == "minecraft":
+        role = server.get_role(761471771450015755)
+    
+    elif payload.emoji.name == "forza_horizon4":
+        role = server.get_role(761471931631009792)
 
-        #και μετά ελέγχουμε κάθε πιθανό σενάριο
-        if payload.emoji.name == "rainbow_six_siege":
-            role    = rainbow_six_siege
-            if reactor is not None and role is not None:
-                await reactor.remove_roles(role)
-            return
-        
-        if payload.emoji.name == "rocket_league":
-            role = rocket_league
-            if reactor is not None and role is not None:
-                await reactor.remove_roles(role)
-            return
+    elif payload.emoji.name == "among_us":
+        role = server.get_role(761472151152230411)
+    
+    elif payload.emoji.name == "league_of_legends":
+        role = server.get_role(761472271239217183)
 
-        if payload.emoji.name == "minecraft":
-            role = minecraft
-            if reactor is not None and role is not None:
-                await reactor.remove_roles(role)
-            return
-        
-        if payload.emoji.name == "forza_horizon4":
-            role = forza_horizon4
-            if reactor is not None and role is not None:
-                await reactor.remove_roles(role)
-            return
+    elif payload.emoji.name == "euro_truck_sim2":
+        role = server.get_role(761472440395497493)
 
-        if payload.emoji.name == "among_us":
-            role = among_us
-            if reactor is not None and role is not None:
-                await reactor.remove_roles(role)
-            return
-        
-        if payload.emoji.name == "league_of_legends":
-            role = league_of_legends
-            if reactor is not None and role is not None:
-                await reactor.remove_roles(role)
-            return
+    elif payload.emoji.name == "wow":
+        role = server.get_role(770018540618907669)
 
-        if payload.emoji.name == "euro_truck_sim2":
-            role = euro_truck_sim2
-            if reactor is not None and role is not None:
-                await reactor.remove_roles(role)
-            return
-        
-        if payload.emoji.name == "wow":
-            role = world_of_warcraft
-            if reactor is not None and role is not None:
-                await reactor.remove_roles(role)
-            return
-        
-        if payload.emoji.name == "sea_of_thieves":
-            role = sea_of_thieves
-            if reactor is not None and role is not None:
-                await reactor.remove_roles(role)
-            return
+    elif payload.emoji.name == "sea_of_thieves":
+        role = server.get_role(778608259925803009)
 
-        if payload.emoji.name == "phasmophobia":
-            role = phasmophobia
-            if reactor is not None and role is not None:
-                await reactor.remove_roles(role)
-            return
+    elif payload.emoji.name == "phasmophobia":
+        role = server.get_role(780112959811616788)
+
+    #ύστερα, βγάζουμε τον ρόλο σε αυτόν που έκανε το react με την φτιαχτή συνάρτησή μας
+    await remove_role(reactor, role)
+
         
 
 @client.event
