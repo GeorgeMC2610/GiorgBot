@@ -10,6 +10,7 @@ f.close()
 
 client = discord.Client()
 
+#συναρτήσεις που ευθύνονται για τους ρόλους
 async def give_role(member, role):
     if member is not None and role is not None:
         await member.add_roles(role)
@@ -19,6 +20,30 @@ async def remove_role(member, role):
     if member is not None and role is not None:
         await member.remove_roles(role)
         print("[" + str(datetime.datetime.now()) + "]: Successfully removed role", role.name, "to member", member.name)
+
+#η συνάρτηση που αναγνωρίζει την θέση του μέμπερ
+def identify_member_position(member):
+    server = client.get_guild(322050982747963392)
+    
+    metzi_tou_neoukti = server.get_role(488730147894198273)
+    if member.top_role == metzi_tou_neoukti:
+        return 4
+    
+    bots = server.get_role(456219306468966410)
+    if member.top_role == bots:
+        return 3
+
+    pcmci = server.get_role(488730461091135488)
+    if member.top_role == pcmci:
+        return 2
+
+    me_meson          = server.get_role(654344275412385793)
+    if member.top_role == me_meson:
+        return 1
+    
+    return 0
+
+     
             
 
 #Το μέρος, όπου οι χρήστες παίρνουν ρόλο βάσει των reactions τους.
@@ -28,7 +53,6 @@ async def on_raw_reaction_add(payload):
     if payload.message_id != 761204434670714912:
         return
 
-    #αλλιώς ξέρουμε σε κάθε περίπτωση ότι είναι ακριβώς το μήνυμα που θέλουμε
     #αποθηκεύουμε σε μεταβλητή τον σέρβερ μας
     server  = client.get_guild(payload.guild_id)   
     reactor = payload.member 
@@ -74,7 +98,6 @@ async def on_raw_reaction_remove(payload):
     if payload.message_id != 761204434670714912:
         return
 
-    #αλλιώς ξέρουμε σε κάθε περίπτωση ότι είναι ακριβώς το μήνυμα που θέλουμε
     #αποθηκεύουμε σε μεταβλητή τον σέρβερ μας
     server  = client.get_guild(payload.guild_id)
 
@@ -115,15 +138,14 @@ async def on_raw_reaction_remove(payload):
     #ύστερα, βγάζουμε τον ρόλο σε αυτόν που έκανε το react με την φτιαχτή συνάρτησή μας
     await remove_role(reactor, role)
 
-        
 
 @client.event
 async def on_message(message):
     #log του μηνύματος.
     print(message.author, "in", message.channel, "says:", message.content)
 
-    #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα.
-    if (message.channel.type == discord.ChannelType.private):
+    #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα. Επίσης σιγουρευόμαστε ότι το bot δεν θα απαντάει ποτέ στον εαυτό του.
+    if message.channel.type == discord.ChannelType.private or message.author == message.author == client.user:
         return
 
     server = client.get_guild(322050982747963392)
@@ -143,124 +165,55 @@ async def on_message(message):
     GeorgeMC2610      = client.get_user(250721113729007617)
     Sotiris168        = await server.fetch_member(250973577761783808)
 
-    #και όλοι οι συμμετέχοντες
-    all_members = await server.fetch_members().flatten()
-
     #Μετατρέπουμε κάθε μήνυμα σε πεζά γράμματα.
     message.content = message.content.lower()
     respondable_messages = ["!ping", "!help", "-p", "-play", "-s", "-skip", "-ping", "-leave", "-l", "-help"]
-    admin_commands = ["!display users", "!secret santa"]
-
-    #                    ------ OI ENTOLES -------
-
-    #Σιγουρευόμαστε ότι το BOT δεν θα απαντήσει ποτέ στον εαυτό του.
-    if message.author == client.user:
-        return
+    admin_commands = ["!display members", "!prune"]
 
     #                                                                   Εκτέλεση εντολών διαχειριστών
-    if message.content not in respondable_messages and message.content in admin_commands:
+    if (message.content not in respondable_messages and message.content in admin_commands) or ([i for i in admin_commands if message.content.startswith(i)] != []):
         #Ελέγχουμε αν όντως ο διαχειριστής εκτελεί εντολές.
         if message.author != Sotiris168 and message.author != GeorgeMC2610:
             msg_to_send = "Καλή προσπάθεια, " + message.author.mention + "! Αυτή είναι εντολή διαχειριστή. Θα 'ταν κρίμα αν το μάθαιναν οι " + metzi_tou_neoukti.mention + "..."
             await message.channel.send(msg_to_send)
             return
 
-        #Αν έχουμε φτάσει μέχρι και αυτό το σημείο, σημαίνει ότι μόνο διαχειριστές θα εκτελούν εντολές. Οπότε τις εκτελούμε.
-        else:
-            if message.content == admin_commands[0]:
-                #φτιάξε μια λίστα με τα αναγνώσιμα ονόματα των μελών του σέρβερ
-                all_member_names = []
-                #βάλε τα ονόματα στη λίστα
-                for member in all_members:
-                    all_member_names.append(member.name)
-                #στείλε το μήνυμα με όλα τα ονόματα στη λίστα
-                all_member_names.sort()
-                await message.channel.send(all_member_names)
+        if message.content == admin_commands[0]:
+            #και όλοι οι συμμετέχοντες
+            all_members = await server.fetch_members().flatten()
+            all_member_names = [i.name for i in all_members]
+
+            #στείλε το μήνυμα με όλα τα ονόματα στη λίστα
+            all_member_names.sort()
+            await message.channel.send(all_member_names)
+            return
+
+        elif message.content.startswith(admin_commands[1]):
+            #χωρίζουμε το μήνυμα ανά κενό, ώστε να πάρουμε τις φορές που πρέπει να σβήσουμε το μήνυμα.
+            message_content_by_space = message.content.split(" ")
+
+            #πρέπει να 'χει ακριβώς ένα όρισμα το prune, αλλιώς δεν θα εκτελσθεί η εντολή.
+            if len(message_content_by_space) != 2:
+                await message.channel.send("ΣΤΕΙΛΕ ΣΩΣΤΑ ΤΗΝ ΕΝΤΟΛΗ, ΡΕ ΒΛΑΚΑ. \n\n`σωστός χειρισμός: !prune <αριθμός μηνυμάτων για σβήσιμο>`")
                 return
+            
+            #ελέγχουμε αν είναι ακέραιος η τιμή που έστειλε
+            try:
+                times = int(message_content_by_space[1])
 
-            elif message.content == admin_commands[1]:
-                #με αυτόν τον χρονοβόρο τρόπο, παίρνουμε το μήνυμα και το reaction στο οποίο θα δουλέψει το secret santa
-                nickzouk = client.get_user(155441474861924355)
-                provatas = client.get_user(172499322259243009)
-                aimilios = client.get_user(206905752613421056)
-                fotis    = client.get_user(232563110790168576)
-                lefteris = client.get_user(371263663748939779)
-                xanthos  = client.get_user(665585845167718426)
-                aggelos  = client.get_user(476839396293738506)
-                jason    = client.get_user(693124188785082399)
-                vassilis = client.get_user(377389900338823188)
+                #δεν πρέπει να 'ναι παραπάνω από πενήντα τα μηνύματα που θα σβησθούν.
+                if times > 50 or times < 0:
+                    await message.channel.send("Τι λέτε, κύριε; ΜΑΞ ΠΕΝΗΝΤΑ MHNYMATA, ΚΑΙ ΠΟΛΛΕΣ ΕΙΝΑΙ.")
+                    return
 
-                #ύστερα, αυτή είναι η λίστα με την οποία θα δουλέψει το secret santa
-                not_me_meson_members = []
-                not_me_meson_members.append(fotis)
-                not_me_meson_members.append(aimilios)
-                not_me_meson_members.append(GeorgeMC2610)
-                not_me_meson_members.append(Sotiris168)
-                not_me_meson_members.append(lefteris)
-                not_me_meson_members.append(aggelos)
-                not_me_meson_members.append(xanthos)
-                not_me_meson_members.append(nickzouk)
-                not_me_meson_members.append(vassilis)
+                #αλλιώς, δεν υπάρχει κανένα πρόβλημα και σβήνουμε τα μηνύματα.
+                async for message_to_be_deleted in message.channel.history(limit=times):
+                    await message_to_be_deleted.delete()
+                return
+            except:
+                await message.channel.send("Ε, καλά, είσαι και πολύ **μαλάκας**. ΑΡΙΘΜΟ ΔΩΣΕ, ΡΕ ΠΟΥΣΤΑΡΕ. \n\n`σωστός χειρισμός: !prune <αριθμός μηνυμάτων για σβήσιμο>`")
+                return
                 
-                #φτιάξε μια ακριβώς ίδια λίστα με την προηγούμενη, αλλά ανακάτεψέ την (για να είναι τυχαίος ο secret santa)
-                secret_santas = not_me_meson_members.copy()
-                random.shuffle(secret_santas)
-
-                i = 0
-                while (i < len(not_me_meson_members)):
-                    duplicate = (not_me_meson_members[i] == nickzouk and secret_santas[i] == xanthos) or (not_me_meson_members[i] == aimilios and secret_santas[i] == nickzouk) or (not_me_meson_members[i] == xanthos and secret_santas[i] == lefteris) or (not_me_meson_members[i] == GeorgeMC2610 and secret_santas[i] == fotis) or (not_me_meson_members[i] == Sotiris168 and secret_santas[i] == aimilios)
-                    if (not_me_meson_members[i] == secret_santas[i]) or duplicate:
-                        random.shuffle(secret_santas)
-                        i = 0
-                    else:
-                        i += 1
-
-                i = 0
-                #στείλε μήνυμα σε αυτόν που πρέπει και αποκάλυψέ του σε ποιόν πρέπει να κάνει δώρο
-                for member in not_me_meson_members:
-                    try:
-                        user_msg_to_send = "**Δεν είσαι, πλέον,** ο secret santa του προηγούμενου.\nΕίσαι ο __**καινούργιος**__ secret santa του " + secret_santas[i].name + "."
-                        await member.send(user_msg_to_send)
-                    except Exception as e:
-                        print("unable to send message to user", member, ". Exception:", e)
-                    
-                    i += 1
-                return
-    # ξεχωριστή περίπτωση για το prune
-    elif message.content.startswith("!prune"):
-
-        #Κι αυτή είναι εντολή διαχειριστή, οπότε θέλουμε κι αυτή να αποκαλύπτει τον παραβιαστή της
-        if message.author.top_role != metzi_tou_neoukti:
-            msg_to_send = "Καλή προσπάθεια, " + message.author.mention + "! Αυτή είναι εντολή διαχειριστή. Θα 'ταν κρίμα αν το μάθαιναν οι " + metzi_tou_neoukti.mention + "..."
-            await message.channel.send(msg_to_send)
-            return
-
-        #χωρίζουμε το μήνυμα ανά κενό, ώστε να πάρουμε τις φορές που πρέπει να σβήσουμε το μήνυμα.
-        message_content_by_space = message.content.split(" ")
-
-        #πρέπει να 'χει ακριβώς ένα όρισμα το prune, αλλιώς δεν θα εκτελσθεί η εντολή.
-        if len(message_content_by_space) != 2:
-            await message.channel.send("ΣΤΕΙΛΕ ΣΩΣΤΑ ΤΗΝ ΕΝΤΟΛΗ, ΡΕ ΒΛΑΚΑ. \n\n`σωστός χειρισμός: !prune <αριθμός μηνυμάτων για σβήσιμο>`")
-            return
-        
-        #ελέγχουμε αν είναι ακέραιος η τιμή που έστειλε
-        try:
-            times = int(message_content_by_space[1])
-
-            #δεν πρέπει να 'ναι παραπάνω από πενήντα τα μηνύματα που θα σβησθούν.
-            if times > 50 or times < 0:
-                await message.channel.send("Τι λέτε, κύριε; ΜΑΞ ΠΕΝΗΝΤΑ ΛΕΞΕΙΣ, ΚΑΙ ΠΟΛΛΕΣ ΕΙΝΑΙ.")
-                return
-
-            #αλλιώς, δεν υπάρχει κανένα πρόβλημα και σβήνουμε τα μηνύματα.
-            async for message_to_be_deleted in message.channel.history(limit=times):
-                await message_to_be_deleted.delete()
-            return
-        except:
-            await message.channel.send("Ε, καλά, είσαι και πολύ **μαλάκας**. ΑΡΙΘΜΟ ΔΩΣΕ, ΡΕ ΠΟΥΣΤΑΡΕ. \n\n`σωστός χειρισμός: !prune <αριθμός μηνυμάτων για σβήσιμο>`")
-            return
-                
-  
     #                                                                  Εκτέλεση εντολών κοινής χρήσης
     if message.content in respondable_messages and message.content not in admin_commands:
 
