@@ -14,12 +14,12 @@ client = discord.Client()
 async def give_role(member, role):
     if member is not None and role is not None:
         await member.add_roles(role)
-        print("[" + str(datetime.datetime.now()) + "]: Successfully gave role", role.name, "to member", member.name)
+        print("[" + str(datetime.datetime.now())[:19] + "]: Successfully gave role", role.name, "to member", member.name)
 
 async def remove_role(member, role):
     if member is not None and role is not None:
         await member.remove_roles(role)
-        print("[" + str(datetime.datetime.now()) + "]: Successfully removed role", role.name, "to member", member.name)
+        print("[" + str(datetime.datetime.now())[:19] + "]: Successfully removed role", role.name, "to member", member.name)
 
 #η συνάρτηση που αναγνωρίζει την θέση του μέμπερ
 def identify_member_position(member):
