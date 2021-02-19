@@ -138,10 +138,10 @@ async def on_raw_reaction_remove(payload):
 @client.event
 async def on_message(message):
     #log του μηνύματος.
-    print(message.author, "in", message.channel, "says:", message.content)
+    print("[" + str(datetime.datetime.now())[:19] + "]:", message.author.name, "in", message.channel, "says:", message.content)
 
     #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα. Επίσης σιγουρευόμαστε ότι το bot δεν θα απαντάει ποτέ στον εαυτό του.
-    if message.channel.type == discord.ChannelType.private or message.author == message.author == client.user:
+    if message.channel.type == discord.ChannelType.private or message.author == client.user:
         return
 
     server = client.get_guild(322050982747963392)
@@ -174,12 +174,15 @@ async def on_message(message):
 
         if message.content == admin_commands[0]:
             #και όλοι οι συμμετέχοντες
-            all_members = await server.fetch_members().flatten()
+            all_members      = await server.fetch_members().flatten()
             all_member_names = [i.name for i in all_members]
+
+            #κάνουμε και καταμέτρηση των bot
+            bots             = [i for i in all_members if identify_member_position(i) == 3]
 
             #στείλε το μήνυμα με όλα τα ονόματα στη λίστα
             all_member_names.sort()
-            await message.channel.send(all_member_names)
+            await message.channel.send("```" + str(all_member_names) + "``` **\n" + str(len(all_member_names)) + " συνολικά μέλη** στον server, όπου τα **" + str(len(bots)) + " είναι bots.**")
             return
 
         elif message.content.startswith(admin_commands[1]):
@@ -188,7 +191,7 @@ async def on_message(message):
 
             #πρέπει να 'χει ακριβώς ένα όρισμα το prune, αλλιώς δεν θα εκτελσθεί η εντολή.
             if len(message_content_by_space) != 2:
-                await message.channel.send("ΣΤΕΙΛΕ ΣΩΣΤΑ ΤΗΝ ΕΝΤΟΛΗ, ΡΕ ΒΛΑΚΑ. \n\n`σωστός χειρισμός: !prune <αριθμός μηνυμάτων για σβήσιμο>`")
+                await message.channel.send("ΣΤΕΙΛΕ ΣΩΣΤΑ ΤΗΝ ΕΝΤΟΛΗ, ΡΕ ΒΛΑΚΑ. \n\n**σωστός χειρισμός:** `!prune <αριθμός μηνυμάτων (από 1-50) για σβήσιμο>`")
                 return
             
             #ελέγχουμε αν είναι ακέραιος η τιμή που έστειλε
