@@ -68,6 +68,9 @@ async def on_raw_reaction_add(payload):
     elif payload.emoji.name == "forza_horizon4":
         role = server.get_role(761471931631009792)
 
+    elif payload.emoji.name == "gtaV":
+        role = server.get_role(813411557341921341)
+
     elif payload.emoji.name == "among_us":
         role = server.get_role(761472151152230411)
     
@@ -85,6 +88,9 @@ async def on_raw_reaction_add(payload):
 
     elif payload.emoji.name == "phasmophobia":
         role = server.get_role(780112959811616788)
+
+    elif payload.emoji.name == "pubeg":
+        role = server.get_role(813411722903552062)
 
     #ύστερα, δίνουμε τον ρόλο σε αυτόν που έκανε το react με την φτιαχτή συνάρτησή μας
     await give_role(reactor, role)
@@ -113,6 +119,9 @@ async def on_raw_reaction_remove(payload):
     
     elif payload.emoji.name == "forza_horizon4":
         role = server.get_role(761471931631009792)
+    
+    elif payload.emoji.name == "gtaV":
+        role = server.get_role(813411557341921341)
 
     elif payload.emoji.name == "among_us":
         role = server.get_role(761472151152230411)
@@ -131,6 +140,9 @@ async def on_raw_reaction_remove(payload):
 
     elif payload.emoji.name == "phasmophobia":
         role = server.get_role(780112959811616788)
+
+    elif payload.emoji.name == "pubeg":
+        role = server.get_role(813411722903552062)
 
     #ύστερα, βγάζουμε τον ρόλο σε αυτόν που έκανε το react με την φτιαχτή συνάρτησή μας
     await remove_role(reactor, role)
@@ -182,7 +194,7 @@ async def on_message(message):
 
             #στείλε το μήνυμα με όλα τα ονόματα στη λίστα
             all_member_names.sort()
-            await message.channel.send("```" + str(all_member_names) + "``` **\n" + str(len(all_member_names)) + " συνολικά μέλη** στον server, όπου τα **" + str(len(bots)) + " είναι bots.**")
+            await message.channel.send("```python\n" + str(all_member_names) + "``` **\n" + str(len(all_member_names)) + " συνολικά μέλη** στον server, όπου τα **" + str(len(bots)) + " είναι bots.**")
             return
 
         elif message.content.startswith(admin_commands[1]):
@@ -200,7 +212,7 @@ async def on_message(message):
 
                 #δεν πρέπει να 'ναι παραπάνω από πενήντα τα μηνύματα που θα σβησθούν.
                 if times > 50:
-                    await message.channel.send("Τι λέτε, κύριε; ΜΑΞ ΠΕΝΗΝΤΑ MHNYMATA, ΚΑΙ ΠΟΛΛΕΣ ΕΙΝΑΙ.")
+                    await message.channel.send("Τι λέτε, κύριε; ΜΑΞ ΠΕΝΗΝΤΑ MHNYMATA. ΚΑΙ ΠΟΛΛA ΕΙΝΑΙ ΜΗ ΣΟΥ ΠΩ.")
                     return
                 elif times < 0:
                     await message.channel.send("Και για πες, ρε βλάκα, ΠΩΣ ΘΑ ΣΒΗΣΩ **ΑΡΝΗΤΙΚΟ** ΑΡΙΘΜΟ ΜΗΝΥΜΑΤΩΝ;")
@@ -226,12 +238,12 @@ async def on_message(message):
         if message.channel != bot_requests:
 
             #Λίστα μηνυμάτων απόρριψης
-            deny1 = "Ξέρεις κάτι; **Όχι**, δεν θα κάνω αυτό που θες... τι το 'χουμε το " + bot_requests.mention + " ΒΡΕ ΜΑΛΑΚΑ; Αν θες πραγματικά να κάνω αυτό που θες, στείλ' το εκεί."
+            deny1 = "Ξέρεις κάτι; **Όχι**, δεν θα κάνω αυτό που θες... τι το 'χουμε το " + bot_requests.mention + " ΒΡΕ ΜΑΛΑΚΑ; Αν θες πραγματικά να γίνει αυτό που θες, στείλ' το εκεί."
             deny2 = "Σου 'χω πει την ιστορία, όπου ένας άνθρωπος στέλνει τις εντολές του **ΟΝΤΩΣ** στο" + bot_requests.mention + ";"
             deny3 = "Κάθε φορά που στέλενεις εντολή έξω από το" + bot_requests.mention + " ένα κουταβάκι πεθαίνει... 😥"
             deny4 = "Γράψε 100 φορές στο τετράδιο σου 'ΘΑ ΣΤΕΛΝΩ ΤΙΣ ΕΝΤΟΛΕΣ ΜΟΥ ΜΟΝΟ ΣΤΟ " + bot_requests.mention + "'." 
             deny5 = "Στείλ' το στο " + bot_requests.mention + ", αλλιώς θα το πω στην κυρίααα 😨."
-            deny6 = "🤡  ← εσύ, όταν δεν στέλενεις τις εντολές σου στο " + bot_requests.mention + "."
+            deny6 = "🤡  ← εσύ, όταν δεν στέλνεις τις εντολές σου στο " + bot_requests.mention + "."
             deny7 = "Θα έβαζες ποτέ το ψυγείο στο μπαλκόνι; Όχι. Μην βάζεις εντολές **έξω** του " + bot_requests.mention + ", τότε **__ΒΛΑΚΑ__**."
             deny8 = "Έχω πει 500 135.000 φορές να τα στέλνεις στο " + bot_requests.mention + "..."
             deny9 = "🚓🚓 **ΑΣΤΥΝΟΜΙΑ ΒΛΑΚΕΙΑΣ!** Ήμουν σίγουρος, ότι κάποιος σαν κι εσένα, θα έστελνε εντολή εκτός του " + bot_requests.mention + "!"
