@@ -10,16 +10,23 @@ f.close()
 
 client = discord.Client()
 
+def channel_log(message):
+    f = open('log.txt', 'a', encoding='utf-8')
+    f.write("[" + str(datetime.datetime.now())[:19] + "]: " + message + "\n")
+    print("[" + str(datetime.datetime.now())[:19] + "]: " + message)
+    f.close()
+    
+
 #συναρτήσεις που ευθύνονται για τους ρόλους
 async def give_role(member, role):
     if member is not None and role is not None:
         await member.add_roles(role)
-        print("[" + str(datetime.datetime.now())[:19] + "]: Successfully gave role", role.name, "to member", member.name)
+        channel_log("Successfully gave role " + role.name + " to member " + member.name)
 
 async def remove_role(member, role):
     if member is not None and role is not None:
         await member.remove_roles(role)
-        print("[" + str(datetime.datetime.now())[:19] + "]: Successfully removed role", role.name, "to member", member.name)
+        channel_log("Successfully removed role " + role.name + " from member " + member.name)
 
 #η συνάρτηση που αναγνωρίζει την θέση του μέμπερ
 def identify_member_position(member):
@@ -150,7 +157,7 @@ async def on_raw_reaction_remove(payload):
 @client.event
 async def on_message(message):
     #log του μηνύματος.
-    print("[" + str(datetime.datetime.now())[:19] + "]:", message.author.name, "in", message.channel, "says:", message.content)
+    channel_log(message.author.name + " in " + str(message.channel) + " says: " + message.content)
 
     #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα. Επίσης σιγουρευόμαστε ότι το bot δεν θα απαντάει ποτέ στον εαυτό του.
     if message.channel.type == discord.ChannelType.private or message.author == client.user:
@@ -298,7 +305,7 @@ async def on_message(message):
     if "nibbaebi" in message.content.lower():
         await message.delete()
         await message.author.move_to(None)
-        print("[" + str(datetime.datetime.now())[:19] + "]: Attempted to disconnect " + message.author.name + " from a voice channel (Nibbaebi).")
+        channel_log("Attempted to disconnect " + message.author.name + " from a voice channel (Nibbaebi.)")
         await message.channel.send("Give this mothafucka a 27 minute ban for being toxic, I'm French. (Κατουράω το Miliobot)")
         
 
