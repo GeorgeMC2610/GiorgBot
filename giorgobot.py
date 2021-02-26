@@ -282,4 +282,24 @@ async def on_message(message):
         await message.channel.send(random_deny_message, delete_after=8.0)
         return
 
+    if "<@!640605837102022696>" in message.content:
+        plaint1 = "Τιιιιι;"
+        plaint2 = "ΤΙ ΘΕΕΕΕΣ;"
+        plaint3 = "Τι έκανα πάλι;"
+        plaint4 = "ΣΚΑΣΕΕΕΕΕ."
+        plaint5 = "Άλλη μία φορά να το πεις αυτό και θα σε διώξω."
+        plaint6 = GeorgeMC2610.mention + " ΚΑΝΕΕΕΕ ΚΑΤΙΙΙ ΜΕ ΕΝΟΧΛΟΥΝ."
+        plaint7 = "Πω, ρε μαλάκα αλήθεια σκάσε..."
+
+        complaints = [plaint1, plaint2, plaint3, plaint4, plaint5, plaint6, plaint7]
+        random_complaint = random.choice(complaints)
+        await message.channel.send(random_complaint)
+
+    if "nibbaebi" in message.content.lower():
+        await message.delete()
+        await message.author.move_to(None)
+        print("[" + str(datetime.datetime.now())[:19] + "]: Attempted to disconnect " + message.author.name + " from a voice channel (Nibbaebi).")
+        await message.channel.send("Give this mothafucka a 27 minute ban for being toxic, I'm French. (Κατουράω το Miliobot)")
+        
+
 client.run(token)
