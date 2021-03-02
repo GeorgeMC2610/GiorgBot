@@ -2,6 +2,7 @@ import discord
 import random
 import datetime
 from discord.ext import commands, tasks
+import json
 
 #Εφ' όσον το repository θέλουμε να 'ναι public, πρέπει να αποθηκεύσουμε το token σε ένα ξεχωριστό αρχείο, το οποίο δεν θα συμπεριληφθεί στο repository.
 f = open('token.txt', 'r')
@@ -49,6 +50,25 @@ def identify_member_position(member):
         return 1
     
     return 0
+
+async def private_meme(message, sender):
+    if '{' in message and message[-1] == '}' and '"target"' in message and '"message"' in message:
+        payload  = json.loads(message.split("meme ")[1])
+        targetID = False
+        server   = client.get_guild(322050982747963392)
+        users    = await server.fetch_members().flatten()
+        try:
+            targetID = [i for i in users if i.name == payload["target"]][0].id
+            await sender.send("Θα στείλω στον " + payload["target"] + " **αμέσως**!")
+        except Exception as e:
+            print("Unable to decode dictionary.", e.args)
+            await sender.send("Ποιός στον πούτσο είναι αυτός;")
+        
+        if targetID:
+            user_to_send = client.get_user(targetID)
+            await user_to_send.send(payload["message"])
+            await sender.send("Και, που λες, του το έστειλα.")
+
 
 
 #Το μέρος, όπου οι χρήστες παίρνουν ρόλο βάσει των reactions τους.
@@ -160,7 +180,14 @@ async def on_message(message):
     channel_log(message.author.name + " in " + str(message.channel) + " says: " + message.content)
 
     #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα. Επίσης σιγουρευόμαστε ότι το bot δεν θα απαντάει ποτέ στον εαυτό του.
-    if message.channel.type == discord.ChannelType.private or message.author == client.user:
+    if message.channel.type == discord.ChannelType.private:
+        if message.content.startswith("meme "):
+            await private_meme(message.content, message.author)
+            return
+
+        return
+    
+    if message.author == client.user:
         return
 
     server = client.get_guild(322050982747963392)
@@ -180,7 +207,7 @@ async def on_message(message):
 
     #Μετατρέπουμε κάθε μήνυμα σε πεζά γράμματα.
     message.content = message.content.lower()
-    respondable_messages = ["!ping", "!help", "-", "!"]
+    respondable_messages = ["!ping", "!help", "!join", "!leave", "-", "!"]
     admin_commands = ["!display members", "!prune"]
 
     #Εκτέλεση εντολών διαχειριστών
@@ -289,6 +316,7 @@ async def on_message(message):
         await message.channel.send(random_deny_message, delete_after=8.0)
         return
 
+    #Το bot πλέον απαντάει όταν το κάνει mention κάποιος.
     if "<@!640605837102022696>" in message.content:
         plaint1 = "Τιιιιι;"
         plaint2 = "ΤΙ ΘΕΕΕΕΣ;"
@@ -308,5 +336,4 @@ async def on_message(message):
         channel_log("Attempted to disconnect " + message.author.name + " from a voice channel (Nibbaebi.)")
         await message.channel.send("Give this mothafucka a 27 minute ban for being toxic, I'm French. (Κατουράω το Miliobot)")
         
-
 client.run(token)
