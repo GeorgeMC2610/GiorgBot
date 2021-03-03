@@ -51,12 +51,14 @@ def identify_member_position(member):
     
     return 0
 
-async def private_meme(message, sender):
+async def private_msg(message, sender):
     if '{' in message and message[-1] == '}' and '"target"' in message and '"message"' in message:
-        payload  = json.loads(message.split("meme ")[1])
+        payload  = json.loads(message.split("send ")[1])
         targetID = False
+
         server   = client.get_guild(322050982747963392)
         users    = await server.fetch_members().flatten()
+
         try:
             targetID = [i for i in users if i.name == payload["target"]][0].id
             await sender.send("Θα στείλω στον " + payload["target"] + " **αμέσως**!")
@@ -179,14 +181,6 @@ async def on_message(message):
     #log του μηνύματος.
     channel_log(message.author.name + " in " + str(message.channel) + " says: " + message.content)
 
-    #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα. Επίσης σιγουρευόμαστε ότι το bot δεν θα απαντάει ποτέ στον εαυτό του.
-    if message.channel.type == discord.ChannelType.private:
-        if message.content.startswith("meme "):
-            await private_meme(message.content, message.author)
-            return
-
-        return
-    
     if message.author == client.user:
         return
 
@@ -202,8 +196,22 @@ async def on_message(message):
     metzi_tou_neoukti = server.get_role(488730147894198273)
 
     #οι admin
-    GeorgeMC2610      = client.get_user(250721113729007617)
+    GeorgeMC2610      = await server.fetch_member(250721113729007617)
     Sotiris168        = await server.fetch_member(250973577761783808)
+
+    #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα. Επίσης σιγουρευόμαστε ότι το bot δεν θα απαντάει ποτέ στον εαυτό του.
+    if message.channel.type == discord.ChannelType.private:
+        if message.content.startswith("send "):
+            if message.author != GeorgeMC2610:
+                await message.author.send("ΤΙ ΠΑΣ ΝΑ ΚΑΝΕΙΣ ΕΚΕΙ;")
+                await GeorgeMC2610.send("ΓΙΑ ΒΑΛΕ ΜΙΑ ΤΑΞΗ. Ο " + message.author.name + " ΚΑΝΕΙ ΤΣΑΤΣΙΕΣ.")
+                return
+
+            await private_msg(message.content, message.author)
+            return
+        
+        return
+    
 
     #Μετατρέπουμε κάθε μήνυμα σε πεζά γράμματα.
     message.content = message.content.lower()
