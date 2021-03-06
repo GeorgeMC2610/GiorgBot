@@ -24,7 +24,18 @@ def channel_log(message):
     f.write("[" + str(datetime.datetime.now())[:19] + "]: " + message + "\n")
     print("[" + str(datetime.datetime.now())[:19] + "]: " + message)
     f.close()
-    
+
+def remove_greek_uppercase_accent(x):
+    x = x.replace("Ά", "Α")
+    x = x.replace("Έ", "Ε")
+    x = x.replace("Ή", "Η")
+    x = x.replace("Ί", "Ι")
+    x = x.replace("Ό", "Ο")
+    x = x.replace("Ύ", "Υ")
+    x = x.replace("Ώ", "Ω")
+    x = x.replace("΅Ι", "Ϊ")
+    x = x.replace("΅Υ", "Ϋ")
+    return x
 
 #συναρτήσεις που ευθύνονται για τους ρόλους
 async def give_role(member, role):
@@ -321,6 +332,7 @@ async def on_message(message):
         if message.content.startswith(respondable_messages[2]):
             #για να βρούμε ποια πόλη θέλει ο χρήστης, πρώτα χωρίζουμε την εντολή και ύστερα την κάνουμε κεφαλαία, για το API
             city = message.content.split("!emvolio ")[1].upper()
+            city = remove_greek_uppercase_accent(city)
 
             #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
             date = datetime.date.today()
@@ -347,7 +359,7 @@ async def on_message(message):
             #αλλιώς προσπαθούμε να βρούμε την περιοχή
             try:
                 #εκτός αν ο χρήστης μας έχει πει να βρούμε όλες τις περιοχές
-                if city == "ΣΥΝΟΛΟ":
+                if city in ["ΣΥΝΟΛΟ", "ΟΛΑ", "ΟΛΟ", "ΕΛΛΑΔΑ", "ΧΩΡΑ", "ΣΥΝΟΛΙΚΑ", "ΠΑΝΤΕΣ"]:
                     #στην οποία περίπτωση κάνουμε κάτι τέτοιο χειροκίνητα
                     grand_total = 0
                     grand_today_total = 0
