@@ -17,8 +17,6 @@ f.close()
 
 client = discord.Client()
 
-tonismena_grammata = ""
-
 def channel_log(message):
     f = open('log.txt', 'a', encoding='utf-8')
     f.write("[" + str(datetime.datetime.now())[:19] + "]: " + message + "\n")
@@ -369,6 +367,12 @@ async def on_message(message):
 
                     await message.channel.send('Έχουν γίνει συνολικά **' + f'{grand_total:n}' + ' εμβολιασμοί** σε ολόκληρη την Ελλάδα. (' + f'{grand_today_total:n}' + ' έγιναν ' + kataliksi + ')')
                     return
+                elif city in ["ΠΕΡΙΦΕΡΕΙΕΣ", "ΠΕΡΙΦΕΡΕΙΑΚΕΣ ΕΝΟΤΗΤΕΣ", "ΛΙΣΤΑ", "ΕΝΟΤΗΤΕΣ", "ΠΕΡΙΟΧΕΣ"]:
+                    total_cities = [data["area"] for data in response]
+                    await message.channel.send('```py\n ' + str(total_cities) + '```\n ● **' + str(len(total_cities)) + '** συνολικές περιφερειακές ενότητες.')
+
+                    return
+
 
                 #βρίσκουμε την περιοχή με LINQ-οειδές request
                 total_vaccines = [data for data in response if data["area"] == city][0]
