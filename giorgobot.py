@@ -321,25 +321,31 @@ async def on_message(message):
             #για να βρούμε ποια πόλη θέλει ο χρήστης, πρώτα χωρίζουμε την εντολή και ύστερα την κάνουμε κεφαλαία, για το API
             city = message.content.split("!emvolio ")[1].upper()
 
-            #
+            #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
             date = datetime.date.today()
             kataliksi = "σήμερα"
             
+            #αλλά αν είναι πολύ νωρίς μέσα στην μέρα, βγάζουμε τα χθεσινά αποτελέσματα
             if datetime.datetime.now().hour < 17:
                 date -= datetime.timedelta(days=1)
                 kataliksi = "χθες"
 
+            #φτιάχνουμε το request και παίρνουμε τα γεγονότα όπως πρέπει
             url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=' + str(date) + '&date_to=' + str(date)
             headers = {'Authorization':'Token ' + emvolioapi}
             response = requests.get(url, headers=headers)
             response = response.json()
             
+            #αν για οποιονδήποτε λόγο δεν έχουμε αποτελέσματα, τότε σταματάμε εδώ
             if response == []:
                 await message.channel.send("Δεν έχουν γίνει ακόμη εμβολιασμοί σήμερα.")
                 return
 
+            #αλλιώς προσπαθούμε να βρούμε την περιοχή
             try:
+                #εκτός αν ο χρήστης μας έχει πει να βρούμε όλες τις περιοχές
                 if city == "ΣΥΝΟΛΟ":
+                    #στην οποία περίπτωση κάνουμε κάτι τέτοιο χειροκίνητα
                     grand_total = 0
                     grand_today_total = 0
                     for data in response:
@@ -349,9 +355,12 @@ async def on_message(message):
                     await message.channel.send('Έχουν γίνει συνολικά **' + str(grand_total) + ' εμβολιασμοί** σε ολόκληρη την Ελλάδα. (' + str(grand_today_total) + ' έγιναν ' + kataliksi + ')')
                     return
 
+                #βρίσκουμε την περιοχή με LINQ-οειδές request
                 total_vaccines = [data for data in response if data["area"] == city][0]
+                #και στέλνουμε το μήνυμα
                 await message.channel.send('Στην περιφερειακή ενότητα **' + city + '** έχουν γίνει συνολικά **' + str(total_vaccines["totalvaccinations"]) + ' εμβολιασμοί**. (' + str(total_vaccines["daytotal"]) + ' έγιναν ' + kataliksi + ')')
             except:
+                #αλλιώς, λογικά δεν θα υπάρχει αυτή η περιοχή
                 await message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 (Η περιοχή που ψάχνεις πρέπει να είναι υποχρεωτικά σε __γενική πτώση__)')
 
             return
