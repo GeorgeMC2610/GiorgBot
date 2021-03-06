@@ -3,6 +3,7 @@ import random
 import datetime
 import requests
 import json
+import locale
 from discord.ext import commands, tasks
 
 #Εφ' όσον το repository θέλουμε να 'ναι public, πρέπει να αποθηκεύσουμε το token σε ένα ξεχωριστό αρχείο, το οποίο δεν θα συμπεριληφθεί στο repository.
@@ -341,6 +342,8 @@ async def on_message(message):
                 await message.channel.send("Δεν έχουν γίνει ακόμη εμβολιασμοί σήμερα.")
                 return
 
+            locale.setlocale(locale.LC_ALL, 'el_GR')
+
             #αλλιώς προσπαθούμε να βρούμε την περιοχή
             try:
                 #εκτός αν ο χρήστης μας έχει πει να βρούμε όλες τις περιοχές
@@ -352,13 +355,13 @@ async def on_message(message):
                         grand_total += data["totalvaccinations"]
                         grand_today_total += data["daytotal"]
 
-                    await message.channel.send('Έχουν γίνει συνολικά **' + str(grand_total) + ' εμβολιασμοί** σε ολόκληρη την Ελλάδα. (' + str(grand_today_total) + ' έγιναν ' + kataliksi + ')')
+                    await message.channel.send('Έχουν γίνει συνολικά **' + f'{grand_total:n}' + ' εμβολιασμοί** σε ολόκληρη την Ελλάδα. (' + f'{grand_today_total:n}' + ' έγιναν ' + kataliksi + ')')
                     return
 
                 #βρίσκουμε την περιοχή με LINQ-οειδές request
                 total_vaccines = [data for data in response if data["area"] == city][0]
                 #και στέλνουμε το μήνυμα
-                await message.channel.send('Στην περιφερειακή ενότητα **' + city + '** έχουν γίνει συνολικά **' + str(total_vaccines["totalvaccinations"]) + ' εμβολιασμοί**. (' + str(total_vaccines["daytotal"]) + ' έγιναν ' + kataliksi + ')')
+                await message.channel.send('Στην περιφερειακή ενότητα **' + city + '** έχουν γίνει συνολικά **' + f'{total_vaccines["totalvaccinations"]:n}' + ' εμβολιασμοί**. (' + f'{total_vaccines["daytotal"]:n}' + ' έγιναν ' + kataliksi + ')')
             except:
                 #αλλιώς, λογικά δεν θα υπάρχει αυτή η περιοχή
                 await message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 (Η περιοχή που ψάχνεις πρέπει να είναι υποχρεωτικά σε __γενική πτώση__)')
