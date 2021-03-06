@@ -32,7 +32,9 @@ def remove_greek_uppercase_accent(x):
     x = x.replace("Ύ", "Υ")
     x = x.replace("Ώ", "Ω")
     x = x.replace("΅Ι", "Ϊ")
+    x = x.replace("Ϊ́", "Ϊ")
     x = x.replace("΅Υ", "Ϋ")
+    x = x.replace("Ϋ́", "Ϋ")
     return x
 
 #συναρτήσεις που ευθύνονται για τους ρόλους
