@@ -1,15 +1,22 @@
 import discord
 import random
 import datetime
-from discord.ext import commands, tasks
+import requests
 import json
+from discord.ext import commands, tasks
 
 #Εφ' όσον το repository θέλουμε να 'ναι public, πρέπει να αποθηκεύσουμε το token σε ένα ξεχωριστό αρχείο, το οποίο δεν θα συμπεριληφθεί στο repository.
 f = open('token.txt', 'r')
 token = f.read()
 f.close()
 
+f = open('emvolioapi.txt', 'r')
+emvolioapi = f.read()
+f.close()
+
 client = discord.Client()
+
+tonismena_grammata = ""
 
 def channel_log(message):
     f = open('log.txt', 'a', encoding='utf-8')
@@ -215,7 +222,7 @@ async def on_message(message):
 
     #Μετατρέπουμε κάθε μήνυμα σε πεζά γράμματα.
     message.content = message.content.lower()
-    respondable_messages = ["!ping", "!help", "!join", "!leave", "-", "!"]
+    respondable_messages = ["!ping", "!help", "!emvolio", "!join", "!leave", "-", "!"]
     admin_commands = ["!display members", "!prune"]
 
     #Εκτέλεση εντολών διαχειριστών
@@ -308,6 +315,45 @@ async def on_message(message):
         if message.content == respondable_messages[1]:
             help_message = "**ΔΙΚΕΣ ΜΟΥ ΕΝΤΟΛΕΣ:** \n `!help` --> Δείχνει το παρόν μενού.\n `!ping` --> ανταπόκριση του μποτ με 'Pong!'.\n\n **ΕΝΤΟΛΕΣ ΔΙΑΧΕΙΡΙΣΤΗ:**\n `!display users` --> Προβολή όλων των μελών του σέρβερ.\n `!prune <αριθμός 1-50>` --> Σβήσιμο όλων των προηγούμενων μηνυμάτων"
             await message.channel.send(help_message)
+            return
+
+        if message.content.startswith(respondable_messages[2]):
+            #για να βρούμε ποια πόλη θέλει ο χρήστης, πρώτα χωρίζουμε την εντολή και ύστερα την κάνουμε κεφαλαία, για το API
+            city = message.content.split("!emvolio ")[1].upper()
+
+            #
+            date = datetime.date.today()
+            kataliksi = "σήμερα"
+            
+            if datetime.datetime.now().hour < 17:
+                date -= datetime.timedelta(days=1)
+                kataliksi = "χθες"
+
+            url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=' + str(date) + '&date_to=' + str(date)
+            headers = {'Authorization':'Token ' + emvolioapi}
+            response = requests.get(url, headers=headers)
+            response = response.json()
+            
+            if response == []:
+                await message.channel.send("Δεν έχουν γίνει ακόμη εμβολιασμοί σήμερα.")
+                return
+
+            try:
+                if city == "ΣΥΝΟΛΟ":
+                    grand_total = 0
+                    grand_today_total = 0
+                    for data in response:
+                        grand_total += data["totalvaccinations"]
+                        grand_today_total += data["daytotal"]
+
+                    await message.channel.send('Έχουν γίνει συνολικά **' + str(grand_total) + ' εμβολιασμοί** σε ολόκληρη την Ελλάδα. (' + str(grand_today_total) + ' έγιναν ' + kataliksi + ')')
+                    return
+
+                total_vaccines = [data for data in response if data["area"] == city][0]
+                await message.channel.send('Στην περιφερειακή ενότητα **' + city + '** έχουν γίνει συνολικά **' + str(total_vaccines["totalvaccinations"]) + ' εμβολιασμοί**. (' + str(total_vaccines["daytotal"]) + ' έγιναν ' + kataliksi + ')')
+            except:
+                await message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 (Η περιοχή που ψάχνεις πρέπει να είναι υποχρεωτικά σε __γενική πτώση__)')
+
             return
             
     #Εδώ ελέγχουμε αν έχει σταλεί κάποιο μήνυμα σε library χωρίς φωτογραφία
