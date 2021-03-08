@@ -220,21 +220,29 @@ async def on_message(message):
 
     #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα. Επίσης σιγουρευόμαστε ότι το bot δεν θα απαντάει ποτέ στον εαυτό του.
     if message.channel.type == discord.ChannelType.private:
-        if message.author != GeorgeMC2610 and message.author != Sotiris168:
-            await message.author.send("ΤΙ ΠΑΣ ΝΑ ΚΑΝΕΙΣ ΕΚΕΙ;")
-            await GeorgeMC2610.send("ΓΙΑ ΒΑΛΕ ΜΙΑ ΤΑΞΗ. Ο " + message.author.name + " ΚΑΝΕΙ ΤΣΑΤΣΙΕΣ.")
-            return
-
         if message.content.startswith("!send "):
             await private_msg(message.content, message.author)
             return
         
         if message.content.startswith("!announcegeniki "):
-            await geniki_sizitisi.send(message.content.split("!announcegeniki ")[1])
+            try:
+                await geniki_sizitisi.send(message.content.split("!announcegeniki ")[1])
+                await GeorgeMC2610.send("Όλα οκ, μαν. Το 'στειλα στην **γενική συζήτηση**.")
+            except Exception as ex:
+                await GeorgeMC2610.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
             return
         
         if message.content.startswith("!announcebot "):
-            await bot_requests.send(message.content.split("!announcebot ")[1])
+            try:
+                await bot_requests.send(message.content.split("!announcebot ")[1])
+                await GeorgeMC2610.send("Όλα οκ, μαν. Το 'στειλα στα **bot requests**.")
+            except Exception as ex:
+                await GeorgeMC2610.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
+            return
+
+        if message.author != GeorgeMC2610 and message.author != Sotiris168:
+            await message.author.send("ΤΙ ΠΑΣ ΝΑ ΚΑΝΕΙΣ ΕΚΕΙ;")
+            await GeorgeMC2610.send("ΓΙΑ ΒΑΛΕ ΜΙΑ ΤΑΞΗ. Ο " + message.author.name + " ΚΑΝΕΙ ΤΣΑΤΣΙΕΣ.")
             return
 
         return 
@@ -374,7 +382,8 @@ async def on_message(message):
                         grand_total += data["totalvaccinations"]
                         grand_today_total += data["daytotal"]
 
-                    await message.channel.send('Έχουν γίνει συνολικά **' + f'{grand_total:n}' + ' εμβολιασμοί** σε ολόκληρη την Ελλάδα. (' + f'{grand_today_total:n}' + ' έγιναν ' + kataliksi + ')')
+                    percentage = round(float(grand_total/10790000), 5) * 100
+                    await message.channel.send('Έχουν γίνει συνολικά **' + f'{grand_total:n}' + ' εμβολιασμοί** σε ολόκληρη την Ελλάδα, δηλαδή στο **' + str(percentage) + '%** του πληθυσμού. (' + f'{grand_today_total:n}' + ' έγιναν ' + kataliksi + ')')
                     return
                 elif city in ["ΠΕΡΙΦΕΡΕΙΕΣ", "ΠΕΡΙΦΕΡΕΙΑΚΕΣ ΕΝΟΤΗΤΕΣ", "ΛΙΣΤΑ", "ΕΝΟΤΗΤΕΣ", "ΠΕΡΙΟΧΕΣ"]:
                     total_cities = [data["area"] for data in response]
