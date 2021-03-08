@@ -383,7 +383,7 @@ async def on_message(message):
                         grand_today_total += data["daytotal"]
 
                     percentage = round(float(grand_total/10790000), 5) * 100
-                    await message.channel.send('Έχουν γίνει συνολικά **' + f'{grand_total:n}' + ' εμβολιασμοί** σε ολόκληρη την Ελλάδα, δηλαδή στο **' + str(percentage) + '%** του πληθυσμού. (' + f'{grand_today_total:n}' + ' έγιναν ' + kataliksi + ')')
+                    await message.channel.send('Έχουν γίνει συνολικά **' + f'{grand_total:n}' + ' εμβολιασμοί** σε ολόκληρη την Ελλάδα, δηλαδή στο **' + str(percentage) + '% του πληθυσμού.** (' + f'{grand_today_total:n}' + ' έγιναν ' + kataliksi + ')')
                     return
                 elif city in ["ΠΕΡΙΦΕΡΕΙΕΣ", "ΠΕΡΙΦΕΡΕΙΑΚΕΣ ΕΝΟΤΗΤΕΣ", "ΛΙΣΤΑ", "ΕΝΟΤΗΤΕΣ", "ΠΕΡΙΟΧΕΣ"]:
                     total_cities = [data["area"] for data in response]
