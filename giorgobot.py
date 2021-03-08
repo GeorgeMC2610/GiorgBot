@@ -325,7 +325,7 @@ async def on_message(message):
             return
 
         if message.content == respondable_messages[1]:
-            help_message = "**ΔΙΚΕΣ ΜΟΥ ΕΝΤΟΛΕΣ:** \n `!help` --> Δείχνει το παρόν μενού.\n `!ping` --> ανταπόκριση του μποτ με 'Pong!'.\n\n **ΕΝΤΟΛΕΣ ΔΙΑΧΕΙΡΙΣΤΗ:**\n `!display users` --> Προβολή όλων των μελών του σέρβερ.\n `!prune <αριθμός 1-50>` --> Σβήσιμο όλων των προηγούμενων μηνυμάτων"
+            help_message = "**ΔΙΚΕΣ ΜΟΥ ΕΝΤΟΛΕΣ:** \n `!help` --> Δείχνει το παρόν μενού.\n `!ping` --> Ανταπόκριση του μποτ με 'Pong!'.\n `!emvolio <όνομα περιφερειακής ενότητας>` -->  Προβολή των συνολικών και ημερίσιων εμβολιασμών της περιφερειακής ενότητας.\n\n **ΕΝΤΟΛΕΣ ΔΙΑΧΕΙΡΙΣΤΗ:**\n `!display members` --> Προβολή όλων των μελών του σέρβερ.\n `!prune <αριθμός 1-50>` --> Σβήσιμο όλων των προηγούμενων μηνυμάτων"
             await message.channel.send(help_message)
             return
 
@@ -339,7 +339,7 @@ async def on_message(message):
             kataliksi = "σήμερα"
             
             #αλλά αν είναι πολύ νωρίς μέσα στην μέρα, βγάζουμε τα χθεσινά αποτελέσματα
-            if datetime.datetime.now().hour < 17:
+            if datetime.datetime.now().hour < 20:
                 date -= datetime.timedelta(days=1)
                 kataliksi = "χθες"
 
