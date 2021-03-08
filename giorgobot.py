@@ -72,7 +72,7 @@ def identify_member_position(member):
 
 async def private_msg(message, sender):
     if '{' in message and message[-1] == '}' and '"target"' in message and '"message"' in message:
-        payload  = json.loads(message.split("send ")[1])
+        payload  = json.loads(message.split("!send ")[1])
         targetID = False
 
         server   = client.get_guild(322050982747963392)
@@ -220,15 +220,19 @@ async def on_message(message):
 
     #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα. Επίσης σιγουρευόμαστε ότι το bot δεν θα απαντάει ποτέ στον εαυτό του.
     if message.channel.type == discord.ChannelType.private:
-        if message.content.startswith("send "):
-            if message.author != GeorgeMC2610:
-                await message.author.send("ΤΙ ΠΑΣ ΝΑ ΚΑΝΕΙΣ ΕΚΕΙ;")
-                await GeorgeMC2610.send("ΓΙΑ ΒΑΛΕ ΜΙΑ ΤΑΞΗ. Ο " + message.author.name + " ΚΑΝΕΙ ΤΣΑΤΣΙΕΣ.")
-                return
+        if message.author != GeorgeMC2610 and message.author != Sotiris168:
+            await message.author.send("ΤΙ ΠΑΣ ΝΑ ΚΑΝΕΙΣ ΕΚΕΙ;")
+            await GeorgeMC2610.send("ΓΙΑ ΒΑΛΕ ΜΙΑ ΤΑΞΗ. Ο " + message.author.name + " ΚΑΝΕΙ ΤΣΑΤΣΙΕΣ.")
+            return
 
+        if message.content.startswith("!send "):
             await private_msg(message.content, message.author)
             return
         
+        if message.content.startswith("!announce "):
+            await geniki_sizitisi.send(message.content.split("!announce ")[1])
+            return
+
         return
     
 
