@@ -229,12 +229,15 @@ async def on_message(message):
             await private_msg(message.content, message.author)
             return
         
-        if message.content.startswith("!announce "):
-            await geniki_sizitisi.send(message.content.split("!announce ")[1])
+        if message.content.startswith("!announcegeniki "):
+            await geniki_sizitisi.send(message.content.split("!announcegeniki ")[1])
+            return
+        
+        if message.content.startswith("!announcebot "):
+            await bot_requests.send(message.content.split("!announcebot ")[1])
             return
 
-        return
-    
+        return 
 
     #Μετατρέπουμε κάθε μήνυμα σε πεζά γράμματα.
     message.content = message.content.lower()
