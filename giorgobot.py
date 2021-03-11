@@ -103,7 +103,7 @@ def identify_member_position(member):
     if member.top_role == metzi_tou_neoukti:
         return 4
 
-    bots = server.get_role(488730461091135488)
+    bots = server.get_role(456219306468966410)
     if member.top_role == bots:
         return 3
 
