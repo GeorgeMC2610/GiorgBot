@@ -185,7 +185,7 @@ async def on_message(message):
 
     #Μετατρέπουμε κάθε μήνυμα σε πεζά γράμματα.
     message.content = message.content.lower()
-    respondable_messages = ["!ping", "!help", "!emvolio", "!join", "!leave", "-", "!"]
+    respondable_messages = ["!ping", "!help", "!emvolio", "!corona", "!join", "!leave", "-", "!"]
     admin_commands = ["!display members", "!prune"]
 
     #Εκτέλεση εντολών διαχειριστών
@@ -318,7 +318,54 @@ async def on_message(message):
                 await message.channel.send('Στην περιφερειακή ενότητα **' + city + '** έχουν γίνει συνολικά **' + f'{total_vaccines["totalvaccinations"]:n}' + ' εμβολιασμοί**. (' + f'{total_vaccines["daytotal"]:n}' + ' έγιναν ' + kataliksi + ')')
             except:
                 #αλλιώς, λογικά δεν θα υπάρχει αυτή η περιοχή
-                await message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 (Η περιοχή που ψάχνεις πρέπει να είναι υποχρεωτικά σε __γενική πτώση__)')
+                await message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 Δες τις διαθέσιμες περιοχές με την εντολή `!emvolio λίστα`.')
+            
+            return
+
+        if message.content.startswith(respondable_messages[3]):
+            country  = message.content.split("!corona ")[1]
+
+            if len(country) < 4:
+                country = country.upper()
+            else:
+                country = country.capitalize()
+
+            #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
+            kataliksi = "σήμερα"
+            yesterday = 'false'
+            
+            #αλλά αν είναι πολύ νωρίς μέσα στην μέρα, βγάζουμε τα χθεσινά αποτελέσματα
+            if datetime.datetime.now().hour < 18:
+                kataliksi = "χθες"
+                yesterday = 'true'
+
+            #φτιάχνουμε το request και παίρνουμε τα γεγονότα όπως πρέπει
+            url = 'https://disease.sh/v3/covid-19/countries?yesterday=' + yesterday + '&twoDaysAgo=false&sort=cases&allowNull=false'
+            response = requests.get(url)
+            response = response.json()
+
+            try:
+                locale.setlocale(locale.LC_ALL, 'el_GR')
+                country_info = ''
+
+                #ανάλογα με το πόσα γράμματα είχε η χώρα που έβαλε ο χρήστης, ψάχνουμε και την ανάλογη χώρα
+                if len(country) == 2:
+                    country_info = [data for data in response if data["countryInfo"]["iso2"] == country][0]
+                elif len(country) == 3:
+                    country_info = [data for data in response if data["countryInfo"]["iso3"] == country][0]
+                else:
+                    country_info = [data for data in response if data["country"] == country].pop()
+                
+                country = country_info["country"]
+                cases_total = country_info["cases"]
+                cases_today = country_info["todayCases"]
+                deaths_total = country_info["deaths"]
+                deaths_today = country_info["todayDeaths"]
+                
+                await message.channel.send('***' + country + ':***\n Έχουν καταγραφεί συνολικά **' + f'{cases_total:n}' + ' κρούσματα** (' + f'{cases_today:n}' + ' καταγράφηκαν ' + kataliksi + '.), εκ των οποίων οι **' + f'{deaths_total:n}' + ' έχασαν τη ζωή τους.** (' + f'{deaths_today:n}' + ' απεβίωσαν ' + kataliksi + '.)')
+            except Exception as e:
+                await message.channel.send('Δεν βρήκα αυτήν την χώρα. 😫 (Η χώρα που ψάχνεις, θα πρέπει να είναι υποχρεωτικά στα Αγγλικά. Π.χ. "GRC" ή "Greece"')
+                print(e.args)
 
             return
             
