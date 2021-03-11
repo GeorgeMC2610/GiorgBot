@@ -4,6 +4,7 @@ import datetime
 import requests
 import json
 import locale
+import flag
 from discord.ext import commands, tasks
 
 #Εφ' όσον το repository θέλουμε να 'ναι public, πρέπει να αποθηκεύσουμε το token σε ένα ξεχωριστό αρχείο, το οποίο δεν θα συμπεριληφθεί στο repository.
@@ -356,16 +357,15 @@ async def on_message(message):
                 else:
                     country_info = [data for data in response if data["country"] == country].pop()
                 
-                country = country_info["country"]
+                country = flag.flag(country_info["countryInfo"]["iso2"])
                 cases_total = country_info["cases"]
                 cases_today = country_info["todayCases"]
                 deaths_total = country_info["deaths"]
                 deaths_today = country_info["todayDeaths"]
                 
-                await message.channel.send('***' + country + ':***\n Έχουν καταγραφεί συνολικά **' + f'{cases_total:n}' + ' κρούσματα** (' + f'{cases_today:n}' + ' καταγράφηκαν ' + kataliksi + '.), εκ των οποίων οι **' + f'{deaths_total:n}' + ' έχασαν τη ζωή τους.** (' + f'{deaths_today:n}' + ' απεβίωσαν ' + kataliksi + '.)')
+                await message.channel.send(country + '\n Έχουν καταγραφεί συνολικά **' + f'{cases_total:n}' + ' κρούσματα** (' + f'{cases_today:n}' + ' καταγράφηκαν ' + kataliksi + '.), εκ των οποίων οι **' + f'{deaths_total:n}' + ' έχασαν τη ζωή τους.** (' + f'{deaths_today:n}' + ' απεβίωσαν ' + kataliksi + '.)')
             except Exception as e:
                 await message.channel.send('Δεν βρήκα αυτήν την χώρα. 😫 (Η χώρα που ψάχνεις, θα πρέπει να είναι υποχρεωτικά στα Αγγλικά. Π.χ. "GRC" ή "Greece"')
-                print(e.args)
 
             return
             
