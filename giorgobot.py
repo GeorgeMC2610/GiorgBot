@@ -29,8 +29,11 @@ help_dialog7 = '`!corona <χώρα στα αγγλικά>` --> Προβολή σ
 help_dialog8 = '**ΕΝΤΟΛΕΣ ΔΙΑΧΕΙΡΙΣΤΗ:**'
 help_dialog9 = '`!display members` --> Προβολή όλων των μελών του σέρβερ.' 
 help_dialog10 = '`!prune <αριθμός 1-50>` --> Σβήσιμο όλων των προηγούμενων μηνυμάτων"'
+help_dialog11 = '`!announcegeniki <μήνυμα>` --> Άμεση αποστολή μηνύματος, από εμένα, στο κανάλι <#518905389811630087>'
+help_dialog12 = '`!announcebot <μήνυμα>` --> Άμεση αποστολή μηνύματος, από εμένα, στο κανάλι <#518904659461668868>'
+help_dialog13 = '`!announce {"channel":"<ακριβές όνομα καναλιού>", "message":"<μήνυμα>"}` --> Άμεση αποστολή μηνύματος, από εμένα, σε συγκεκριμένο κανάλι που ορίζεται στο πεδίο `channel`.'
 
-help_message = help_dialog1 + '\n' + help_dialog2 + '\n' + help_dialog3 + '\n' + help_dialog4 + '\n' + help_dialog5 + '\n' + help_dialog6 + '\n' +  help_dialog7 + '\n\n' + help_dialog8 + '\n' + help_dialog9 + '\n' + help_dialog10
+help_message = help_dialog1 + '\n' + help_dialog2 + '\n' + help_dialog3 + '\n' + help_dialog4 + '\n' + help_dialog5 + '\n' + help_dialog6 + '\n' +  help_dialog7 + '\n\n' + help_dialog8 + '\n' + help_dialog9 + '\n' + help_dialog10  + '\n' + help_dialog11 + '\n' + help_dialog12  + '\n' + help_dialog13 
 
 #Λίστα μηνυμάτων απόρριψης
 deny1 = "Ξέρεις κάτι; **Όχι**, δεν θα κάνω αυτό που θες... τι το 'χουμε το " + '<#518904659461668868>' + " ΒΡΕ ΜΑΛΑΚΑ; Αν θες πραγματικά να γίνει αυτό που θες, στείλ' το εκεί."
@@ -187,17 +190,17 @@ async def on_message(message):
         elif message.content.startswith("!announcegeniki "):
             try:
                 await geniki_sizitisi.send(message.content.split("!announcegeniki ")[1])
-                await GeorgeMC2610.send("Όλα οκ, μαν. Το 'στειλα στην **γενική συζήτηση**.")
+                await message.author.send("Όλα οκ, μαν. Το 'στειλα στην **γενική συζήτηση**.")
             except Exception as ex:
-                await GeorgeMC2610.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
+                await message.author.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
             return
         
         elif message.content.startswith("!announcebot "):
             try:
                 await bot_requests.send(message.content.split("!announcebot ")[1])
-                await GeorgeMC2610.send("Όλα οκ, μαν. Το 'στειλα στα **bot requests**.")
+                await message.author.send("Όλα οκ, μαν. Το 'στειλα στα **bot requests**.")
             except Exception as ex:
-                await GeorgeMC2610.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
+                await message.author.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
             return
 
         elif message.content.startswith("!announce "):
