@@ -150,7 +150,7 @@ async def announce(message, sender):
 
         try:
             targetID = [i for i in channels if i.name == payload["channel"]][0].id
-            await sender.send("Εννοείται πως θα το ανακοινώσω στο " + payload["channel"])
+            await sender.send("Εννοείται πως θα το ανακοινώσω στο <#" + str(targetID) + ">")
         except Exception as e:
             print("Unable to decode dictionary.", e.args)
             await sender.send("Δεν το βρήκα αυτό ρε φίλε :(")
