@@ -388,7 +388,7 @@ async def on_message(message):
                 deaths_total = country_info["deaths"]
                 deaths_today = country_info["todayDeaths"]
                 
-                await message.channel.send(country + '\n Έχουν καταγραφεί συνολικά **' + f'{cases_total:n}' + ' κρούσματα** (' + f'{cases_today:n}' + ' καταγράφηκαν ' + kataliksi + '.), εκ των οποίων οι **' + f'{deaths_total:n}' + ' έχασαν τη ζωή τους.** (' + f'{deaths_today:n}' + ' απεβίωσαν ' + kataliksi + '.)')
+                await message.channel.send(country + '\n Έχουν καταγραφεί συνολικά **' + f'{cases_total:n}' + ' κρούσματα** (' + f'{cases_today:n}' + ' καταγράφηκαν ' + kataliksi + '), εκ των οποίων οι **' + f'{deaths_total:n}' + ' έχασαν τη ζωή τους.** (' + f'{deaths_today:n}' + ' απεβίωσαν ' + kataliksi + ')')
             except Exception as e:
                 await message.channel.send('Δεν βρήκα αυτήν την χώρα. 😫 (Η χώρα που ψάχνεις, θα πρέπει να είναι υποχρεωτικά στα Αγγλικά. Π.χ. "GRC" ή "Greece"')
 
