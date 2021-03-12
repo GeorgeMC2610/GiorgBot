@@ -435,6 +435,9 @@ async def on_raw_reaction_add(payload):
 
     elif payload.emoji.name == "pubeg":
         role = server.get_role(813411722903552062)
+    
+    elif payload.emoji.name == "politics":
+        role = server.get_role(819861063213645854)
 
     #ύστερα, δίνουμε τον ρόλο σε αυτόν που έκανε το react με την φτιαχτή συνάρτησή μας
     await give_role(reactor, role)
@@ -487,6 +490,9 @@ async def on_raw_reaction_remove(payload):
 
     elif payload.emoji.name == "pubeg":
         role = server.get_role(813411722903552062)
+    
+    elif payload.emoji.name == "politics":
+        role = server.get_role(819861063213645854)
 
     #ύστερα, βγάζουμε τον ρόλο σε αυτόν που έκανε το react με την φτιαχτή συνάρτησή μας
     await remove_role(reactor, role)
