@@ -137,6 +137,25 @@ async def private_msg(message, sender):
             await user_to_send.send(payload["message"])
             await sender.send("Και, που λες, του το έστειλα.")
 
+async def announce(message, sender):
+    if '{' in message and message[-1] == '}' and '"channel"' in message and '"message"' in message:
+        payload  = json.loads(message.split("!announce ")[1])
+        targetID = False
+
+        server   = client.get_guild(322050982747963392)
+        channels = await server.fetch_channels()
+
+        try:
+            targetID = [i for i in channels if i.name == payload["channel"]][0].id
+            await sender.send("Εννοείται πως θα το ανακοινώσω στο " + targetID.name)
+        except Exception as e:
+            print("Unable to decode dictionary.", e.args)
+            await sender.send("Δεν το βρήκα αυτό ρε φίλε :(")
+        
+        if targetID:
+            channel = client.get_channel(targetID)
+            await channel.send(payload["message"])
+            await sender.send("ΕΤΟΙΜΟ, ΜΑΝ ΜΟΥ.")
 
 @client.event
 async def on_message(message):
@@ -158,11 +177,14 @@ async def on_message(message):
 
     #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα. Επίσης σιγουρευόμαστε ότι το bot δεν θα απαντάει ποτέ στον εαυτό του.
     if message.channel.type == discord.ChannelType.private:
+        if message.author != GeorgeMC2610 and message.author != Sotiris168:
+            return
+        
         if message.content.startswith("!send "):
             await private_msg(message.content, message.author)
             return
         
-        if message.content.startswith("!announcegeniki "):
+        elif message.content.startswith("!announcegeniki "):
             try:
                 await geniki_sizitisi.send(message.content.split("!announcegeniki ")[1])
                 await GeorgeMC2610.send("Όλα οκ, μαν. Το 'στειλα στην **γενική συζήτηση**.")
@@ -170,7 +192,7 @@ async def on_message(message):
                 await GeorgeMC2610.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
             return
         
-        if message.content.startswith("!announcebot "):
+        elif message.content.startswith("!announcebot "):
             try:
                 await bot_requests.send(message.content.split("!announcebot ")[1])
                 await GeorgeMC2610.send("Όλα οκ, μαν. Το 'στειλα στα **bot requests**.")
@@ -178,9 +200,8 @@ async def on_message(message):
                 await GeorgeMC2610.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
             return
 
-        if message.author != GeorgeMC2610 and message.author != Sotiris168:
-            await message.author.send("ΤΙ ΠΑΣ ΝΑ ΚΑΝΕΙΣ ΕΚΕΙ;")
-            await GeorgeMC2610.send("ΓΙΑ ΒΑΛΕ ΜΙΑ ΤΑΞΗ. Ο " + message.author.name + " ΚΑΝΕΙ ΤΣΑΤΣΙΕΣ.")
+        elif message.content.startswith("!announce "):
+            await announce(message.content, message.author)
             return
 
         return 
