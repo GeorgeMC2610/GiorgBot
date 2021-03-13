@@ -67,6 +67,18 @@ plaint7 = "Πω, ρε μαλάκα αλήθεια σκάσε..."
 
 complaints = [plaint1, plaint2, plaint3, plaint4, plaint5, plaint6, plaint7]
 
+#Εντολής απόρριψης εντολής
+pm_deny1 = "Απλά άσ' το. ΔΕΝ ΤΟ 'ΧΕΙΣ."
+pm_deny2 = "Μην είσαι σίγουρος ότι δεν θα το μάθει ο GeorgeMC2610."
+pm_deny3 = "ΧΑΧΑΧΑΧΑΧΑΧΑΧΑΝΑΙΚΑΛΑ"
+
+pm_denying = [pm_deny1, pm_deny2, pm_deny3]
+
+
+respondable_messages = ["!ping", "!help", "!emvolio", "!corona", "!join", "!leave", "-", "!"]
+admin_commands       = ["!display members", "!prune", "!announcegeniki", "!announcebot", "!announce"]
+
+
 def channel_log(message):
     f = open('log.txt', 'a', encoding='utf-8')
     f.write("[" + str(datetime.datetime.now())[:19] + "]: " + message + "\n")
@@ -180,14 +192,16 @@ async def on_message(message):
 
     #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα. Επίσης σιγουρευόμαστε ότι το bot δεν θα απαντάει ποτέ στον εαυτό του.
     if message.channel.type == discord.ChannelType.private:
-        if message.author != GeorgeMC2610 and message.author != Sotiris168:
+        if (message.author != GeorgeMC2610 and message.author != Sotiris168) and ([i for i in admin_commands if message.content.startswith(i)] != []):
+            await message.author.send(random.choice(pm_denying))
+            await GeorgeMC2610.send("Ο γνωστός άγνωστος " + message.author.name + " προσπάθησε ΝΑ ΜΕ ΚΑΝΕΙ ΝΑ ΚΑΝΩ ΚΑΤΙ ΠΟΥ ΔΕΝ ΠΡΕΠΕΙ.")
             return
         
         if message.content.startswith("!send "):
             await private_msg(message.content, message.author)
             return
         
-        elif message.content.startswith("!announcegeniki "):
+        elif message.content.startswith(admin_commands[2]):
             try:
                 await geniki_sizitisi.send(message.content.split("!announcegeniki ")[1])
                 await message.author.send("Όλα οκ, μαν. Το 'στειλα στην **γενική συζήτηση**.")
@@ -195,7 +209,7 @@ async def on_message(message):
                 await message.author.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
             return
         
-        elif message.content.startswith("!announcebot "):
+        elif message.content.startswith(admin_commands[3]):
             try:
                 await bot_requests.send(message.content.split("!announcebot ")[1])
                 await message.author.send("Όλα οκ, μαν. Το 'στειλα στα **bot requests**.")
@@ -203,7 +217,7 @@ async def on_message(message):
                 await message.author.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
             return
 
-        elif message.content.startswith("!announce "):
+        elif message.content.startswith(admin_commands[4]):
             await announce(message.content, message.author)
             return
 
@@ -211,8 +225,6 @@ async def on_message(message):
 
     #Μετατρέπουμε κάθε μήνυμα σε πεζά γράμματα.
     message.content = message.content.lower()
-    respondable_messages = ["!ping", "!help", "!emvolio", "!corona", "!join", "!leave", "-", "!"]
-    admin_commands = ["!display members", "!prune"]
 
     #Εκτέλεση εντολών διαχειριστών
     if [i for i in admin_commands if message.content.startswith(i)] != []:
