@@ -75,7 +75,7 @@ pm_deny3 = "ΧΑΧΑΧΑΧΑΧΑΧΑΧΑΝΑΙΚΑΛΑ"
 pm_denying = [pm_deny1, pm_deny2, pm_deny3]
 
 
-respondable_messages = ["!ping", "!help", "!emvolio", "!corona", "!join", "!leave", "-", "!"]
+respondable_messages = ["!ping", "!help", "!emvolio", "!corona", "-", "!"]
 admin_commands       = ["!display members", "!prune", "!announcegeniki", "!announcebot", "!announce"]
 
 
@@ -141,16 +141,16 @@ async def private_msg(message, sender):
         users    = await server.fetch_members().flatten()
 
         try:
-            targetID = [i for i in users if i.name == payload["target"]][0].id
-            await sender.send("Θα στείλω στον " + payload["target"] + " **αμέσως**!")
+            targetID = [i.id for i in users if str(i) == payload["target"]].pop()
+            await sender.send("Αμέσως! Στέλνω μήνυμα προς **" + payload["target"] + "**.")
         except Exception as e:
             print("Unable to decode dictionary.", e.args)
-            await sender.send("Ποιός στον πούτσο είναι αυτός;")
+            await sender.send('ΚΑΤΙ ΠΑΕΙ ΛΑΘΟΣ.\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "target":"<Χρήστης#1234>"}```')
         
         if targetID:
             user_to_send = client.get_user(targetID)
             await user_to_send.send(payload["message"])
-            await sender.send("Και, που λες, του το έστειλα.")
+            await sender.send("Έφτασε το μήνυμα!")
 
 async def announce(message, sender):
     if '{' in message and message[-1] == '}' and '"channel"' in message and '"message"' in message:
@@ -161,7 +161,7 @@ async def announce(message, sender):
         channels = await server.fetch_channels()
 
         try:
-            targetID = [i for i in channels if i.name == payload["channel"]][0].id
+            targetID = [i.id for i in channels if i.name == payload["channel"]].pop()
             await sender.send("Εννοείται πως θα το ανακοινώσω στο <#" + str(targetID) + ">")
         except Exception as e:
             print("Unable to decode dictionary.", e.args)
@@ -170,12 +170,12 @@ async def announce(message, sender):
         if targetID:
             channel = client.get_channel(targetID)
             await channel.send(payload["message"])
-            await sender.send("ΕΤΟΙΜΟ, ΜΑΝ ΜΟΥ.")
+            await sender.send('ΝΑΙ, ΑΛΛΑ ΟΧΙ.\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "channel":"akrives-onoma-kanaliou"}```')
 
 @client.event
 async def on_message(message):
     #log του μηνύματος.
-    channel_log(message.author.name + " in " + str(message.channel) + " says: " + message.content)
+    channel_log(str(message.author) + " in " + str(message.channel) + " says: " + message.content)
 
     if message.author == client.user:
         return
