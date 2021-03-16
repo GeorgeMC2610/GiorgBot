@@ -145,7 +145,7 @@ async def private_msg(message, sender):
             await sender.send("Αμέσως! Στέλνω μήνυμα προς **" + payload["target"] + "**.")
         except Exception as e:
             print("Unable to decode dictionary.", e.args)
-            await sender.send('ΚΑΤΙ ΠΑΕΙ ΛΑΘΟΣ.\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "target":"<Χρήστης#1234>"}```')
+            await sender.send('**ΚΑΤΙ ΠΑΕΙ ΛΑΘΟΣ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "target":"<Χρήστης#1234>"}```')
         
         if targetID:
             user_to_send = client.get_user(targetID)
@@ -170,7 +170,7 @@ async def announce(message, sender):
         if targetID:
             channel = client.get_channel(targetID)
             await channel.send(payload["message"])
-            await sender.send('ΝΑΙ, ΑΛΛΑ ΟΧΙ.\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "channel":"akrives-onoma-kanaliou"}```')
+            await sender.send('**ΝΑΙ, ΑΛΛΑ ΟΧΙ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "channel":"akrives-onoma-kanaliou"}```')
 
 @client.event
 async def on_message(message):
@@ -342,7 +342,7 @@ async def on_message(message):
                         grand_today_total += data["daytotal"]
 
                     percentage = round(float(grand_total/10790000), 5) * 100
-                    await message.channel.send('Έχουν γίνει συνολικά **' + f'{grand_total:n}' + ' εμβολιασμοί** σε ολόκληρη την Ελλάδα, δηλαδή στο **' + str(percentage) + '% του πληθυσμού.** (' + f'{grand_today_total:n}' + ' έγιναν ' + kataliksi + ')')
+                    await message.channel.send('Έχουν γίνει συνολικά **' + f'{grand_total:n}' + ' εμβολιασμοί** σε ολόκληρη την Ελλάδα, δηλαδή στο **' + str(percentage).replace('.', ',') + '% του πληθυσμού.** (' + f'{grand_today_total:n}' + ' έγιναν ' + kataliksi + ')')
                     return
                 elif city in ["ΠΕΡΙΦΕΡΕΙΕΣ", "ΠΕΡΙΦΕΡΕΙΑΚΕΣ ΕΝΟΤΗΤΕΣ", "ΛΙΣΤΑ", "ΕΝΟΤΗΤΕΣ", "ΠΕΡΙΟΧΕΣ"]:
                     total_cities = [data["area"] for data in response]
