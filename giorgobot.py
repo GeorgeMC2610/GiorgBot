@@ -321,12 +321,12 @@ async def on_message(message):
 
             #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
             date = datetime.date.today()
-            kataliksi = 'σήμερα'
+            kataliksi = 'Σήμερα'
             
             #αλλά αν είναι πολύ νωρίς μέσα στην μέρα, βγάζουμε τα χθεσινά αποτελέσματα
             if datetime.datetime.now().hour < 20:
                 date -= datetime.timedelta(days=1)
-                kataliksi = 'χθες'
+                kataliksi = 'Χθες'
 
             #φτιάχνουμε το request και παίρνουμε τα γεγονότα όπως πρέπει
             url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=' + str(date) + '&date_to=' + str(date)
