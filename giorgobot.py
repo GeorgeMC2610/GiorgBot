@@ -310,12 +310,12 @@ async def on_message(message):
 
             #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
             date = datetime.date.today()
-            kataliksi = "σήμερα"
+            kataliksi = 'σήμερα'
             
             #αλλά αν είναι πολύ νωρίς μέσα στην μέρα, βγάζουμε τα χθεσινά αποτελέσματα
             if datetime.datetime.now().hour < 20:
                 date -= datetime.timedelta(days=1)
-                kataliksi = "χθες"
+                kataliksi = 'χθες'
 
             #φτιάχνουμε το request και παίρνουμε τα γεγονότα όπως πρέπει
             url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=' + str(date) + '&date_to=' + str(date)
@@ -336,13 +336,23 @@ async def on_message(message):
                 if city in ["ΣΥΝΟΛΟ", "ΟΛΑ", "ΟΛΟ", "ΕΛΛΑΔΑ", "ΧΩΡΑ", "ΣΥΝΟΛΙΚΑ", "ΠΑΝΤΕΣ"]:
                     #στην οποία περίπτωση κάνουμε κάτι τέτοιο χειροκίνητα
                     grand_total = 0
+                    grand_dose1_total = 0
+                    grand_dose2_total = 0
+
                     grand_today_total = 0
+                    grand_today_dose1_total = 0
+                    grand_today_dose2_total = 0
                     for data in response:
                         grand_total += data["totalvaccinations"]
-                        grand_today_total += data["daytotal"]
+                        grand_dose1_total += data["totaldose1"]
+                        grand_dose2_total += data["totaldose2"]
 
-                    percentage = round(float(grand_total/10790000), 5) * 100
-                    await message.channel.send('Έχουν γίνει συνολικά **' + f'{grand_total:n}' + ' εμβολιασμοί** σε ολόκληρη την Ελλάδα, δηλαδή στο **' + str(percentage).replace('.', ',') + '% του πληθυσμού.** (' + f'{grand_today_total:n}' + ' έγιναν ' + kataliksi + ')')
+                        grand_today_total += data["daytotal"]
+                        grand_today_dose1_total += data["dailydose1"]
+                        grand_today_dose2_total += data["dailydose2"]
+
+                    percentage = str(round(float(grand_dose2_total/10790000), 5) * 100) + '%'
+                    await message.channel.send("Εχουν γίνει **" + f'{grand_dose1_total:n}' + "** εμβολιασμοί της **πρώτης δόσης** και **" + f'{grand_dose2_total:n}' + "** της **δεύτερης δόσης** (**" + f'{grand_total:n}' + "** σύνολο). Ολοκληρωμένοι εμβολιασμοί στο **" + str(percentage).replace('.', ',') + ' του πληθυσμού.** (' + kataliksi + " έγιναν " + f'{grand_today_dose1_total:n}' + " της πρώτης δόσης, " + f'{grand_today_dose2_total:n}' + " της δεύτερης, δηλαδή " + f'{grand_today_total:n}' + " σύνολο)")
                     return
                 elif city in ["ΠΕΡΙΦΕΡΕΙΕΣ", "ΠΕΡΙΦΕΡΕΙΑΚΕΣ ΕΝΟΤΗΤΕΣ", "ΛΙΣΤΑ", "ΕΝΟΤΗΤΕΣ", "ΠΕΡΙΟΧΕΣ"]:
                     total_cities = [data["area"] for data in response]
