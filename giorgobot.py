@@ -134,7 +134,13 @@ def identify_member_position(member):
 
 async def private_msg(message, sender):
     if '{' in message and message[-1] == '}' and '"target"' in message and '"message"' in message:
-        payload  = json.loads(message.split("!send ")[1])
+        payload = 0
+        try:
+            payload  = json.loads(message.split("!send ")[1])
+        except:
+            await sender.send("Είσαι πολύ ηλίθιος, αν δεν ξέρεις ούτε σωστή **JSON** να γράφεις. 😣")
+            return
+
         targetID = False
 
         server   = client.get_guild(322050982747963392)
@@ -154,7 +160,12 @@ async def private_msg(message, sender):
 
 async def announce(message, sender):
     if '{' in message and message[-1] == '}' and '"channel"' in message and '"message"' in message:
-        payload  = json.loads(message.split("!announce ")[1])
+        payload = 0
+        try:
+            payload  = json.loads(message.split("!send ")[1])
+        except:
+            await sender.send("Είσαι πολύ ηλίθιος, αν δεν ξέρεις ούτε σωστή **JSON** να γράφεις 🙄")
+            return
         targetID = False
 
         server   = client.get_guild(322050982747963392)
