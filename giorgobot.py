@@ -423,14 +423,19 @@ async def on_message(message):
                 else:
                     country_info = [data for data in response if data["country"] == country].pop()
                 
-                country = flag.flag(country_info["countryInfo"]["iso2"])
+                country_emoji = flag.flag(country_info["countryInfo"]["iso2"])
+                country = country_info["country"]
                 cases_total = country_info["cases"]
                 cases_today = country_info["todayCases"]
                 deaths_total = country_info["deaths"]
                 deaths_today = country_info["todayDeaths"]
-                
-                await message.channel.send(country + '\n Έχουν καταγραφεί συνολικά **' + f'{cases_total:n}' + ' κρούσματα** (' + f'{cases_today:n}' + ' καταγράφηκαν ' + kataliksi + '), εκ των οποίων οι **' + f'{deaths_total:n}' + ' έχασαν τη ζωή τους.** (' + f'{deaths_today:n}' + ' απεβίωσαν ' + kataliksi + ')')
+
+                cases_stats = "**Κρούσματα 🦠:**  Καταγράφηκαν **" + f'{cases_today:n}' + " κρούσματα κορωνοϊού** " + kataliksi + ". (**" + f'{cases_total:n}' + "** συνολικά κρούσματα)"
+                death_stats = "**Θάνατοι ☠:**  Καταγράφηκαν **" + f'{deaths_today:n}' + " θάνατοι** " + kataliksi + ". (**" + f'{deaths_total:n}' + "** συνολικοί θάνατοι)"
+
+                await message.channel.send(country_emoji + ' **__' + country + ':__**' + "\n\n" + cases_stats + "\n" + death_stats)
             except Exception as e:
+                print(e.args)
                 await message.channel.send('Δεν βρήκα αυτήν την χώρα. 😫 (Η χώρα που ψάχνεις, θα πρέπει να είναι υποχρεωτικά στα Αγγλικά. Π.χ. "GRC" ή "Greece"')
 
             return
