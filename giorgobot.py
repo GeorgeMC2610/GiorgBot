@@ -395,7 +395,7 @@ async def on_message(message):
             if len(country) < 4:
                 country = country.upper()
             else:
-                country = country.capitalize()
+                country = country.title()
 
             #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
             kataliksi = "σήμερα"

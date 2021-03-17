@@ -12,7 +12,6 @@ for letter_a in letters:
 
 f.close()'''
 
-f = open('token.txt', 'r')
-token = f.read()
-print(token)
-f.close()
+one = 'san francisco'
+one = one.title()
+print(one)
