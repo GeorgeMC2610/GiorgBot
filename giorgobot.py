@@ -366,7 +366,7 @@ async def on_message(message):
                     dose1_stats = '**Δόση 1️⃣:**  Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose1_total:n}' + '** σύνολο)'
                     dose2_stats = '**Δόση 2️⃣:**  Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose2_total:n}' + '** σύνολο)'
                     total_stats = '**Αθροιστικά 💉:**  Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_total:n}' + '** σύνολο). Το **' + percentage.replace('.', ',') + '** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.'
-                    await message.channel.send('🌍 **__ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ:__**\n\n' + dose1_stats + '\n' + dose2_stats + '\n' + total_stats)
+                    await message.channel.send(flag.flag('gr') + '  **__ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ:__**\n\n' + dose1_stats + '\n' + dose2_stats + '\n' + total_stats)
                     return
                 elif city in ["ΠΕΡΙΦΕΡΕΙΕΣ", "ΠΕΡΙΦΕΡΕΙΑΚΕΣ ΕΝΟΤΗΤΕΣ", "ΛΙΣΤΑ", "ΕΝΟΤΗΤΕΣ", "ΠΕΡΙΟΧΕΣ"]:
                     total_cities = [data["area"] for data in response]
@@ -407,7 +407,7 @@ async def on_message(message):
                 yesterday = 'true'
 
             #φτιάχνουμε το request και παίρνουμε τα γεγονότα όπως πρέπει
-            url = 'https://disease.sh/v3/covid-19/countries?yesterday=' + yesterday + '&twoDaysAgo=false&sort=cases&allowNull=false'
+            url = 'https://disease.sh/v3/covid-19/countries?yesterday=' + yesterday + '&twoDaysAgo=false&sort=cases&allowNull=true'
             response = requests.get(url)
             response = response.json()
 
@@ -417,26 +417,45 @@ async def on_message(message):
 
                 #ανάλογα με το πόσα γράμματα είχε η χώρα που έβαλε ο χρήστης, ψάχνουμε και την ανάλογη χώρα
                 if len(country) == 2:
-                    country_info = [data for data in response if data["countryInfo"]["iso2"] == country][0]
+                    country_info = [data for data in response if data["countryInfo"]["iso2"] == country].pop()
                 elif len(country) == 3:
-                    country_info = [data for data in response if data["countryInfo"]["iso3"] == country][0]
+                    country_info = [data for data in response if data["countryInfo"]["iso3"] == country].pop()
                 else:
                     country_info = [data for data in response if data["country"] == country].pop()
                 
+                #ανακτάμε το εμότζι και το όνομα της χώρας για να το βάλουμε στο συγχωνευμένο μήνυμα
                 country_emoji = flag.flag(country_info["countryInfo"]["iso2"])
-                country = country_info["country"]
-                cases_total = country_info["cases"]
-                cases_today = country_info["todayCases"]
-                deaths_total = country_info["deaths"]
-                deaths_today = country_info["todayDeaths"]
+                country       = country_info["country"]
 
-                cases_stats = "**Κρούσματα 🦠:**  Καταγράφηκαν **" + f'{cases_today:n}' + " κρούσματα κορωνοϊού** " + kataliksi + ". (**" + f'{cases_total:n}' + "** συνολικά κρούσματα)"
-                death_stats = "**Θάνατοι ☠:**  Καταγράφηκαν **" + f'{deaths_today:n}' + " θάνατοι** " + kataliksi + ". (**" + f'{deaths_total:n}' + "** συνολικοί θάνατοι)"
+                #στατιστικά για τα κρούσματα
+                if country_info["todayCases"] is None:
+                    cases_stats = ("**Κρούσματα 🦠:**  Δεν υπάρχουν στοιχεία κρουσμάτων κορωνοϊού για " + kataliksi + ". ")
+                elif country_info["todayCases"] > 1:
+                    cases_stats = ("**Κρούσματα 🦠:**  Καταγράφηκαν **" + f'{country_info["todayCases"]:n}' + " κρούσματα κορωνοϊού** " + kataliksi + ". ")
+                elif country_info["todayCases"] == 1:
+                    cases_stats = ("**Κρούσματα 🦠:**  Καταγράφηκε μονάχα **ένα κρούσμα κορωνοϊού** " + kataliksi + ". ")
+                else:
+                    cases_stats = ("**Κρούσματα 🦠:  Κανένα κρούσμα κορωνοϊού** " + kataliksi + " 😄. ")
 
+                cases_stats += "(**" + f'{country_info["cases"]:n}' + "** συνολικά κρούσματα)"
+                
+                #στατιστικά για τους θανάτους
+                if country_info["todayDeaths"] is None:
+                    death_stats = ("**Θάνατοι ☠:**  Δεν υπάρχουν στοιχεία για θανάτους από κορονωϊό για " + kataliksi + ". ")
+                elif country_info["todayDeaths"] > 1:
+                    death_stats = ("**Θάνατοι ☠:**  Σημειώθηκαν **" + f'{country_info["todayDeaths"]:n}' + " θάνατοι** " + kataliksi + ". ")
+                elif country_info["todayDeaths"] == 1:
+                    death_stats = ("**Θάνατοι ☠:**  Σημειώθηκε μονάχα **ένας θάνατος** " + kataliksi + ". ")
+                else:
+                    death_stats = ("**Θάνατοι ☠:  Κανένας θάνατος από κορωνοϊό** " + kataliksi + " 🥳. ")
+
+                death_stats += "(**" + f'{country_info["deaths"]:n}' + "** συνολικοί θάνατοι)"
+
+                #αποστολή μηνύματος με συγχώνευση των παραπάνω
                 await message.channel.send(country_emoji + ' **__' + country + ':__**' + "\n\n" + cases_stats + "\n" + death_stats)
             except Exception as e:
-                print(e.args)
-                await message.channel.send('Δεν βρήκα αυτήν την χώρα. 😫 (Η χώρα που ψάχνεις, θα πρέπει να είναι υποχρεωτικά στα Αγγλικά. Π.χ. "GRC" ή "Greece"')
+                print(e.__cause__, str(e))
+                await message.channel.send('Δεν βρήκα αυτήν την χώρα. 😫 (Η χώρα που ψάχνεις, θα πρέπει να είναι υποχρεωτικά στα Αγγλικά. Π.χ. "GR" ή "GRC" ή "Greece")')
 
             return
             
