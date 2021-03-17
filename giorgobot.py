@@ -321,12 +321,12 @@ async def on_message(message):
 
             #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
             date = datetime.date.today()
-            kataliksi = 'Σήμερα'
+            kataliksi = 'σήμερα'
             
             #αλλά αν είναι πολύ νωρίς μέσα στην μέρα, βγάζουμε τα χθεσινά αποτελέσματα
             if datetime.datetime.now().hour < 20:
                 date -= datetime.timedelta(days=1)
-                kataliksi = 'Χθες'
+                kataliksi = 'χθες'
 
             #φτιάχνουμε το request και παίρνουμε τα γεγονότα όπως πρέπει
             url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=' + str(date) + '&date_to=' + str(date)
@@ -363,7 +363,10 @@ async def on_message(message):
                         grand_today_dose2_total += data["dailydose2"]
 
                     percentage = str(round(float(grand_dose2_total/10790000), 5) * 100) + '%'
-                    await message.channel.send("Εχουν γίνει **" + f'{grand_dose1_total:n}' + "** εμβολιασμοί της **πρώτης δόσης** και **" + f'{grand_dose2_total:n}' + "** της **δεύτερης δόσης** (**" + f'{grand_total:n}' + "** σύνολο). Ολοκληρωμένοι εμβολιασμοί στο **" + str(percentage).replace('.', ',') + ' του πληθυσμού.** (' + kataliksi + " έγιναν " + f'{grand_today_dose1_total:n}' + " της πρώτης δόσης, " + f'{grand_today_dose2_total:n}' + " της δεύτερης, δηλαδή " + f'{grand_today_total:n}' + " σύνολο)")
+                    dose1_stats = '**Δόση 1️⃣:**  Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose1_total:n}' + '** σύνολο)'
+                    dose2_stats = '**Δόση 2️⃣:**  Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose2_total:n}' + '** σύνολο)'
+                    total_stats = '**Αθροιστικά 💉:**  Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_total:n}' + '** σύνολο). Το **' + percentage.replace('.', ',') + '** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.'
+                    await message.channel.send('🌍 **__ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ:__**\n\n' + dose1_stats + '\n' + dose2_stats + '\n' + total_stats)
                     return
                 elif city in ["ΠΕΡΙΦΕΡΕΙΕΣ", "ΠΕΡΙΦΕΡΕΙΑΚΕΣ ΕΝΟΤΗΤΕΣ", "ΛΙΣΤΑ", "ΕΝΟΤΗΤΕΣ", "ΠΕΡΙΟΧΕΣ"]:
                     total_cities = [data["area"] for data in response]
@@ -373,8 +376,13 @@ async def on_message(message):
 
                 #βρίσκουμε την περιοχή με LINQ-οειδές request
                 total_vaccines = [data for data in response if data["area"] == city][0]
+
+                #χωρίζουμε τα στατιστικά, για να αποστείλουμε ευκολότερα το μήνυμα.
+                dose1_stats = '**Δόση 1️⃣:**  Έγιναν **' + f'{total_vaccines["dailydose1"]:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{total_vaccines["totaldose1"]:n}' + '** σύνολο)'
+                dose2_stats = '**Δόση 2️⃣:**  Έγιναν **' + f'{total_vaccines["dailydose2"]:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{total_vaccines["totaldose2"]:n}' + '** σύνολο)'
+                total_stats = '**Αθροιστικά 💉:**  Έγιναν **' + f'{total_vaccines["daytotal"]:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{total_vaccines["totalvaccinations"]:n}' + '** σύνολο).'
                 #και στέλνουμε το μήνυμα
-                await message.channel.send('Στην περιφερειακή ενότητα **' + city + '** έχουν γίνει συνολικά **' + f'{total_vaccines["totalvaccinations"]:n}' + ' εμβολιασμοί**. (' + f'{total_vaccines["daytotal"]:n}' + ' έγιναν ' + kataliksi + ')')
+                await message.channel.send('📍 **__ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + city + ':__**\n\n' + dose1_stats + '\n' + dose2_stats + '\n' + total_stats)
             except:
                 #αλλιώς, λογικά δεν θα υπάρχει αυτή η περιοχή
                 await message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 Δες τις διαθέσιμες περιοχές με την εντολή `!emvolio λίστα`.')
