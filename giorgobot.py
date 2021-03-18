@@ -26,14 +26,15 @@ help_dialog4 = '`!emvolio <όνομα περιφερειακής ενότητα�
 help_dialog5 = '`!emvolio <σύνολο|όλα|όλο|Ελλάδα|χώρα|συνολικά|πάντες>` → Προβολή των συνολικών και ημερίσιων εμβολιασμών όλης της Ελλάδας.'
 help_dialog6 = '`!emvolio <περιφέρειες|περιφερειακές ενότητες|λίστα|ενότητες|περιοχές>` → Προβολή των διαθέσιμων περιοχών, για την ανάκτηση δεδομένων του εμβολίου.'
 help_dialog7 = '`!corona <χώρα στα αγγλικά>` → Προβολή συνολικών και ημερισίων κρουσμάτων και θανάτων από την COVID-19 της επιλεγμένης χώρας.'
-help_dialog8 = '**ΕΝΤΟΛΕΣ ΔΙΑΧΕΙΡΙΣΤΗ:**'
-help_dialog9 = '`!display members` → Προβολή όλων των μελών του σέρβερ.' 
-help_dialog10 = '`!prune <αριθμός 1-50>` → Σβήσιμο όλων των προηγούμενων μηνυμάτων"'
-help_dialog11 = '`!announcegeniki <μήνυμα>` → Άμεση αποστολή μηνύματος, από εμένα, στο κανάλι <#518905389811630087>'
-help_dialog12 = '`!announcebot <μήνυμα>` → Άμεση αποστολή μηνύματος, από εμένα, στο κανάλι <#518904659461668868>'
-help_dialog13 = '`!announce {"channel":"<ακριβές όνομα καναλιού>", "message":"<μήνυμα>"}` → Άμεση αποστολή μηνύματος, από εμένα, σε συγκεκριμένο κανάλι που ορίζεται στο πεδίο `channel`.'
+help_dialog8 = '`!corona <list|all|countries>` → Προβολή των διαθέσιμων χωρών, για ανάκτηση στατιστικών στοιχείων περί COVID-19 (κρούσματα & θάνατοι).'
+help_dialog9 = '**ΕΝΤΟΛΕΣ ΔΙΑΧΕΙΡΙΣΤΗ:**'
+help_dialog95 = '`!display members` → Προβολή όλων των μελών του σέρβερ.' 
+help_dialog96 = '`!prune <αριθμός 1-50>` → Σβήσιμο όλων των προηγούμενων μηνυμάτων"'
+help_dialog97 = '`!announcegeniki <μήνυμα>` → Άμεση αποστολή μηνύματος, από εμένα, στο κανάλι <#518905389811630087>'
+help_dialog98 = '`!announcebot <μήνυμα>` → Άμεση αποστολή μηνύματος, από εμένα, στο κανάλι <#518904659461668868>'
+help_dialog99 = '`!announce {"channel":"<ακριβές όνομα καναλιού>", "message":"<μήνυμα>"}` → Άμεση αποστολή μηνύματος, από εμένα, σε συγκεκριμένο κανάλι που ορίζεται στο πεδίο `channel`.'
 
-help_message = help_dialog1 + '\n' + help_dialog2 + '\n' + help_dialog3 + '\n' + help_dialog4 + '\n' + help_dialog5 + '\n' + help_dialog6 + '\n' +  help_dialog7 + '\n\n' + help_dialog8 + '\n' + help_dialog9 + '\n' + help_dialog10  + '\n' + help_dialog11 + '\n' + help_dialog12  + '\n' + help_dialog13 
+help_message = help_dialog1 + '\n' + help_dialog2 + '\n' + help_dialog3 + '\n' + help_dialog4 + '\n' + help_dialog5 + '\n' + help_dialog6 + '\n' +  help_dialog7 + '\n' + help_dialog8 + '\n\n' + help_dialog9 + '\n' + help_dialog95  + '\n' + help_dialog96 + '\n' + help_dialog97  + '\n' + help_dialog98 + '\n' + help_dialog99
 
 #Λίστα μηνυμάτων απόρριψης
 deny1 = "Ξέρεις κάτι; **Όχι**, δεν θα κάνω αυτό που θες... τι το 'χουμε το " + '<#518904659461668868>' + " ΒΡΕ ΜΑΛΑΚΑ; Αν θες πραγματικά να γίνει αυτό που θες, στείλ' το εκεί."
@@ -410,6 +411,14 @@ async def on_message(message):
             url = 'https://disease.sh/v3/covid-19/countries?yesterday=' + yesterday + '&twoDaysAgo=false&sort=cases&allowNull=true'
             response = requests.get(url)
             response = response.json()
+
+            #αν ο χρήστης θέλει λίστα με όλες τις χώρες, δεν πηγαίνουμε παρακάτω, και απλά του τις προβάλλουμε
+            if country in ['List', 'ALL', 'Countries']:
+                countries = [data["country"] for data in response]
+                countries.sort()
+                await message.channel.send('```python\n' + str(countries[:len(countries)//2]) + '```')
+                await message.channel.send('```python\n' + str(countries[len(countries)//2:]) + '```\n ● **' + str(len(countries)) + '** συνολικές διαθέσιμες χώρες-κλειδιά.')
+                return
 
             try:
                 locale.setlocale(locale.LC_ALL, 'el_GR')
