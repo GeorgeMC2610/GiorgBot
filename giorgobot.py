@@ -412,7 +412,7 @@ async def on_message(message):
             response = response.json()
 
             #αν ο χρήστης θέλει λίστα με όλες τις χώρες, δεν πηγαίνουμε παρακάτω, και απλά του τις προβάλλουμε
-            if country in ['List', 'ALL', 'Countries']:
+            if country.casefold() in ['List', 'ALL', 'Countries']:
                 countries = [data["country"] for data in response]
                 countries.sort()
                 await message.channel.send('```python\n' + str(countries[:len(countries)//2]) + '```')
@@ -461,9 +461,11 @@ async def on_message(message):
 
                 #αποστολή μηνύματος με συγχώνευση των παραπάνω
                 await message.channel.send(country_emoji + ' **__' + country + ':__**' + "\n\n" + cases_stats + "\n" + death_stats)
-            except Exception as e:
-                print(e.__cause__, str(e))
+            except IndexError as e:
                 await message.channel.send('Δεν βρήκα αυτήν την χώρα. 😫 (Η χώρα που ψάχνεις, θα πρέπει να είναι υποχρεωτικά στα Αγγλικά. Π.χ. "GR" ή "GRC" ή "Greece")')
+            except Exception as e:
+                print(e.args)
+                await message.channel.send('Κάτι πήγε λάθος με αυτήν τη χώρα. 😫')
 
             return
             
