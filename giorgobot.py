@@ -117,6 +117,10 @@ def identify_member_position(member):
     
     metzi_tou_neoukti = server.get_role(488730147894198273)
     if member.top_role == metzi_tou_neoukti:
+        return 5
+
+    skase = server.get_role(821739015970619393)
+    if member.top_role == skase:
         return 4
 
     bots = server.get_role(456219306468966410)
@@ -393,11 +397,6 @@ async def on_message(message):
         if message.content.startswith(respondable_messages[3]):
             country  = message.content.split("!corona ")[1]
 
-            if len(country) < 4:
-                country = country.upper()
-            else:
-                country = country.title()
-
             #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
             kataliksi = "σήμερα"
             yesterday = 'false'
@@ -426,11 +425,11 @@ async def on_message(message):
 
                 #ανάλογα με το πόσα γράμματα είχε η χώρα που έβαλε ο χρήστης, ψάχνουμε και την ανάλογη χώρα
                 if len(country) == 2:
-                    country_info = [data for data in response if data["countryInfo"]["iso2"] == country].pop()
+                    country_info = [data for data in response if data["countryInfo"]["iso2"].casefold() == country.casefold()].pop()
                 elif len(country) == 3:
-                    country_info = [data for data in response if data["countryInfo"]["iso3"] == country].pop()
+                    country_info = [data for data in response if data["countryInfo"]["iso3"].casefold() == country.casefold()].pop()
                 else:
-                    country_info = [data for data in response if data["country"] == country].pop()
+                    country_info = [data for data in response if data["country"].casefold() == country.casefold()].pop()
                 
                 #ανακτάμε το εμότζι και το όνομα της χώρας για να το βάλουμε στο συγχωνευμένο μήνυμα
                 country_emoji = flag.flag(country_info["countryInfo"]["iso2"])
