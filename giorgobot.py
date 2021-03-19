@@ -202,6 +202,7 @@ async def on_message(message):
     acquire_role      = await client.fetch_channel(760736083544637511)
     secret_santa      = await client.fetch_channel(787998456131354625)
     metzi_tou_neoukti = server.get_role(488730147894198273)
+    skase             = server.get_role(821739015970619393)
     
     GeorgeMC2610      = await client.fetch_user(250721113729007617)
     Sotiris168        = await client.fetch_user(250973577761783808)
@@ -245,8 +246,8 @@ async def on_message(message):
     #Εκτέλεση εντολών διαχειριστών
     if [i for i in admin_commands if message.content.startswith(i)] != []:
         #Ελέγχουμε αν όντως ο διαχειριστής εκτελεί εντολές.
-        if identify_member_position(message.author) != 4:
-            msg_to_send = "Καλή προσπάθεια, " + message.author.mention + "! Αυτή είναι εντολή διαχειριστή. Θα 'ταν κρίμα αν το μάθαιναν οι " + metzi_tou_neoukti.mention + "..."
+        if identify_member_position(message.author) < 4:
+            msg_to_send = "Καλή προσπάθεια, " + message.author.mention + "! Αυτή είναι εντολή διαχειριστή. Θα 'ταν κρίμα αν το μάθαιναν οι " + metzi_tou_neoukti.mention + ", " + skase.mention + "..."
             await message.channel.send(msg_to_send)
             return
 
