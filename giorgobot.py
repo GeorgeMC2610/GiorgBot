@@ -413,7 +413,7 @@ async def on_message(message):
             response = response.json()
 
             #αν ο χρήστης θέλει λίστα με όλες τις χώρες, δεν πηγαίνουμε παρακάτω, και απλά του τις προβάλλουμε
-            if country.casefold() in ['List', 'ALL', 'Countries']:
+            if country.casefold() in ['List'.casefold(), 'ALL'.casefold(), 'Countries'.casefold()]:
                 countries = [data["country"] for data in response]
                 countries.sort()
                 await message.channel.send('```python\n' + str(countries[:len(countries)//2]) + '```')
