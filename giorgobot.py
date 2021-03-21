@@ -426,9 +426,9 @@ async def on_message(message):
 
                 #ανάλογα με το πόσα γράμματα είχε η χώρα που έβαλε ο χρήστης, ψάχνουμε και την ανάλογη χώρα
                 if len(country) == 2:
-                    country_info = [data for data in response if data["countryInfo"]["iso2"].casefold() == country.casefold()].pop()
+                    country_info = [data for data in response if data["countryInfo"]["iso2"] == country.upper()].pop()
                 elif len(country) == 3:
-                    country_info = [data for data in response if data["countryInfo"]["iso3"].casefold() == country.casefold()].pop()
+                    country_info = [data for data in response if data["countryInfo"]["iso3"] == country.upper()].pop()
                 else:
                     country_info = [data for data in response if data["country"].casefold() == country.casefold()].pop()
                 
