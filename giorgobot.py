@@ -5,7 +5,6 @@ import requests
 import json
 import locale
 import flag
-from discord.ext import commands, tasks
 
 #Εφ' όσον το repository θέλουμε να 'ναι public, πρέπει να αποθηκεύσουμε το token σε ένα ξεχωριστό αρχείο, το οποίο δεν θα συμπεριληφθεί στο repository.
 f = open('token.txt', 'r')
@@ -79,6 +78,9 @@ pm_denying = [pm_deny1, pm_deny2, pm_deny3]
 respondable_messages = ["!ping", "!help", "!emvolio", "!corona", "-", "!"]
 admin_commands       = ["!display members", "!prune", "!announcegeniki", "!announcebot", "!announce"]
 
+server            = None
+GeorgeMC2610      = None
+Sotiris168        = None
 
 def channel_log(message):
     f = open('log.txt', 'a', encoding='utf-8')
@@ -189,6 +191,10 @@ async def announce(message, sender):
             await sender.send('**ΝΑΙ, ΑΛΛΑ ΟΧΙ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "channel":"akrives-onoma-kanaliou"}```')
 
 @client.event
+async def on_ready():
+    print('Bot online.')
+
+@client.event
 async def on_message(message):
     #log του μηνύματος.
     channel_log(str(message.author) + " in " + str(message.channel) + " says: " + message.content)
@@ -196,20 +202,12 @@ async def on_message(message):
     if message.author == client.user:
         return
     
-    server            = await client.fetch_guild(322050982747963392)
-    bot_requests      = await client.fetch_channel(518904659461668868)
-    geniki_sizitisi   = await client.fetch_channel(518905389811630087)
-    acquire_role      = await client.fetch_channel(760736083544637511)
-    secret_santa      = await client.fetch_channel(787998456131354625)
-    metzi_tou_neoukti = server.get_role(488730147894198273)
-    skase             = server.get_role(821739015970619393)
-    
-    GeorgeMC2610      = await client.fetch_user(250721113729007617)
-    Sotiris168        = await client.fetch_user(250973577761783808)
+    server = await client.fetch_guild(322050982747963392)
 
     #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα. Επίσης σιγουρευόμαστε ότι το bot δεν θα απαντάει ποτέ στον εαυτό του.
     if message.channel.type == discord.ChannelType.private:
-        if (message.author != GeorgeMC2610 and message.author != Sotiris168) and ([i for i in admin_commands if message.content.startswith(i)] != []):
+        if (str(message.author) != "GeorgeMC2610#8036" and str(message.author) != "Sotiris168#5790") and ([i for i in admin_commands if message.content.startswith(i)] != []):
+            GeorgeMC2610 = await client.fetch_user(250721113729007617)
             await message.author.send(random.choice(pm_denying))
             await GeorgeMC2610.send("Ο γνωστός άγνωστος " + message.author.name + " προσπάθησε ΝΑ ΜΕ ΚΑΝΕΙ ΝΑ ΚΑΝΩ ΚΑΤΙ ΠΟΥ ΔΕΝ ΠΡΕΠΕΙ.")
             return
@@ -220,6 +218,7 @@ async def on_message(message):
         
         elif message.content.startswith(admin_commands[2]):
             try:
+                geniki_sizitisi = await client.fetch_channel(518905389811630087)
                 await geniki_sizitisi.send(message.content.split("!announcegeniki ")[1])
                 await message.author.send("Όλα οκ, μαν. Το 'στειλα στην **γενική συζήτηση**.")
             except Exception as ex:
@@ -228,6 +227,7 @@ async def on_message(message):
         
         elif message.content.startswith(admin_commands[3]):
             try:
+                bot_requests = await client.fetch_channel(518904659461668868)
                 await bot_requests.send(message.content.split("!announcebot ")[1])
                 await message.author.send("Όλα οκ, μαν. Το 'στειλα στα **bot requests**.")
             except Exception as ex:
@@ -247,7 +247,7 @@ async def on_message(message):
     if [i for i in admin_commands if message.content.startswith(i)] != []:
         #Ελέγχουμε αν όντως ο διαχειριστής εκτελεί εντολές.
         if identify_member_position(message.author) < 4:
-            msg_to_send = "Καλή προσπάθεια, " + message.author.mention + "! Αυτή είναι εντολή διαχειριστή. Θα 'ταν κρίμα αν το μάθαιναν οι " + metzi_tou_neoukti.mention + ", " + skase.mention + "..."
+            msg_to_send = "Καλή προσπάθεια, " + message.author.mention + "! Αυτή είναι εντολή διαχειριστή. Θα 'ταν κρίμα αν το μάθαιναν οι <@&488730147894198273>, <@&821739015970619393>..."
             await message.channel.send(msg_to_send)
             return
 
@@ -302,7 +302,7 @@ async def on_message(message):
             return
         
         #Στην αρχή βλέπουμε αν το μήνυμα που εστάλη είναι στα bot requests. Αν δεν είναι, δεν εκτελείται η εντολή, σβήνεται η εντολή που εστάλη παράλληλα με το μήνυμα της ειδοποίησης με παράταση 5 δευτερολέπτων.
-        if message.channel != bot_requests:
+        if message.channel.id != 518904659461668868:
             #επιλέγουμε ένα τυχαίο από αυτά
             random_deny_message = random.choice(denying_messages)
 
