@@ -5,6 +5,7 @@ import requests
 import json
 import locale
 import flag
+import re as regex
 from dateutil.parser import parse
 from discord.ext import commands, tasks
 
@@ -79,7 +80,7 @@ pm_deny3 = "ΧΑΧΑΧΑΧΑΧΑΧΑΧΑΝΑΙΚΑΛΑ"
 
 pm_denying = [pm_deny1, pm_deny2, pm_deny3]
 
-admin_commands = ["!display_members", "!prune", "!announcegeniki", "!announcebot", "!announce"]
+admin_commands = ["giorg display_members", "giorg prune", "giorg announcegeniki", "giorg announcebot", "giorg announce"]
 
 def channel_log(message):
     f = open('log.txt', 'a', encoding='utf-8')
@@ -178,6 +179,15 @@ async def announce_in_channel(message, sender):
             await channel.send(payload["message"])
             await sender.send("Έφτασε το μήνυμα!")
 
+async def is_bot_requests_channel(message):
+    if message.channel.id == 518904659461668868:
+        return True
+    
+    await message.delete()
+    await message.channel.send(random.choice(denying_messages), delete_after=8.0)
+    return False
+
+
 @client.event
 async def on_ready():
     print('Bot online.')
@@ -185,14 +195,22 @@ async def on_ready():
 #                   ----     εντολές κοινής χρήσεως    ----
 @client.command()
 async def ping(ctx):
+    if not await is_bot_requests_channel(ctx.message):
+        raise Exception("Command was not located in #bot-requests channel. Aborting command use.")
+
     await ctx.send("Pong!")
 
 @client.group(invoke_without_command=True)
 async def help(ctx):
+    if not await is_bot_requests_channel(ctx.message):
+        raise Exception("Command was not located in #bot-requests channel. Aborting command use.")
+
     await ctx.send(help_message)
 
 @client.command()
 async def emvolio(ctx, periferia, *imerominia):
+    if not await is_bot_requests_channel(ctx.message):
+        raise Exception("Command was not located in #bot-requests channel. Aborting command use.")
 
     #για να βρούμε ποια πόλη θέλει ο χρήστης, πρώτα χωρίζουμε την εντολή και ύστερα την κάνουμε κεφαλαία, για το API
     periferia = periferia.upper()
@@ -306,6 +324,9 @@ async def emvolio(ctx, periferia, *imerominia):
 
 @client.command()
 async def corona(ctx, country):
+    if not await is_bot_requests_channel(ctx.message):
+        raise Exception("Command was not located in #bot-requests channel. Aborting command use.")
+
     #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
     kataliksi = "σήμερα"
     yesterday = 'false'
@@ -510,6 +531,16 @@ async def on_message(message):
     channel_log(str(message.author) + " in " + str(message.channel) + " says: " + message.content)
 
     if message.author == client.user:
+        return
+
+    #Εδώ ελέγχουμε αν έχει σταλεί κάποιο μήνυμα σε library χωρίς φωτογραφία
+    if message.channel.category_id == 749958245203836939 and not message.attachments:
+        random_warning_message = random.choice(warning_messages)
+        await message.delete()
+        await message.channel.send(random_warning_message, delete_after=8.0)
+        return
+    
+    if message.channel.type != discord.ChannelType.private and regex.search("^([!-][a-zA-Z]+)", message.content) and not await is_bot_requests_channel(message):
         return
     
     #Το bot πλέον απαντάει όταν το κάνει mention κάποιος.
