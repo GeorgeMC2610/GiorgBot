@@ -27,7 +27,7 @@ help_dialog2 = '`giorg help` → Δείχνει το παρόν μενού.'
 help_dialog3 = '`giorg ping` → Ανταπόκριση του μποτ με "Pong!"'
 help_dialog4 = '`giorg emvolio "<όνομα περιφερειακής ενότητας>" [ημερομηνία]` → Προβολή των συνολικών και ημερίσιων εμβολιασμών της περιφερειακής ενότητας.'
 help_dialog5 = '`giorg emvolio <σύνολο|όλα|όλο|Ελλάδα|χώρα|συνολικά|πάντες> [ημερομηνία]` → Προβολή των συνολικών και ημερίσιων εμβολιασμών όλης της Ελλάδας.'
-help_dialog6 = '`giorg emvolio <περιφέρειες|περιφερειακές ενότητες|λίστα|ενότητες|περιοχές>` → Προβολή των διαθέσιμων περιοχών, για την ανάκτηση δεδομένων του εμβολίου.'
+help_dialog6 = '`giorg emvolio <περιφέρειες|"περιφερειακές ενότητες"|λίστα|ενότητες|περιοχές>` → Προβολή των διαθέσιμων περιοχών, για την ανάκτηση δεδομένων του εμβολίου.'
 help_dialog7 = '`giorg corona "<χώρα στα αγγλικά>"` → Προβολή συνολικών και ημερισίων κρουσμάτων και θανάτων από την COVID-19 της επιλεγμένης χώρας.'
 help_dialog8 = '`giorg corona <list|all|countries>` → Προβολή των διαθέσιμων χωρών, για ανάκτηση στατιστικών στοιχείων περί COVID-19 (κρούσματα & θάνατοι).'
 help_dialog9 = '**ΕΝΤΟΛΕΣ ΔΙΑΧΕΙΡΙΣΤΗ:**'
@@ -178,11 +178,11 @@ async def announce_in_channel(message, sender):
             await channel.send(payload["message"])
             await sender.send("Έφτασε το μήνυμα!")
 
-#                   ----     εντολές κοινής χρήσεως    ----
 @client.event
 async def on_ready():
     print('Bot online.')
 
+#                   ----     εντολές κοινής χρήσεως    ----
 @client.command()
 async def ping(ctx):
     await ctx.send("Pong!")
@@ -249,47 +249,59 @@ async def emvolio(ctx, periferia, *imerominia):
     #αλλιώς προσπαθούμε να βρούμε την περιοχή
     try:
         #εκτός αν ο χρήστης μας έχει πει να βρούμε όλες τις περιοχές
-        if periferia in ["ΣΥΝΟΛΟ", "ΟΛΑ", "ΟΛΟ", "ΕΛΛΑΔΑ", "ΧΩΡΑ", "ΣΥΝΟΛΙΚΑ", "ΠΑΝΤΕΣ"]:
+        if periferia in ["ΠΕΡΙΦΕΡΕΙΕΣ", "ΠΕΡΙΦΕΡΕΙΑΚΕΣ ΕΝΟΤΗΤΕΣ", "ΛΙΣΤΑ", "ΕΝΟΤΗΤΕΣ", "ΠΕΡΙΟΧΕΣ"]:
+            total_cities = [data["area"] for data in response]
+            await ctx.message.channel.send('```py\n ' + str(total_cities) + '```\n ● **' + str(len(total_cities)) + '** συνολικές περιφερειακές ενότητες.')
+            return
+
+        elif periferia in ["ΣΥΝΟΛΟ", "ΟΛΑ", "ΟΛΟ", "ΕΛΛΑΔΑ", "ΧΩΡΑ", "ΣΥΝΟΛΙΚΑ", "ΠΑΝΤΕΣ"]:
             #στην οποία περίπτωση κάνουμε κάτι τέτοιο χειροκίνητα
-            grand_total = 0
+            grand_total       = 0
             grand_dose1_total = 0
             grand_dose2_total = 0
 
-            grand_today_total = 0
+            grand_today_total       = 0
             grand_today_dose1_total = 0
             grand_today_dose2_total = 0
+
             for data in response:
-                grand_total += data["totalvaccinations"]
+                grand_total       += data["totalvaccinations"]
                 grand_dose1_total += data["totaldose1"]
                 grand_dose2_total += data["totaldose2"]
 
-                grand_today_total += data["daytotal"]
+                grand_today_total       += data["daytotal"]
                 grand_today_dose1_total += data["dailydose1"]
                 grand_today_dose2_total += data["dailydose2"]
 
             percentage = str(round(float(grand_dose2_total/10790000), 5) * 100) + '%'
-            dose1_stats = '**Δόση 1️⃣:**  Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose1_total:n}' + '** σύνολο)'
-            dose2_stats = '**Δόση 2️⃣:**  Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose2_total:n}' + '** σύνολο)'
-            total_stats = '**Αθροιστικά 💉:**  Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_total:n}' + '** σύνολο). Το **' + percentage.replace('.', ',') + '** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.'
-            await ctx.message.channel.send(flag.flag('gr') + '  **__ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ:__**\n\n' + dose1_stats + '\n' + dose2_stats + '\n' + total_stats)
-            
-        elif periferia in ["ΠΕΡΙΦΕΡΕΙΕΣ", "ΠΕΡΙΦΕΡΕΙΑΚΕΣ ΕΝΟΤΗΤΕΣ", "ΛΙΣΤΑ", "ΕΝΟΤΗΤΕΣ", "ΠΕΡΙΟΧΕΣ"]:
-            total_cities = [data["area"] for data in response]
-            await ctx.message.channel.send('```py\n ' + str(total_cities) + '```\n ● **' + str(len(total_cities)) + '** συνολικές περιφερειακές ενότητες.')
+            statistic = 'Το **' + percentage.replace('.', ',') + '** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.'
+            intro = flag.flag('gr') + '  **__ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ:__**\n\n'
 
         else:
             #βρίσκουμε την περιοχή με LINQ-οειδές request
-            total_vaccines = [data for data in response if data["area"] == periferia][0]
+            total_vaccines = [data for data in response if data["area"] == periferia].pop()
+
+            grand_total       = total_vaccines["totalvaccinations"]
+            grand_dose1_total = total_vaccines["totaldose1"]
+            grand_dose2_total = total_vaccines["totaldose2"]
+
+            grand_today_total       = total_vaccines["daytotal"]
+            grand_today_dose1_total = total_vaccines["dailydose1"]
+            grand_today_dose2_total = total_vaccines["dailydose2"]
+
+            statistic = ''
+            intro = '📍 **__ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + periferia + ':__**\n\n' 
 
             #χωρίζουμε τα στατιστικά, για να αποστείλουμε ευκολότερα το μήνυμα.
-            dose1_stats = '**Δόση 1️⃣:**  Έγιναν **' + f'{total_vaccines["dailydose1"]:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{total_vaccines["totaldose1"]:n}' + '** σύνολο)'
-            dose2_stats = '**Δόση 2️⃣:**  Έγιναν **' + f'{total_vaccines["dailydose2"]:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{total_vaccines["totaldose2"]:n}' + '** σύνολο)'
-            total_stats = '**Αθροιστικά 💉:**  Έγιναν **' + f'{total_vaccines["daytotal"]:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{total_vaccines["totalvaccinations"]:n}' + '** σύνολο).'
-            #και στέλνουμε το μήνυμα
-            await ctx.message.channel.send('📍 **__ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + periferia + ':__**\n\n' + dose1_stats + '\n' + dose2_stats + '\n' + total_stats)
+            
+        dose1_stats = '**Δόση 1️⃣:**  Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose1_total:n}' + '** σύνολο)'
+        dose2_stats = '**Δόση 2️⃣:**  Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose2_total:n}' + '** σύνολο)'
+        total_stats = '**Αθροιστικά 💉:**  Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_total:n}' + '** σύνολο). ' + statistic
+        await ctx.message.channel.send(intro + dose1_stats + '\n' + dose2_stats + '\n' + total_stats)
+
     except Exception as e:
         #αλλιώς, λογικά δεν θα υπάρχει αυτή η περιοχή
-        await ctx.message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 Δες τις διαθέσιμες περιοχές με την εντολή `!emvolio λίστα`.')
+        await ctx.message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 Δες τις διαθέσιμες περιοχές με την εντολή `giorg emvolio λίστα`.')
         print(e.args)
 
 @client.command()
