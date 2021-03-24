@@ -180,7 +180,7 @@ async def announce_in_channel(message, sender):
             await sender.send("Έφτασε το μήνυμα!")
 
 async def is_bot_requests_channel(message):
-    if message.channel.id == 518904659461668868:
+    if message.channel.type == discord.ChannelType.private or message.channel.id == 518904659461668868:
         return True
     
     await message.delete()
@@ -534,13 +534,13 @@ async def on_message(message):
         return
 
     #Εδώ ελέγχουμε αν έχει σταλεί κάποιο μήνυμα σε library χωρίς φωτογραφία
-    if message.channel.category_id == 749958245203836939 and not message.attachments:
+    if message.channel.type != discord.ChannelType.private and message.channel.category_id == 749958245203836939 and not message.attachments:
         random_warning_message = random.choice(warning_messages)
         await message.delete()
         await message.channel.send(random_warning_message, delete_after=8.0)
         return
     
-    if message.channel.type != discord.ChannelType.private and regex.search("^([!-][a-zA-Z]+)", message.content) and not await is_bot_requests_channel(message):
+    if message.channel.type != discord.ChannelType.private and regex.search("^(([!-]|r6s )[a-zA-Z]+)", message.content) and not await is_bot_requests_channel(message):
         return
     
     #Το bot πλέον απαντάει όταν το κάνει mention κάποιος.
