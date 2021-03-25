@@ -291,8 +291,8 @@ async def emvolio(ctx, periferia, *imerominia):
                 grand_today_dose1_total += data["dailydose1"]
                 grand_today_dose2_total += data["dailydose2"]
 
-            percentage = str(round(float(grand_dose2_total/10790000), 5) * 100) + '%'
-            statistic = 'Το **' + percentage.replace('.', ',') + '** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.'
+            percentage = str(round(grand_dose2_total*100/10790000, 5)).replace('.', ',') + '%'
+            statistic = 'Το **' + percentage + '** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.'
             intro = flag.flag('gr') + '  **__ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ:__**\n\n'
 
         else:
@@ -540,6 +540,7 @@ async def on_message(message):
         await message.channel.send(random_warning_message, delete_after=8.0)
         return
     
+    #η ακόλουθη κανονική έκφραση ψάχνει για ένα κείμενο, το οποίο αρχίζει με ! ή - ή r6s, έχοντας αμέσως μετά γράμματα.
     if message.channel.type != discord.ChannelType.private and regex.search("^(([!-]|r6s )[a-zA-Z]+)", message.content) and not await is_bot_requests_channel(message):
         return
     
