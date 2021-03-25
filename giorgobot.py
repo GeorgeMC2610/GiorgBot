@@ -545,15 +545,14 @@ async def on_message(message):
         return
     
     #Το bot πλέον απαντάει όταν το κάνει mention κάποιος.
-    if "<@!640605837102022696>" in message.content:
+    if [i for i in message.mentions if i.id == 640605837102022696] != []:
         random_complaint = random.choice(complaints)
-        await message.channel.send(random_complaint)
+        await message.reply(random_complaint)
 
     if "nibbaebi" in message.content.lower():
-        await message.delete()
         await message.author.move_to(None)
         channel_log("Attempted to disconnect " + message.author.name + " from a voice channel (Nibbaebi.)")
-        await message.channel.send("Give this mothafucka a 27 minute ban for being toxic, I'm French. (Κατουράω το Miliobot)")
+        await message.reply("Give this mothafucka a 27 minute ban for being toxic, I'm French.")
 
     await client.process_commands(message)
 
