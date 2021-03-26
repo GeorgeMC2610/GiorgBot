@@ -323,21 +323,46 @@ async def emvolio(ctx, periferia, *imerominia):
         print(e.args)
 
 @client.command()
-async def corona(ctx, country):
+async def corona(ctx, country, *day):
     if not await is_bot_requests_channel(ctx.message):
         raise Exception("Command was not located in #bot-requests channel. Aborting command use.")
-
-    #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
-    kataliksi = "σήμερα"
-    yesterday = 'false'
     
-    #αλλά αν είναι πολύ νωρίς μέσα στην μέρα, βγάζουμε τα χθεσινά αποτελέσματα
-    if datetime.datetime.now().hour < 18:
-        kataliksi = "χθες"
-        yesterday = 'true'
+    if len(day) < 1:
+        #τότε επιλέγουμε αυτόματα την ημέρα, ανάλογα με την ώρα
+        yesterday  = 'false'
+        twoDaysAgo = 'false'
+        kataliksi  = 'σήμερα'
+
+        if datetime.datetime.now().hour < 18:
+            yesterday  = 'true'
+            twoDaysAgo = 'false'
+            kataliksi  = 'χθες'
+    else:
+        #παίρνουμε το τι έχει πει ο χρήστης
+        day = day[0]
+        day = day.upper()
+        day = remove_greek_uppercase_accent(day)
+
+        #ανάλογα πράττουμε
+        if day == 'ΣΗΜΕΡΑ':
+            yesterday  = 'false'
+            twoDaysAgo = 'false'
+            kataliksi = 'σήμερα'
+        elif day == 'ΧΘΕΣ':
+            yesterday  = 'true'
+            twoDaysAgo = 'false'
+            kataliksi  = 'χθες'
+        elif day == 'ΠΡΟΧΘΕΣ':
+            yesterday  = 'false'
+            twoDaysAgo = 'true'
+            kataliksi = 'προχθές'
+        #αλλιώς λογικά θα 'χει γράψει ημερομηνία.
+        else:
+            await ctx.message.channel.send("Θα πρέπει να στείλεις ένα (σωστό) χρονικό επίρρημα. (σήμερα/χθες/προχθές)")
+            return
 
     #φτιάχνουμε το request και παίρνουμε τα γεγονότα όπως πρέπει
-    url = 'https://disease.sh/v3/covid-19/countries?yesterday=' + yesterday + '&twoDaysAgo=false&sort=cases&allowNull=true'
+    url = 'https://disease.sh/v3/covid-19/countries?yesterday=' + yesterday + '&twoDaysAgo=' + twoDaysAgo + '&sort=cases&allowNull=true'
     response = requests.get(url)
     response = response.json()
 
@@ -379,7 +404,7 @@ async def corona(ctx, country):
         
         #στατιστικά για τους θανάτους
         if country_info["todayDeaths"] is None:
-            death_stats = ("**Θάνατοι ☠:**  Δεν υπάρχουν στοιχεία για θανάτους από κορονωϊό για " + kataliksi + ". ")
+            death_stats = ("**Θάνατοι ☠:**  Δεν υπάρχουν στοιχεία για θανάτους από κορωνοϊό για " + kataliksi + ". ")
         elif country_info["todayDeaths"] > 1:
             death_stats = ("**Θάνατοι ☠:**  Σημειώθηκαν **" + f'{country_info["todayDeaths"]:n}' + " θάνατοι** " + kataliksi + ". ")
         elif country_info["todayDeaths"] == 1:
@@ -532,16 +557,21 @@ async def on_message(message):
 
     if message.author == client.user:
         return
+    
+    #Λέμε στο bot να εκτελέσει αμέσως τις εντολές, αν πρόκειται για dm. (Ώστε να μην γίνουν οι παρακάτω έλεγχοι που αφορούν τον σέρβερ.)
+    if message.channel.type == discord.ChannelType.private:
+        await client.process_commands(message)
+        return
 
     #Εδώ ελέγχουμε αν έχει σταλεί κάποιο μήνυμα σε library χωρίς φωτογραφία
-    if message.channel.type != discord.ChannelType.private and message.channel.category_id == 749958245203836939 and not message.attachments:
+    if message.channel.category_id == 749958245203836939 and not message.attachments:
         random_warning_message = random.choice(warning_messages)
         await message.delete()
         await message.channel.send(random_warning_message, delete_after=8.0)
         return
     
     #η ακόλουθη κανονική έκφραση ψάχνει για ένα κείμενο, το οποίο αρχίζει με ! ή - ή r6s, έχοντας αμέσως μετά γράμματα.
-    if message.channel.type != discord.ChannelType.private and regex.search("^(([!-]|r6s )[a-zA-Z]+)", message.content) and not await is_bot_requests_channel(message):
+    if regex.search("^(([!-]|r6s )[a-zA-Z]+)", message.content) and not await is_bot_requests_channel(message):
         return
     
     #Το bot πλέον απαντάει όταν το κάνει mention κάποιος.
