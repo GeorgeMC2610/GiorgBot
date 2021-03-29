@@ -80,6 +80,15 @@ pm_deny3 = "ΧΑΧΑΧΑΧΑΧΑΧΑΧΑΝΑΙΚΑΛΑ"
 
 pm_denying = [pm_deny1, pm_deny2, pm_deny3]
 
+denying_admin_message1 = "ΟΟΟΧΙ."
+denying_admin_message2 = "Καλά, είσαι ηλίθιος;"
+denying_admin_message3 = "OXI. ΕΔΩ."
+denying_admin_message4 = "ΡΕ, ΒΛΑΚΑΣ ΕΙΣΑΙ;"
+denying_admin_message5 = "Ναι, αλλά όχι."
+denying_admin_message6 = "ΦΙΛΕ, ΟΧΙ ΕΔΩ."
+
+denying_admin_messages = [denying_admin_message1, denying_admin_message2, denying_admin_message3, denying_admin_message4, denying_admin_message5, denying_admin_message6]
+
 admin_commands = ["giorg display_members", "giorg prune", "giorg announcegeniki", "giorg announcebot", "giorg announce"]
 
 def channel_log(message):
@@ -128,6 +137,7 @@ def identify_member_position(member):
     
     return 0
 
+#η συνάρτηση που κάνει decode json
 async def private_msg(message, sender):
     if '{' in message and message[-1] == '}' and '"target"' in message and '"message"' in message:
         payload = 0
@@ -154,6 +164,7 @@ async def private_msg(message, sender):
             await user_to_send.send(payload["message"])
             await sender.send("Έφτασε το μήνυμα!")
 
+#η συνάρτηση που κάνει decode json
 async def announce_in_channel(message, sender):
     if '{' in message and message[-1] == '}' and '"channel"' in message and '"message"' in message:
         payload = 0
@@ -179,6 +190,7 @@ async def announce_in_channel(message, sender):
             await channel.send(payload["message"])
             await sender.send("Έφτασε το μήνυμα!")
 
+#συναρτήσεις ελέγχων για τις εντολές
 def is_bot_requests_channel():
     async def predicate(ctx):
         if ctx.message.channel.type == discord.ChannelType.private or ctx.message.channel.id == 518904659461668868:
@@ -189,6 +201,41 @@ def is_bot_requests_channel():
         return False
     return commands.check(predicate)
 
+def is_moderator():
+    async def predicate(ctx):
+        if identify_member_position(ctx.message.author) < 4:
+            msg_to_send = "Καλή προσπάθεια, " + ctx.message.author.mention + "! Αυτή είναι εντολή διαχειριστή. Θα 'ταν κρίμα αν το μάθαιναν οι <@&488730147894198273>, <@&821739015970619393>..."
+            await ctx.message.channel.send(msg_to_send)
+            return False
+        return True
+    return commands.check(predicate)
+
+def is_admin():
+    async def predicate(ctx):
+        if ctx.message.author.id != 250721113729007617 and ctx.message.author.id != 250973577761783808:
+            GeorgeMC2610 = await client.fetch_user(250721113729007617)
+            await ctx.message.author.send(random.choice(pm_denying))
+            await GeorgeMC2610.send("Ο γνωστός άγνωστος " + str(ctx.message.author) + " προσπάθησε ΝΑ ΜΕ ΚΑΝΕΙ ΝΑ ΚΑΝΩ ΚΑΤΙ ΠΟΥ ΔΕΝ ΠΡΕΠΕΙ.")
+            return False
+        
+        return True
+    return commands.check(predicate)
+
+        
+def is_pm_message(pm):
+    async def predicate(ctx):
+        if pm:
+            if ctx.message.channel.type == discord.ChannelType.private:
+                return True
+            await ctx.send(random.choice(denying_admin_messages))
+            return False
+        else:
+            if ctx.message.channel.type != discord.ChannelType.private:
+                return True
+            await ctx.send(random.choice(denying_admin_messages))
+            return False
+    return commands.check(predicate)
+    
 
 @client.event
 async def on_ready():
@@ -418,17 +465,9 @@ async def corona(ctx, country, *day):
 
 #                   ----     εντολές διαχειριστών    ----
 @client.command()
+@is_pm_message(False)
+@is_moderator()
 async def display_members(ctx):
-    #δεν λειτουργεί αυτή η εντολή σε pm.
-    if ctx.message.channel.type == discord.ChannelType.private:
-        await ctx.send("Καλά, είσαι ηλίθιος;")
-        return
-    
-    if identify_member_position(ctx.message.author) < 4:
-        msg_to_send = "Καλή προσπάθεια, " + ctx.message.author.mention + "! Αυτή είναι εντολή διαχειριστή. Θα 'ταν κρίμα αν το μάθαιναν οι <@&488730147894198273>, <@&821739015970619393>..."
-        await ctx.message.channel.send(msg_to_send)
-        return
-
     #και όλοι οι συμμετέχοντες
     server           = await client.fetch_guild(322050982747963392)
     all_members      = await server.fetch_members().flatten()
@@ -441,18 +480,9 @@ async def display_members(ctx):
     return
 
 @client.command()
+@is_pm_message(False)
+@is_moderator()
 async def prune(ctx, times):
-    #δεν λειτουργεί αυτή η εντολή σε pm.
-    if ctx.message.channel.type == discord.ChannelType.private:
-        await ctx.send("ΟΧΙΙ.")
-        return
-
-    #Ελέγχουμε αν όντως ο διαχειριστής εκτελεί εντολές.
-    if identify_member_position(ctx.message.author) < 4:
-        msg_to_send = "Καλή προσπάθεια, " + ctx.message.author.mention + "! Αυτή είναι εντολή διαχειριστή. Θα 'ταν κρίμα αν το μάθαιναν οι <@&488730147894198273>, <@&821739015970619393>..."
-        await ctx.message.channel.send(msg_to_send)
-        return
-
     #ελέγχουμε αν είναι ακέραιος η τιμή που έστειλε
     try:
         times = int(times)
@@ -475,18 +505,9 @@ async def prune(ctx, times):
         return
 
 @client.command()
-async def announcegeniki(ctx, message):
-    #δεν λειτουργεί αυτή η εντολή χωρίς pm.
-    if ctx.message.channel.type != discord.ChannelType.private:
-        await ctx.send("ΟΧΙ ΕΔΩΩΩ.")
-        return
-
-    if ctx.message.author.id != 250721113729007617 and ctx.message.author.id != 250973577761783808:
-        GeorgeMC2610 = await client.fetch_user(250721113729007617)
-        await ctx.message.author.send(random.choice(pm_denying))
-        await GeorgeMC2610.send("Ο γνωστός άγνωστος " + str(ctx.message.author) + " προσπάθησε ΝΑ ΜΕ ΚΑΝΕΙ ΝΑ ΚΑΝΩ ΚΑΤΙ ΠΟΥ ΔΕΝ ΠΡΕΠΕΙ.")
-        return
-    
+@is_pm_message(True)
+@is_admin()
+async def announcegeniki(ctx, message):    
     try:
         geniki_sizitisi = await client.fetch_channel(518905389811630087)
         await geniki_sizitisi.send(message)
@@ -495,18 +516,9 @@ async def announcegeniki(ctx, message):
         await ctx.message.author.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
 
 @client.command()
+@is_pm_message(True)
+@is_admin()
 async def announcebot(ctx, message):
-    #δεν λειτουργεί αυτή η εντολή χωρίς pm.
-    if ctx.message.channel.type != discord.ChannelType.private:
-        await ctx.send("ΑΠΛΑ, ΣΚΑΣΕ.")
-        return
-
-    if ctx.message.author.id != 250721113729007617 and ctx.message.author.id != 250973577761783808:
-        GeorgeMC2610 = await client.fetch_user(250721113729007617)
-        await ctx.message.author.send(random.choice(pm_denying))
-        await GeorgeMC2610.send("Ο γνωστός άγνωστος " + str(ctx.message.author) + " προσπάθησε ΝΑ ΜΕ ΚΑΝΕΙ ΝΑ ΚΑΝΩ ΚΑΤΙ ΠΟΥ ΔΕΝ ΠΡΕΠΕΙ.")
-        return
-    
     try:
         bot_requests = await client.fetch_channel(518904659461668868)
         await bot_requests.send(message)
@@ -515,33 +527,15 @@ async def announcebot(ctx, message):
         await ctx.message.author.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
 
 @client.command()
+@is_pm_message(True)
+@is_admin()
 async def announce(ctx):
-    #δεν λειτουργεί αυτή η εντολή χωρίς pm.
-    if ctx.message.channel.type != discord.ChannelType.private:
-        await ctx.send("ΑΑΑΑΡΓΚ. ΟΟΟΟΟΧΙ.")
-        return
-
-    if ctx.message.author.id != 250721113729007617 and ctx.message.author.id != 250973577761783808:
-        GeorgeMC2610 = await client.fetch_user(250721113729007617)
-        await ctx.message.author.send(random.choice(pm_denying))
-        await GeorgeMC2610.send("Ο γνωστός άγνωστος " + str(ctx.message.author) + " προσπάθησε ΝΑ ΜΕ ΚΑΝΕΙ ΝΑ ΚΑΝΩ ΚΑΤΙ ΠΟΥ ΔΕΝ ΠΡΕΠΕΙ.")
-        return
-
     await announce_in_channel(ctx.message.content, ctx.message.author)
 
 @client.command()
+@is_pm_message(True)
+@is_admin()
 async def send(ctx):
-    #δεν λειτουργεί αυτή η εντολή χωρίς pm.
-    if ctx.message.channel.type != discord.ChannelType.private:
-        await ctx.send("ΣΤΑΜΑΤΑ.")
-        return
-
-    if ctx.message.author.id != 250721113729007617 and ctx.message.author.id != 250973577761783808:
-        GeorgeMC2610 = await client.fetch_user(250721113729007617)
-        await ctx.message.author.send(random.choice(pm_denying))
-        await GeorgeMC2610.send("Ο γνωστός άγνωστος " + str(ctx.message.author) + " προσπάθησε ΝΑ ΜΕ ΚΑΝΕΙ ΝΑ ΚΑΝΩ ΚΑΤΙ ΠΟΥ ΔΕΝ ΠΡΕΠΕΙ.")
-        return
-
     await private_msg(ctx.message.content, ctx.message.author)
 
 @client.event
