@@ -179,13 +179,15 @@ async def announce_in_channel(message, sender):
             await channel.send(payload["message"])
             await sender.send("Έφτασε το μήνυμα!")
 
-async def is_bot_requests_channel(message):
-    if message.channel.type == discord.ChannelType.private or message.channel.id == 518904659461668868:
-        return True
-    
-    await message.delete()
-    await message.channel.send(random.choice(denying_messages), delete_after=8.0)
-    return False
+def is_bot_requests_channel():
+    async def predicate(ctx):
+        if ctx.message.channel.type == discord.ChannelType.private or ctx.message.channel.id == 518904659461668868:
+            return True
+        
+        await ctx.message.delete()
+        await ctx.message.channel.send(random.choice(denying_messages), delete_after=8.0)
+        return False
+    return commands.check(predicate)
 
 
 @client.event
@@ -194,24 +196,18 @@ async def on_ready():
 
 #                   ----     εντολές κοινής χρήσεως    ----
 @client.command()
+@is_bot_requests_channel()
 async def ping(ctx):
-    if not await is_bot_requests_channel(ctx.message):
-        raise Exception("Command was not located in #bot-requests channel. Aborting command use.")
-
     await ctx.send("Pong!")
 
-@client.group(invoke_without_command=True)
+@client.command()
+@is_bot_requests_channel()
 async def help(ctx):
-    if not await is_bot_requests_channel(ctx.message):
-        raise Exception("Command was not located in #bot-requests channel. Aborting command use.")
-
     await ctx.send(help_message)
 
 @client.command()
+@is_bot_requests_channel()
 async def emvolio(ctx, periferia, *imerominia):
-    if not await is_bot_requests_channel(ctx.message):
-        raise Exception("Command was not located in #bot-requests channel. Aborting command use.")
-
     #για να βρούμε ποια πόλη θέλει ο χρήστης, πρώτα χωρίζουμε την εντολή και ύστερα την κάνουμε κεφαλαία, για το API
     periferia = periferia.upper()
     periferia = remove_greek_uppercase_accent(periferia)
@@ -323,10 +319,8 @@ async def emvolio(ctx, periferia, *imerominia):
         print(e.args)
 
 @client.command()
+@is_bot_requests_channel()
 async def corona(ctx, country, *day):
-    if not await is_bot_requests_channel(ctx.message):
-        raise Exception("Command was not located in #bot-requests channel. Aborting command use.")
-    
     if len(day) < 1:
         #τότε επιλέγουμε αυτόματα την ημέρα, ανάλογα με την ώρα
         yesterday  = 'false'
