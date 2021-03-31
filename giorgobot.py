@@ -289,7 +289,7 @@ async def emvolio(ctx, periferia, *imerominia):
             try:
                 date = parse(imerominia)
                 date = date.date()
-                kataliksi = 'στις ' + str(date)
+                kataliksi = 'την ' + str(date)
             except Exception as e:
                 await ctx.message.channel.send("Θα πρέπει να στείλεις μία (σωστή) ημερομηνία.")
                 return
@@ -336,6 +336,7 @@ async def emvolio(ctx, periferia, *imerominia):
 
             percentage = str(round(grand_dose2_total*100/10790000, 5)).replace('.', ',') + '%'
             statistic = 'Το **' + percentage + '** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.'
+            tempo = '\n**Ρυθμός 💹:** Σε **' + str(round((10790000*0.7 - grand_dose2_total) / grand_today_dose2_total, 2)) + '** μέρες, θα έχει εμβολιασθεί το **70%** του πληθυσμού, με τα δεδομένα ' + kataliksi + '.' if grand_today_dose2_total != 0 else '\n**Ρυθμός 💹:** Δεν μπορεί να υπολογισθεί, καθώς **δεν έγιναν εμβολιασμοί δεύτερης δόσης ' + kataliksi + '**.'
             intro = flag.flag('gr') + '  **__ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ:__**\n\n'
 
         else:
@@ -351,18 +352,23 @@ async def emvolio(ctx, periferia, *imerominia):
             grand_today_dose2_total = total_vaccines["dailydose2"]
 
             statistic = ''
+            tempo = ''
             intro = '📍 **__ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + periferia + ':__**\n\n' 
 
             #χωρίζουμε τα στατιστικά, για να αποστείλουμε ευκολότερα το μήνυμα.
             
-        dose1_stats = '**Δόση 1️⃣:**  Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose1_total:n}' + '** σύνολο)'
-        dose2_stats = '**Δόση 2️⃣:**  Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose2_total:n}' + '** σύνολο)'
-        total_stats = '**Αθροιστικά 💉:**  Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_total:n}' + '** σύνολο). ' + statistic
+        dose1_stats = '**Δόση 1️⃣:** '       + ('Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί ' if grand_today_dose1_total > 1 else "Έγινε **ένας** εμβολιασμός " if grand_today_dose1_total == 1 else "Δεν έγινε **κανένας** εμβολιασμός ") + kataliksi + '. (**' + f'{grand_dose1_total:n}' + '** σύνολο)'
+        dose2_stats = '**Δόση 2️⃣:** '       + ('Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί ' if grand_today_dose2_total > 1 else "Έγινε **ένας** εμβολιασμός " if grand_today_dose2_total == 1 else "Δεν έγινε **κανένας** εμβολιασμός ") + kataliksi + '. (**' + f'{grand_dose2_total:n}' + '** σύνολο)'
+        total_stats = '**Αθροιστικά 💉:** ' + ('Έγιναν **' + f'{grand_today_total:n}'       + '** εμβολιασμοί ' if grand_today_total       > 1 else "Έγινε **ένας** εμβολιασμός " if grand_today_total       == 1 else "Δεν έγινε **κανένας** εμβολιασμός ") + kataliksi + '. (**' + f'{grand_total:n}'       + '** σύνολο). ' + statistic + tempo
         await ctx.message.channel.send(intro + dose1_stats + '\n' + dose2_stats + '\n' + total_stats)
 
-    except Exception as e:
+    except IndexError as e:
         #αλλιώς, λογικά δεν θα υπάρχει αυτή η περιοχή
         await ctx.message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 Δες τις διαθέσιμες περιοχές με την εντολή `giorg emvolio λίστα`.')
+        print(e.args)
+
+    except Exception as e:
+        await ctx.message.channel.send("ΓΙΩΡΓΟΟΟΟΟΟΟΟΟΟΟΟΟΟΟΟΟΟΟ. ΔΕΣ ΤΙ ΕΓΙΝΕΕΕΕΕΕΕΕ. <@!250721113729007617>")
         print(e.args)
 
 @client.command()
@@ -537,6 +543,12 @@ async def announce(ctx):
 @is_admin()
 async def send(ctx):
     await private_msg(ctx.message.content, ctx.message.author)
+
+@client.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.message.reply("Εε;")
+        return
 
 @client.event
 async def on_message(message):
