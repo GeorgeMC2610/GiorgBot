@@ -571,7 +571,9 @@ async def on_message(message):
         return
     
     #η ακόλουθη κανονική έκφραση ψάχνει για ένα κείμενο, το οποίο αρχίζει με ! ή - ή r6s, έχοντας αμέσως μετά γράμματα.
-    if regex.search("^(([!-]|r6s )[a-zA-Z]+)", message.content) and not await is_bot_requests_channel(message):
+    if regex.search("^(([!-]|r6s |giorg )[a-zA-Z]+)", message.content) and message.channel.id != 518904659461668868:
+        await message.delete()
+        await message.channel.send(random.choice(denying_messages), delete_after=8.0)
         return
     
     #Το bot πλέον απαντάει όταν το κάνει mention κάποιος.
