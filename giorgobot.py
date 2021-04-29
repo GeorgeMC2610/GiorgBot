@@ -319,7 +319,7 @@ async def on_message(message):
 
         if message.content.startswith(respondable_messages[2]):
             #για να βρούμε ποια πόλη θέλει ο χρήστης, πρώτα χωρίζουμε την εντολή και ύστερα την κάνουμε κεφαλαία, για το API
-            city = message.content.split("!emvolio ")[1].upper()
+            city = message.content.split("giorg emvolio ")[1].upper()
             city = remove_greek_uppercase_accent(city)
 
             #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
@@ -365,7 +365,7 @@ async def on_message(message):
                         grand_today_dose1_total += data["dailydose1"]
                         grand_today_dose2_total += data["dailydose2"]
 
-                    percentage = str(round(float(grand_dose2_total/10790000), 5) * 100) + '%'
+                    percentage = str(round(float(grand_dose2_total*100/10790000), 5)) + '%'
                     dose1_stats = '**Δόση 1️⃣:**  Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose1_total:n}' + '** σύνολο)'
                     dose2_stats = '**Δόση 2️⃣:**  Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose2_total:n}' + '** σύνολο)'
                     total_stats = '**Αθροιστικά 💉:**  Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_total:n}' + '** σύνολο). Το **' + percentage.replace('.', ',') + '** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.'
@@ -388,12 +388,12 @@ async def on_message(message):
                 await message.channel.send('📍 **__ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + city + ':__**\n\n' + dose1_stats + '\n' + dose2_stats + '\n' + total_stats)
             except:
                 #αλλιώς, λογικά δεν θα υπάρχει αυτή η περιοχή
-                await message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 Δες τις διαθέσιμες περιοχές με την εντολή `!emvolio λίστα`.')
+                await message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 Δες τις διαθέσιμες περιοχές με την εντολή `giorg emvolio λίστα`.')
             
             return
 
         if message.content.startswith(respondable_messages[3]):
-            country  = message.content.split("!corona ")[1]
+            country  = message.content.split("giorg corona ")[1]
 
             #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
             kataliksi = "σήμερα"
@@ -536,6 +536,9 @@ async def on_raw_reaction_add(payload):
     elif payload.emoji.name == "politics":
         role = server.get_role(819861063213645854)
 
+    elif payload.emoji.name == "valorant":
+        role = server.get_role(834504650509254749)
+
     #ύστερα, δίνουμε τον ρόλο σε αυτόν που έκανε το react με την φτιαχτή συνάρτησή μας
     await give_role(reactor, role)
 
@@ -590,6 +593,9 @@ async def on_raw_reaction_remove(payload):
     
     elif payload.emoji.name == "politics":
         role = server.get_role(819861063213645854)
+
+    elif payload.emoji.name == "valorant":
+        role = server.get_role(834504650509254749)
 
     #ύστερα, βγάζουμε τον ρόλο σε αυτόν που έκανε το react με την φτιαχτή συνάρτησή μας
     await remove_role(reactor, role)
