@@ -75,12 +75,9 @@ pm_deny3 = "ΧΑΧΑΧΑΧΑΧΑΧΑΧΑΝΑΙΚΑΛΑ"
 pm_denying = [pm_deny1, pm_deny2, pm_deny3]
 
 
-respondable_messages = ["!ping", "!help", "!emvolio", "!corona", "-", "!"]
-admin_commands       = ["!display members", "!prune", "!announcegeniki", "!announcebot", "!announce"]
+respondable_messages = ["giorg ping", "giorg help", "giorg emvolio", "giorg corona", "-", "!", "r6s"]
+admin_commands       = ["giorg display members", "giorg prune", "giorg announcegeniki", "giorg announcebot", "giorg announce"]
 
-server            = None
-GeorgeMC2610      = None
-Sotiris168        = None
 
 def channel_log(message):
     f = open('log.txt', 'a', encoding='utf-8')
