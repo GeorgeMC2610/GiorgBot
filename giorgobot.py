@@ -369,17 +369,19 @@ async def on_message(message):
                         grand_today_dose2_total += data["dailydose2"]
 
                     percentage = str(round(float(grand_dose2_total*100/8658460), 5)) + '%'
-                    rythm      = str(round((8658460*0.7 - grand_dose2_total) / grand_today_dose2_total)) + 'μέρες '
+                    rythm      = str(round((8658460*0.7 - grand_dose2_total) / grand_today_dose2_total)) + ' μέρες'
 
                     embedded_message = discord.Embed(title=flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ", description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.")
-                    embedded_message.set_thumbnail(url="https://www.moh.gov.gr/photos/w_930px/articles/202012/logo_emvoliasmoi.jpg")
+                    embedded_message.set_thumbnail(url="https://emvolio.gov.gr/sites/default/files/og-img.png")
 
                     embedded_message.add_field(name="Δόση 1️⃣", value='Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose1_total:n}' + '** σύνολο)', inline=True)
                     embedded_message.add_field(name="Δόση 2️⃣", value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Αθροιστικά 💉", value='Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί. (**' + f'{grand_total:n}' + '** σύνολο).', inline=False)
+                    embedded_message.add_field(name="Αθροιστικά 💉", value='Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί. (**' + f'{grand_total:n}' + '** σύνολο).', inline=True)
 
                     embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage.replace('.', ',') + "** του **ενήλικου** πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.'", inline=True)
-                    embedded_message.add_field(name="Ρυθμός 🕖", value="Με τα δεδομένα " + kataliksi + ", σε " + rythm + "θα έχει εμβολιαστεί το 70% του **ενήλικου** πληθυσμού.", inline=True)
+                    embedded_message.add_field(name="Ρυθμός 🕖", value="Με τα δεδομένα " + kataliksi + ", σε **" + rythm + "** θα έχει εμβολιαστεί το 70% του **ενήλικου** πληθυσμού.", inline=True)
+
+                    embedded_message.footer(text="Δεδομένα από το https://emvolio.gov.gr/")
 
                     await message.channel.send(embed=embedded_message)
                     return
