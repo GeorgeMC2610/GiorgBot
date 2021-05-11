@@ -475,7 +475,7 @@ async def on_message(message):
                 if country_info["todayDeaths"] is None:
                     death_stats = ("Δεν υπάρχουν στοιχεία.")
                 elif country_info["todayDeaths"] > 1:
-                    death_stats = ("Σημειώθηκαν **" + f'{country_info["todayDeaths"]:n}' + "**.")
+                    death_stats = ("Σημειώθηκαν **" + f'{country_info["todayDeaths"]:n}' + "** θάνατοι.")
                 elif country_info["todayDeaths"] == 1:
                     death_stats = ("Σημειώθηκε μονάχα **ένας θάνατος**.")
                 else:
