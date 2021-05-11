@@ -263,7 +263,7 @@ async def on_message(message):
 
         elif message.content.startswith(admin_commands[1]):
             #χωρίζουμε το μήνυμα ανά κενό, ώστε να πάρουμε τις φορές που πρέπει να σβήσουμε το μήνυμα.
-            message_content_by_space = message.content.split(" ")
+            message_content_by_space = message.content.split("giorg prune ")
 
             #πρέπει να 'χει ακριβώς ένα όρισμα το prune, αλλιώς δεν θα εκτελσθεί η εντολή.
             if len(message_content_by_space) != 2:
@@ -309,14 +309,17 @@ async def on_message(message):
             return
         
         #Εκτέλεση των εντολών
+        #giorg ping
         if message.content == respondable_messages[0]:
             await message.channel.send("Pong!")
             return
 
+        #giorg help
         if message.content == respondable_messages[1]:
             await message.channel.send(help_message)
             return
 
+        #giorg emvolio
         if message.content.startswith(respondable_messages[2]):
             #για να βρούμε ποια πόλη θέλει ο χρήστης, πρώτα χωρίζουμε την εντολή και ύστερα την κάνουμε κεφαλαία, για το API
             city = message.content.split("giorg emvolio ")[1].upper()
@@ -347,7 +350,7 @@ async def on_message(message):
             #αλλιώς προσπαθούμε να βρούμε την περιοχή
             try:
                 #εκτός αν ο χρήστης μας έχει πει να βρούμε όλες τις περιοχές
-                if city in ["ΣΥΝΟΛΟ", "ΟΛΑ", "ΟΛΟ", "ΕΛΛΑΔΑ", "ΧΩΡΑ", "ΣΥΝΟΛΙΚΑ", "ΠΑΝΤΕΣ"]:
+                if city in ["ΣΥΝΟΛΟ", "ΟΛΑ", "ΟΛΟ", "ΟΛΟΙ", "ΕΛΛΑΔΑ", "ΧΩΡΑ", "ΣΥΝΟΛΙΚΑ", "ΠΑΝΤΕΣ"]:
                     #στην οποία περίπτωση κάνουμε κάτι τέτοιο χειροκίνητα
                     grand_total = 0
                     grand_dose1_total = 0
@@ -366,11 +369,21 @@ async def on_message(message):
                         grand_today_dose2_total += data["dailydose2"]
 
                     percentage = str(round(float(grand_dose2_total*100/8658460), 5)) + '%'
-                    dose1_stats = '**Δόση 1️⃣:**  Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose1_total:n}' + '** σύνολο)'
-                    dose2_stats = '**Δόση 2️⃣:**  Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_dose2_total:n}' + '** σύνολο)'
-                    total_stats = '**Αθροιστικά 💉:**  Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{grand_total:n}' + '** σύνολο). Το **' + percentage.replace('.', ',') + '** του **ενήλικου** πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.'
-                    await message.channel.send(flag.flag('gr') + '  **__ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ:__**\n\n' + dose1_stats + '\n' + dose2_stats + '\n' + total_stats)
+                    rythm      = str(round((8658460*0.7 - grand_dose2_total) / grand_today_dose2_total)) + 'μέρες '
+
+                    embedded_message = discord.Embed(title=flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ", description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.")
+                    embedded_message.set_thumbnail(url="https://www.moh.gov.gr/photos/w_930px/articles/202012/logo_emvoliasmoi.jpg")
+
+                    embedded_message.add_field(name="Δόση 1️⃣", value='Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose1_total:n}' + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Δόση 2️⃣", value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Αθροιστικά 💉", value='Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί. (**' + f'{grand_total:n}' + '** σύνολο).', inline=False)
+
+                    embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage.replace('.', ',') + "** του **ενήλικου** πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.'", inline=True)
+                    embedded_message.add_field(name="Ρυθμός 🕖", value="Με τα δεδομένα " + kataliksi + ", σε " + rythm + "θα έχει εμβολιαστεί το 70% του **ενήλικου** πληθυσμού.", inline=True)
+
+                    await message.channel.send(embed=embedded_message)
                     return
+
                 elif city in ["ΠΕΡΙΦΕΡΕΙΕΣ", "ΠΕΡΙΦΕΡΕΙΑΚΕΣ ΕΝΟΤΗΤΕΣ", "ΛΙΣΤΑ", "ΕΝΟΤΗΤΕΣ", "ΠΕΡΙΟΧΕΣ"]:
                     total_cities = [data["area"] for data in response]
                     await message.channel.send('```py\n ' + str(total_cities) + '```\n ● **' + str(len(total_cities)) + '** συνολικές περιφερειακές ενότητες.')
@@ -392,6 +405,7 @@ async def on_message(message):
             
             return
 
+        #giorg corona
         if message.content.startswith(respondable_messages[3]):
             country  = message.content.split("giorg corona ")[1]
 
