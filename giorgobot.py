@@ -378,10 +378,10 @@ async def on_message(message):
                     embedded_message.add_field(name="Δόση 2️⃣", value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
                     embedded_message.add_field(name="Αθροιστικά 💉", value='Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί. (**' + f'{grand_total:n}' + '** σύνολο).', inline=True)
 
-                    embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage.replace('.', ',') + "** του **ενήλικου** πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.'", inline=True)
+                    embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage.replace('.', ',') + "** του **ενήλικου** πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.", inline=True)
                     embedded_message.add_field(name="Ρυθμός 🕖", value="Με τα δεδομένα " + kataliksi + ", σε **" + rythm + "** θα έχει εμβολιαστεί το 70% του **ενήλικου** πληθυσμού.", inline=True)
 
-                    embedded_message.footer(text="Δεδομένα από το https://emvolio.gov.gr/")
+                    embedded_message.set_footer(text="Δεδομένα από το https://emvolio.gov.gr/")
 
                     await message.channel.send(embed=embedded_message)
                     return
@@ -401,9 +401,10 @@ async def on_message(message):
                 total_stats = '**Αθροιστικά 💉:**  Έγιναν **' + f'{total_vaccines["daytotal"]:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{total_vaccines["totalvaccinations"]:n}' + '** σύνολο).'
                 #και στέλνουμε το μήνυμα
                 await message.channel.send('📍 **__ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + city + ':__**\n\n' + dose1_stats + '\n' + dose2_stats + '\n' + total_stats)
-            except:
+            except Exception as e:
                 #αλλιώς, λογικά δεν θα υπάρχει αυτή η περιοχή
                 await message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 Δες τις διαθέσιμες περιοχές με την εντολή `giorg emvolio λίστα`.')
+                print(e.args)
             
             return
 
