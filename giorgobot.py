@@ -368,11 +368,11 @@ async def on_message(message):
                         grand_today_dose1_total += data["dailydose1"]
                         grand_today_dose2_total += data["dailydose2"]
 
-                    percentage = str(round(float(grand_dose2_total*100/8658460), 5)) + '%'
+                    percentage = str(round(float(grand_dose2_total*100/8658460), 1)) + '%'
                     rythm      = str(round((8658460*0.7 - grand_dose2_total) / grand_today_dose2_total)) + ' μέρες'
 
                     embedded_message = discord.Embed(title=flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ", description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.")
-                    embedded_message.set_thumbnail(url="https://emvolio.gov.gr/sites/default/files/og-img.png")
+                    embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
 
                     embedded_message.add_field(name="Δόση 1️⃣", value='Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose1_total:n}' + '** σύνολο)', inline=True)
                     embedded_message.add_field(name="Δόση 2️⃣", value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
@@ -395,12 +395,18 @@ async def on_message(message):
                 #βρίσκουμε την περιοχή με LINQ-οειδές request
                 total_vaccines = [data for data in response if data["area"] == city][0]
 
-                #χωρίζουμε τα στατιστικά, για να αποστείλουμε ευκολότερα το μήνυμα.
-                dose1_stats = '**Δόση 1️⃣:**  Έγιναν **' + f'{total_vaccines["dailydose1"]:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{total_vaccines["totaldose1"]:n}' + '** σύνολο)'
-                dose2_stats = '**Δόση 2️⃣:**  Έγιναν **' + f'{total_vaccines["dailydose2"]:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{total_vaccines["totaldose2"]:n}' + '** σύνολο)'
-                total_stats = '**Αθροιστικά 💉:**  Έγιναν **' + f'{total_vaccines["daytotal"]:n}' + '** εμβολιασμοί ' + kataliksi + '. (**' + f'{total_vaccines["totalvaccinations"]:n}' + '** σύνολο).'
+                #μαζεύουμε το μήνυμα σε embed
+                embedded_message = discord.Embed(title='📍 ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + city, description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.")
+                embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
+
+                embedded_message.add_field(name="Δόση 1️⃣", value='Έγιναν **' + f'{total_vaccines["dailydose1"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose1"]:n}' + '** σύνολο)', inline=True)
+                embedded_message.add_field(name="Δόση 2️⃣", value='Έγιναν **' + f'{total_vaccines["dailydose2"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose2"]:n}' + '** σύνολο)', inline=True)
+                embedded_message.add_field(name="Αθροιστικά 💉", value='Έγιναν **' + f'{total_vaccines["daytotal"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totalvaccinations"]:n}' + '** σύνολο).', inline=False)
+
+                embedded_message.set_footer(text="Δεδομένα από το https://emvolio.gov.gr/")
+
                 #και στέλνουμε το μήνυμα
-                await message.channel.send('📍 **__ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + city + ':__**\n\n' + dose1_stats + '\n' + dose2_stats + '\n' + total_stats)
+                await message.channel.send(embed=embedded_message)
             except Exception as e:
                 #αλλιώς, λογικά δεν θα υπάρχει αυτή η περιοχή
                 await message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 Δες τις διαθέσιμες περιοχές με την εντολή `giorg emvolio λίστα`.')
