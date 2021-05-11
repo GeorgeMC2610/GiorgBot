@@ -431,7 +431,7 @@ async def on_message(message):
                 yesterday = 'true'
 
             #φτιάχνουμε το request και παίρνουμε τα γεγονότα όπως πρέπει
-            url = 'https://disease.sh/v3/covid-19/countries?yesterday=' + yesterday + '&twoDaysAgo=false&sort=cases&allowNull=true'
+            url = 'https://disease.sh/v3/covid-19/countries?yesterday=' + yesterday + '&twoDaysAgo=false&sort=cases&allowNull=false'
             response = requests.get(url)
             response = response.json()
 
@@ -461,30 +461,38 @@ async def on_message(message):
 
                 #στατιστικά για τα κρούσματα
                 if country_info["todayCases"] is None:
-                    cases_stats = ("**Κρούσματα 🦠:**  Δεν υπάρχουν στοιχεία κρουσμάτων κορωνοϊού για " + kataliksi + ". ")
+                    cases_stats = ("Δεν υπάρχουν στοιχεία κρουσμάτων κορωνοϊού.")
                 elif country_info["todayCases"] > 1:
-                    cases_stats = ("**Κρούσματα 🦠:**  Καταγράφηκαν **" + f'{country_info["todayCases"]:n}' + " κρούσματα κορωνοϊού** " + kataliksi + ". ")
+                    cases_stats = ("Καταγράφηκαν **" + f'{country_info["todayCases"]:n}' + "** κρούσματα κορωνοϊού.")
                 elif country_info["todayCases"] == 1:
-                    cases_stats = ("**Κρούσματα 🦠:**  Καταγράφηκε μονάχα **ένα κρούσμα κορωνοϊού** " + kataliksi + ". ")
+                    cases_stats = ("Καταγράφηκε μονάχα **ένα κρούσμα** κορωνοϊού.")
                 else:
-                    cases_stats = ("**Κρούσματα 🦠:  Κανένα κρούσμα κορωνοϊού** " + kataliksi + " 😄. ")
+                    cases_stats = ("Κανένα κρούσμα κορωνοϊού 😄. ")
 
-                cases_stats += "(**" + f'{country_info["cases"]:n}' + "** συνολικά κρούσματα)"
+                cases_stats += " (**" + f'{country_info["cases"]:n}' + "** συνολικά κρούσματα)"
                 
                 #στατιστικά για τους θανάτους
                 if country_info["todayDeaths"] is None:
-                    death_stats = ("**Θάνατοι ☠:**  Δεν υπάρχουν στοιχεία για θανάτους από κορονωϊό για " + kataliksi + ". ")
+                    death_stats = ("Δεν υπάρχουν στοιχεία θανάτων.")
                 elif country_info["todayDeaths"] > 1:
-                    death_stats = ("**Θάνατοι ☠:**  Σημειώθηκαν **" + f'{country_info["todayDeaths"]:n}' + " θάνατοι** " + kataliksi + ". ")
+                    death_stats = ("Σημειώθηκαν **" + f'{country_info["todayDeaths"]:n}' + "** θάνατοι.")
                 elif country_info["todayDeaths"] == 1:
-                    death_stats = ("**Θάνατοι ☠:**  Σημειώθηκε μονάχα **ένας θάνατος** " + kataliksi + ". ")
+                    death_stats = ("Σημειώθηκε μονάχα **ένας θάνατος** από κορωνοϊό.")
                 else:
-                    death_stats = ("**Θάνατοι ☠:  Κανένας θάνατος από κορωνοϊό** " + kataliksi + " 🥳. ")
+                    death_stats = ("Κανένας θάνατος από κορωνοϊό 🥳. ")
 
-                death_stats += "(**" + f'{country_info["deaths"]:n}' + "** συνολικοί θάνατοι)"
+                death_stats += " (**" + f'{country_info["deaths"]:n}' + "** συνολικοί θάνατοι)"
+
+                embedded_message = discord.Embed(title=country_emoji + " " + country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.")
+
+                embedded_message.add_field(name="Κρούσματα 🦠", value=cases_stats)
+                embedded_message.add_field(name="Θάνατοι ☠"   , value=death_stats)
+
+                embedded_message.set_footer(text="Στοιχεία από https://corona.lmao.ninja/")
+
 
                 #αποστολή μηνύματος με συγχώνευση των παραπάνω
-                await message.channel.send(country_emoji + ' **__' + country + ':__**' + "\n\n" + cases_stats + "\n" + death_stats)
+                await message.channel.send(embed=embedded_message)
             except IndexError as e:
                 await message.channel.send('Δεν βρήκα αυτήν την χώρα. 😫 (Η χώρα που ψάχνεις, θα πρέπει να είναι υποχρεωτικά στα Αγγλικά. Π.χ. "GR" ή "GRC" ή "Greece")')
             except Exception as e:
