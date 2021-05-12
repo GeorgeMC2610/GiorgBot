@@ -456,7 +456,6 @@ async def on_message(message):
                     country_info = [data for data in response if data["country"].casefold() == country.casefold()].pop()
                 
                 #ανακτάμε το εμότζι και το όνομα της χώρας για να το βάλουμε στο συγχωνευμένο μήνυμα
-                country_emoji = flag.flag(country_info["countryInfo"]["iso2"])
                 country       = country_info["country"]
 
                 #στατιστικά για τα κρούσματα
@@ -483,7 +482,8 @@ async def on_message(message):
 
                 death_stats += " (**" + f'{country_info["deaths"]:n}' + "** συνολικοί θάνατοι)" if country_info["deaths"] > 1 else " (**Ένας** θάνατος συνολικά)" if country_info["deaths"] == 1 else " (**Κανένας** θάνατος συνολικά 🎊)"
 
-                embedded_message = discord.Embed(title=country_emoji + " " + country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.")
+                embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.")
+                embedded_message.set_thumbnail(url=country_info["countryInfo"]["flag"])
 
                 embedded_message.add_field(name="Κρούσματα 🦠", value=cases_stats)
                 embedded_message.add_field(name="Θάνατοι ☠"   , value=death_stats)
