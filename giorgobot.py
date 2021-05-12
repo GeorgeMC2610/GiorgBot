@@ -469,7 +469,7 @@ async def on_message(message):
                 else:
                     cases_stats = ("Κανένα κρούσμα 😄.")
 
-                cases_stats += " (**" + f'{country_info["cases"]:n}' + "** συνολικά κρούσματα)"
+                cases_stats += " (**" + f'{country_info["cases"]:n}' + "** συνολικά κρούσματα)" if country_info["cases"] > 1 else " (**Ένα** κρούσμα συνολικά)" if country_info["cases"] == 1 else " (**Κανένα** κρούσμα συνολικά 🎉)"
                 
                 #στατιστικά για τους θανάτους
                 if country_info["todayDeaths"] is None:
@@ -481,7 +481,7 @@ async def on_message(message):
                 else:
                     death_stats = ("Κανένας θάνατος 🥳.")
 
-                death_stats += " (**" + f'{country_info["deaths"]:n}' + "** συνολικοί θάνατοι)"
+                death_stats += " (**" + f'{country_info["deaths"]:n}' + "** συνολικοί θάνατοι)" if country_info["deaths"] > 1 else " (**Ένας** θάνατος συνολικά)" if country_info["deaths"] == 1 else " (**Κανένας** θάνατος συνολικά 🎊)"
 
                 embedded_message = discord.Embed(title=country_emoji + " " + country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.")
 
