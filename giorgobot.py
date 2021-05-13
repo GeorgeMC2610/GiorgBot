@@ -460,13 +460,13 @@ async def on_message(message):
 
                 #στατιστικά για τα κρούσματα
                 if country_info["todayCases"] is None:
-                    cases_stats = ("Δεν υπάρχουν στοιχεία κρουσμάτων.")
+                    cases_stats = ("Δεν υπάρχουν στοιχεία.")
                 elif country_info["todayCases"] > 1:
                     cases_stats = ("Καταγράφηκαν **" + f'{country_info["todayCases"]:n}' + "** κρούσματα.")
                 elif country_info["todayCases"] == 1:
                     cases_stats = ("Καταγράφηκε μονάχα **ένα κρούσμα**.")
                 else:
-                    cases_stats = ("Κανένα κρούσμα 😄.")
+                    cases_stats = ("**Κανένα** κρούσμα 😄.")
 
                 cases_stats += " (**" + f'{country_info["cases"]:n}' + "** συνολικά κρούσματα)" if country_info["cases"] > 1 else " (**Ένα** κρούσμα συνολικά)" if country_info["cases"] == 1 else " (**Κανένα** κρούσμα συνολικά 🎉)"
                 
@@ -478,18 +478,27 @@ async def on_message(message):
                 elif country_info["todayDeaths"] == 1:
                     death_stats = ("Σημειώθηκε μονάχα **ένας θάνατος**.")
                 else:
-                    death_stats = ("Κανένας θάνατος 🥳.")
+                    death_stats = ("**Κανένας** θάνατος 🥳.")
 
                 death_stats += " (**" + f'{country_info["deaths"]:n}' + "** συνολικοί θάνατοι)" if country_info["deaths"] > 1 else " (**Ένας** θάνατος συνολικά)" if country_info["deaths"] == 1 else " (**Κανένας** θάνατος συνολικά 🎊)"
+
+                if country_info["critical"] is None:
+                    active_stats = "Δεν υπάρχουν στοιχεία."
+                elif country_info["critical"] > 1:
+                    active_stats = "**" + f'{country_info["critical"]:n}' + "** βρίσκονται σε Μ.Ε.Θ."
+                elif country_info["critical"] == 1:
+                    active_stats = "**Ένας** άνθρωπος βρίσκεται σε Μ.Ε.Θ."
+                else:
+                    active_stats = "**Κανένας** σε Μ.Ε.Θ. 😁"
 
                 embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.")
                 embedded_message.set_thumbnail(url=country_info["countryInfo"]["flag"])
 
-                embedded_message.add_field(name="Κρούσματα 🦠", value=cases_stats)
-                embedded_message.add_field(name="Θάνατοι ☠"   , value=death_stats)
+                embedded_message.add_field(name="Κρούσματα 🦠",      value=cases_stats)
+                embedded_message.add_field(name="Θάνατοι ☠"   ,      value=death_stats)
+                embedded_message.add_field(name="Διασωληνωμένοι 🏥", value=active_stats)
 
                 embedded_message.set_footer(text="Στοιχεία από https://corona.lmao.ninja/")
-
 
                 #αποστολή μηνύματος με συγχώνευση των παραπάνω
                 await message.channel.send(embed=embedded_message)
