@@ -482,6 +482,7 @@ async def on_message(message):
 
                 death_stats += " (**" + f'{country_info["deaths"]:n}' + "** συνολικοί θάνατοι)" if country_info["deaths"] > 1 else " (**Ένας** θάνατος συνολικά)" if country_info["deaths"] == 1 else " (**Κανένας** θάνατος συνολικά 🎊)"
 
+                #στατιστικά για διασωληνωμένους
                 if country_info["critical"] is None:
                     active_stats = "Δεν υπάρχουν στοιχεία."
                 elif country_info["critical"] > 1:
@@ -494,9 +495,9 @@ async def on_message(message):
                 embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.")
                 embedded_message.set_thumbnail(url=country_info["countryInfo"]["flag"])
 
-                embedded_message.add_field(name="Κρούσματα 🦠",      value=cases_stats)
-                embedded_message.add_field(name="Θάνατοι ☠"   ,      value=death_stats)
-                embedded_message.add_field(name="Διασωληνωμένοι 🏥", value=active_stats)
+                embedded_message.add_field(name="Κρούσματα 🦠",      value=cases_stats, inline=True)
+                embedded_message.add_field(name="Θάνατοι ☠"   ,      value=death_stats, inline=True)
+                embedded_message.add_field(name="Διασωληνωμένοι 🏥", value=active_stats, inline=False)
 
                 embedded_message.set_footer(text="Στοιχεία από https://corona.lmao.ninja/")
 
