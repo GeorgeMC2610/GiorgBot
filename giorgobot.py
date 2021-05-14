@@ -502,12 +502,12 @@ async def on_message(message):
                     active_stats = "**Κανένας** σε κρίσιμη κατάσταση. 😁"
 
                 #στατιστικά για τεστ
-                if CurrentTotalTests is None or PreviousTotalTests is None or country_info["todayCases"] is None or country_info["todayCases"] == 0:
+                TotalTests = CurrentTotalTests - PreviousTotalTests
+                if CurrentTotalTests is None or PreviousTotalTests is None or country_info["todayCases"] is None or TotalTests == 0:
                     print(CurrentTotalTests, PreviousTotalTests, country_info["todayCases"])
                     tests_stats = "Δεν υπάρχουν στοιχεία."
                 else:
-                    TotalTests = CurrentTotalTests - PreviousTotalTests
-                    tests_stats = "Το **" + str(round(country_info["todayCases"]*100/TotalTests, 1)).replace('.', ',') + "%** των τεστ βγήκαν θετικά. (**" + f'{TotalTests:n}' + "** δοκιμές)"
+                    tests_stats = "Το **" + str(round(country_info["todayCases"]*100/TotalTests, 5)).replace('.', ',') + "%** των τεστ βγήκαν θετικά. (**" + f'{TotalTests:n}' + "** δοκιμές)"
 
                 embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.")
                 embedded_message.set_thumbnail(url=country_info["countryInfo"]["flag"])
@@ -516,7 +516,7 @@ async def on_message(message):
                 embedded_message.add_field(name="Θάνατοι ☠"   ,      value=death_stats, inline=True)
 
                 embedded_message.add_field(name="Διασωληνωμένοι 🏥", value=active_stats, inline=False)
-                embedded_message.add_field(name="Τεστ 🔄",           value=tests_stats, inline=True)
+                embedded_message.add_field(name="Τεστ 🧪",           value=tests_stats, inline=True)
 
                 embedded_message.set_footer(text="Στοιχεία από https://corona.lmao.ninja/")
 
