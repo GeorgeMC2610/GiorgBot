@@ -423,15 +423,15 @@ async def on_message(message):
 
             #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
             kataliksi = "σήμερα"
-            yesterday = 'false'
+            yesterday = False
             
             #αλλά αν είναι πολύ νωρίς μέσα στην μέρα, βγάζουμε τα χθεσινά αποτελέσματα
             if datetime.datetime.now().hour < 18:
                 kataliksi = "χθες"
-                yesterday = 'true'
+                yesterday = True
 
             #φτιάχνουμε το request και παίρνουμε τα γεγονότα όπως πρέπει
-            url = 'https://disease.sh/v3/covid-19/countries?yesterday=' + yesterday + '&twoDaysAgo=false&sort=cases&allowNull=false'
+            url = 'https://disease.sh/v3/covid-19/countries?yesterday=' + str(yesterday).lower() + '&twoDaysAgo=false&sort=cases&allowNull=false'
             response = requests.get(url)
             response = response.json()
 
@@ -458,29 +458,38 @@ async def on_message(message):
                 #ανακτάμε το εμότζι και το όνομα της χώρας για να το βάλουμε στο συγχωνευμένο μήνυμα
                 country       = country_info["country"]
 
+                CurrentTotalTests = country_info["tests"]
+
+                #ΜΕΤΑ ΑΠΟ ΠΟΛΛΗ ΣΚΕΨΗ (οχι) ο yesterday ύστερα γίνεται το αντίθετο με πριν και το προχθές γίνεται το ίδιο με το yesterday πριν. Δουλεύει, πίστεψέ με.
+                url = 'https://disease.sh/v3/covid-19/countries/' + country_info["countryInfo"]["iso3"] + '?yesterday=' + str((not yesterday)).lower() + '&twoDaysAgo=' + str(yesterday).lower() + '&sort=cases&allowNull=false'
+                response = requests.get(url)
+                PreviousData = response.json()
+                
+                PreviousTotalTests = PreviousData["tests"]
+
                 #στατιστικά για τα κρούσματα
                 if country_info["todayCases"] is None:
                     cases_stats = ("Δεν υπάρχουν στοιχεία.")
                 elif country_info["todayCases"] > 1:
-                    cases_stats = ("Καταγράφηκαν **" + f'{country_info["todayCases"]:n}' + "** κρούσματα.")
+                    cases_stats = ("**" + f'{country_info["todayCases"]:n}' + "** νοσώντες.")
                 elif country_info["todayCases"] == 1:
-                    cases_stats = ("Καταγράφηκε μονάχα **ένα κρούσμα**.")
+                    cases_stats = ("Μονάχα **ένα κρούσμα**.")
                 else:
-                    cases_stats = ("**Κανένα** κρούσμα 😄.")
+                    cases_stats = ("**Κανένα** κρούσμα! 😄.")
 
-                cases_stats += " (**" + f'{country_info["cases"]:n}' + "** συνολικά κρούσματα)" if country_info["cases"] > 1 else " (**Ένα** κρούσμα συνολικά)" if country_info["cases"] == 1 else " (**Κανένα** κρούσμα συνολικά 🎉)"
+                cases_stats += " (**" + f'{country_info["cases"]:n}' + "** συνολικά)" if country_info["cases"] > 1 else " (**Ένα** κρούσμα συνολικά)" if country_info["cases"] == 1 else " (**Κανένα** κρούσμα συνολικά ‼)"
                 
                 #στατιστικά για τους θανάτους
                 if country_info["todayDeaths"] is None:
                     death_stats = ("Δεν υπάρχουν στοιχεία.")
                 elif country_info["todayDeaths"] > 1:
-                    death_stats = ("Σημειώθηκαν **" + f'{country_info["todayDeaths"]:n}' + "** θάνατοι.")
+                    death_stats = ("**" + f'{country_info["todayDeaths"]:n}' + "** απώλειες.")
                 elif country_info["todayDeaths"] == 1:
-                    death_stats = ("Σημειώθηκε μονάχα **ένας θάνατος**.")
+                    death_stats = ("Μονάχα **ένας θάνατος**.")
                 else:
                     death_stats = ("**Κανένας** θάνατος 🥳.")
 
-                death_stats += " (**" + f'{country_info["deaths"]:n}' + "** συνολικοί θάνατοι)" if country_info["deaths"] > 1 else " (**Ένας** θάνατος συνολικά)" if country_info["deaths"] == 1 else " (**Κανένας** θάνατος συνολικά 🎊)"
+                death_stats += " (**" + f'{country_info["deaths"]:n}' + "** συνολικά)" if country_info["deaths"] > 1 else " (**Ένας** θάνατος συνολικά)" if country_info["deaths"] == 1 else " (**Κανένας** θάνατος συνολικά 🎊)"
 
                 #στατιστικά για διασωληνωμένους
                 if country_info["critical"] is None:
@@ -490,14 +499,24 @@ async def on_message(message):
                 elif country_info["critical"] == 1:
                     active_stats = "**Ένας** άνθρωπος βρίσκεται σε Μ.Ε.Θ."
                 else:
-                    active_stats = "**Κανένας** σε Μ.Ε.Θ. 😁"
+                    active_stats = "**Κανένας** σε κρίσιμη κατάσταση. 😁"
+
+                #στατιστικά για τεστ
+                if CurrentTotalTests is None or PreviousTotalTests is None or country_info["todayCases"] is None or country_info["todayCases"] == 0:
+                    print(CurrentTotalTests, PreviousTotalTests, country_info["todayCases"])
+                    tests_stats = "Δεν υπάρχουν στοιχεία."
+                else:
+                    TotalTests = CurrentTotalTests - PreviousTotalTests
+                    tests_stats = "Το **" + str(round(country_info["todayCases"]*100/TotalTests, 1)).replace('.', ',') + "%** των τεστ βγήκαν θετικά. (**" + f'{TotalTests:n}' + "** δοκιμές)"
 
                 embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.")
                 embedded_message.set_thumbnail(url=country_info["countryInfo"]["flag"])
 
                 embedded_message.add_field(name="Κρούσματα 🦠",      value=cases_stats, inline=True)
                 embedded_message.add_field(name="Θάνατοι ☠"   ,      value=death_stats, inline=True)
+
                 embedded_message.add_field(name="Διασωληνωμένοι 🏥", value=active_stats, inline=False)
+                embedded_message.add_field(name="Τεστ 🔄",           value=tests_stats, inline=True)
 
                 embedded_message.set_footer(text="Στοιχεία από https://corona.lmao.ninja/")
 
