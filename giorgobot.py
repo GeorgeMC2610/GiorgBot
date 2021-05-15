@@ -275,8 +275,8 @@ async def on_message(message):
                 times = int(message_content_by_space[1])
 
                 #δεν πρέπει να 'ναι παραπάνω από πενήντα τα μηνύματα που θα σβησθούν.
-                if times == 69420:
-                    await message.channel.send("Ναι ναι ναι, ΧΑ-ΧΑ. Μαλάκα, ε μαλάκα.")
+                if times == 69420 or times == 42069:
+                    await message.channel.send("Ναι ναι ναι, ΧΑ-ΧΑ. **Μαλάκα**, ε μαλάκα.")
                     return
                 elif times > 50:
                     await message.channel.send("Τι λέτε, κύριε; ΜΑΞ ΠΕΝΗΝΤΑ MHNYMATA. ΚΑΙ ΠΟΛΛA ΕΙΝΑΙ ΜΗ ΣΟΥ ΠΩ.")
