@@ -471,11 +471,11 @@ async def on_message(message):
                 if country_info["todayCases"] is None:
                     cases_stats = ("Δεν υπάρχουν στοιχεία.")
                 elif country_info["todayCases"] > 1:
-                    cases_stats = ("**" + f'{country_info["todayCases"]:n}' + "** νοσώντες.")
+                    cases_stats = ("**" + f'{country_info["todayCases"]:n}' + "** νοσούντες.")
                 elif country_info["todayCases"] == 1:
                     cases_stats = ("Μονάχα **ένα κρούσμα**.")
                 else:
-                    cases_stats = ("**Κανένα** κρούσμα! 😄.")
+                    cases_stats = ("**Κανένα** κρούσμα! 😄")
 
                 cases_stats += " (**" + f'{country_info["cases"]:n}' + "** συνολικά)" if country_info["cases"] > 1 else " (**Ένα** κρούσμα συνολικά)" if country_info["cases"] == 1 else " (**Κανένα** κρούσμα συνολικά ‼)"
                 
@@ -487,7 +487,7 @@ async def on_message(message):
                 elif country_info["todayDeaths"] == 1:
                     death_stats = ("Μονάχα **ένας θάνατος**.")
                 else:
-                    death_stats = ("**Κανένας** θάνατος 🥳.")
+                    death_stats = ("**Κανένας** θάνατος! 🥳")
 
                 death_stats += " (**" + f'{country_info["deaths"]:n}' + "** συνολικά)" if country_info["deaths"] > 1 else " (**Ένας** θάνατος συνολικά)" if country_info["deaths"] == 1 else " (**Κανένας** θάνατος συνολικά 🎊)"
 
@@ -497,9 +497,9 @@ async def on_message(message):
                 elif country_info["critical"] > 1:
                     active_stats = "**" + f'{country_info["critical"]:n}' + "** βρίσκονται σε Μ.Ε.Θ."
                 elif country_info["critical"] == 1:
-                    active_stats = "**Ένας** άνθρωπος βρίσκεται σε Μ.Ε.Θ."
+                    active_stats = "**Ένας** νοσηλεύεται σε Μ.Ε.Θ."
                 else:
-                    active_stats = "**Κανένας** σε κρίσιμη κατάσταση. 😁"
+                    active_stats = "**Κανένας** σε κρίσιμη κατάσταση! 😁"
 
                 #στατιστικά για τεστ
                 TotalTests = CurrentTotalTests - PreviousTotalTests
