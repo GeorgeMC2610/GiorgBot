@@ -326,16 +326,20 @@ async def on_message(message):
         if message.content.startswith(respondable_messages[2]):
             #για να βρούμε ποια πόλη θέλει ο χρήστης, πρώτα χωρίζουμε την εντολή και ύστερα την κάνουμε κεφαλαία, για το API
             city = message.content.split("giorg emvolio ")[1].upper()
-            city = remove_greek_uppercase_accent(city)
+            city = remove_greek_uppercase_accent(city) 
 
-            #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
+                
             date = datetime.date.today()
             kataliksi = 'σήμερα'
             
             #αλλά αν είναι πολύ νωρίς μέσα στην μέρα, βγάζουμε τα χθεσινά αποτελέσματα
-            if datetime.datetime.now().hour < 20:
+            if datetime.datetime.now().hour < 21:
                 date -= datetime.timedelta(days=1)
                 kataliksi = 'χθες'
+
+            if date.weekday() == 6:
+                await message.channel.send(("Χθες ήταν " if datetime.datetime.now().hour < 21 else "Σήμερα είναι ") + "**Κυριακή**, που σημαίνει ότι __δεν γίνονται εμβολιασμοί__.")
+                return
 
             #φτιάχνουμε το request και παίρνουμε τα γεγονότα όπως πρέπει
             url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=' + str(date) + '&date_to=' + str(date)
@@ -345,7 +349,7 @@ async def on_message(message):
             
             #αν για οποιονδήποτε λόγο δεν έχουμε αποτελέσματα, τότε σταματάμε εδώ
             if response == []:
-                await message.channel.send("Δεν έχουν γίνει ακόμη εμβολιασμοί σήμερα.")
+                await message.channel.send("Δεν έχουν γίνει εμβολιασμοί σήμερα.")
                 return
 
             locale.setlocale(locale.LC_ALL, 'el_GR')
@@ -512,11 +516,11 @@ async def on_message(message):
                 embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.")
                 embedded_message.set_thumbnail(url=country_info["countryInfo"]["flag"])
 
-                embedded_message.add_field(name="Κρούσματα 🦠",      value=cases_stats, inline=True)
-                embedded_message.add_field(name="Θάνατοι ☠"   ,      value=death_stats, inline=True)
+                embedded_message.add_field(name="Κρούσματα 🦠",      value=cases_stats,  inline=False)
+                embedded_message.add_field(name="Θάνατοι ☠"   ,      value=death_stats,  inline=False)
 
                 embedded_message.add_field(name="Διασωληνωμένοι 🏥", value=active_stats, inline=False)
-                embedded_message.add_field(name="Τεστ 🧪",           value=tests_stats, inline=True)
+                embedded_message.add_field(name="Τεστ 🧪",           value=tests_stats,  inline=False)
 
                 embedded_message.set_footer(text="Στοιχεία από https://corona.lmao.ninja/")
 
