@@ -522,7 +522,7 @@ async def on_message(message):
                 else:
                     tests_stats = "Το **" + str(round(country_info["todayCases"]*100/TotalTests, 5)).replace('.', ',') + "%** των τεστ βγήκαν θετικά. (**" + f'{TotalTests:n}' + "** δοκιμές)"
 
-                embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.", color="")
+                embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.")
                 embedded_message.set_thumbnail(url=country_info["countryInfo"]["flag"])
 
                 embedded_message.add_field(name="Κρούσματα 🦠",      value=cases_stats,  inline=False)
