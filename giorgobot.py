@@ -378,12 +378,21 @@ async def on_message(message):
                     percentage = str(round(float(grand_dose2_total*100/8658460), 1)) + '%'
                     rythm      = str(round((8658460*0.7 - grand_dose2_total) / grand_today_dose2_total)) + ' μέρες'
 
-                    embedded_message = discord.Embed(title=flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ", description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.")
+                    factor = float(grand_dose2_total/8658460)
+                    r = round(255 - 364*factor)
+                    g = round(255 - factor*64)
+                    b = round(255 - 364*factor)
+
+                    print(r,g,b,factor)
+
+                    color      = discord.embeds.Colour.from_rgb(r, g, b)
+                     
+                    embedded_message = discord.Embed(title=flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ", description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.", color=color)
                     embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
 
                     embedded_message.add_field(name="Δόση 1️⃣", value='Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose1_total:n}' + '** σύνολο)', inline=True)
                     embedded_message.add_field(name="Δόση 2️⃣", value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Αθροιστικά 💉", value='Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί. (**' + f'{grand_total:n}' + '** σύνολο).', inline=True)
+                    embedded_message.add_field(name="Αθροιστικά 💉", value='Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί. (**' + f'{grand_total:n}'       + '** σύνολο)', inline=True)
 
                     embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage.replace('.', ',') + "** του **ενήλικου** πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.", inline=True)
                     embedded_message.add_field(name="Ρυθμός 🕖", value="Με τα δεδομένα " + kataliksi + ", σε **" + rythm + "** θα έχει εμβολιαστεί το 70% του **ενήλικου** πληθυσμού.", inline=True)
@@ -513,7 +522,7 @@ async def on_message(message):
                 else:
                     tests_stats = "Το **" + str(round(country_info["todayCases"]*100/TotalTests, 5)).replace('.', ',') + "%** των τεστ βγήκαν θετικά. (**" + f'{TotalTests:n}' + "** δοκιμές)"
 
-                embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.")
+                embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.", color="")
                 embedded_message.set_thumbnail(url=country_info["countryInfo"]["flag"])
 
                 embedded_message.add_field(name="Κρούσματα 🦠",      value=cases_stats,  inline=False)
