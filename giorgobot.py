@@ -349,7 +349,7 @@ async def on_message(message):
             
             #αν για οποιονδήποτε λόγο δεν έχουμε αποτελέσματα, τότε σταματάμε εδώ
             if response == []:
-                await message.channel.send("Δεν έχουν γίνει εμβολιασμοί σήμερα.")
+                await message.channel.send("Δεν υπάρχουν στοιχεία εμβολιασμών για " + kataliksi + ".")
                 return
 
             locale.setlocale(locale.LC_ALL, 'el_GR')
@@ -385,7 +385,7 @@ async def on_message(message):
 
                     print(r,g,b,factor)
 
-                    color      = discord.embeds.Colour.from_rgb(r, g, b)
+                    color = discord.embeds.Colour.from_rgb(r, g, b)
                      
                     embedded_message = discord.Embed(title=flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ", description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.", color=color)
                     embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
@@ -410,14 +410,24 @@ async def on_message(message):
 
                 #βρίσκουμε την περιοχή με LINQ-οειδές request
                 total_vaccines = [data for data in response if data["area"] == city][0]
+                percentage = str(round(total_vaccines["totaldose2"]*100/total_vaccines["totaldistinctpersons"], 1)) + '%'
+
+                factor = float(total_vaccines["totaldose2"]/total_vaccines["totaldistinctpersons"])
+                r = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
+                g = round(255 - factor*64)
+                b = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
+
+                print(r,g,b,factor)
+                color = discord.embeds.Colour.from_rgb(r, g, b)
 
                 #μαζεύουμε το μήνυμα σε embed
-                embedded_message = discord.Embed(title='📍 ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + city, description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.")
+                embedded_message = discord.Embed(title='📍 ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + city, description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.", color=color)
                 embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
 
                 embedded_message.add_field(name="Δόση 1️⃣", value='Έγιναν **' + f'{total_vaccines["dailydose1"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose1"]:n}' + '** σύνολο)', inline=True)
                 embedded_message.add_field(name="Δόση 2️⃣", value='Έγιναν **' + f'{total_vaccines["dailydose2"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose2"]:n}' + '** σύνολο)', inline=True)
-                embedded_message.add_field(name="Αθροιστικά 💉", value='Έγιναν **' + f'{total_vaccines["daytotal"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totalvaccinations"]:n}' + '** σύνολο).', inline=False)
+                embedded_message.add_field(name="Αθροιστικά 💉", value='Έγιναν **' + f'{total_vaccines["daytotal"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totalvaccinations"]:n}' + '** σύνολο).', inline=True)
+                embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage.replace('.', ',') + "** του **ενήλικου** πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.", inline=True)
 
                 embedded_message.set_footer(text="Δεδομένα από το https://emvolio.gov.gr/")
 
@@ -522,7 +532,15 @@ async def on_message(message):
                 else:
                     tests_stats = "Το **" + str(round(country_info["todayCases"]*100/TotalTests, 5)).replace('.', ',') + "%** των τεστ βγήκαν θετικά. (**" + f'{TotalTests:n}' + "** δοκιμές)"
 
-                embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.")
+                factor = float(country_info["critical"]/country_info["todayCases"]) if country_info["todayCases"] != 0 else 0
+                r = round(254 - factor*16)
+                g = round(255 - 254*factor)
+                b = round(255 - 254*factor)
+
+                print(r, g, b, factor)
+                color = discord.embeds.Colour.from_rgb(r, g, b)
+
+                embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.", color=color)
                 embedded_message.set_thumbnail(url=country_info["countryInfo"]["flag"])
 
                 embedded_message.add_field(name="Κρούσματα 🦠",      value=cases_stats,  inline=False)
