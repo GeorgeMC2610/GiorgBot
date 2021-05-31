@@ -532,10 +532,10 @@ async def on_message(message):
                 else:
                     tests_stats = "Το **" + str(round(country_info["todayCases"]*100/TotalTests, 5)).replace('.', ',') + "%** των τεστ βγήκαν θετικά. (**" + f'{TotalTests:n}' + "** δοκιμές)"
 
-                factor = float(country_info["critical"]/country_info["todayCases"]) if country_info["todayCases"] != 0 else 0
-                r = round(254 - factor*16)
-                g = round(255 - 254*factor)
-                b = round(255 - 254*factor)
+                factor = float(country_info["active"]/country_info["casesPerOneMillion"]) if country_info["casesPerOneMillion"] != 0 else 0
+                r = round(254 - factor*2) if factor*2 < 130 else 125
+                g = round(255 - 254*factor) if factor < 1 else 0
+                b = round(255 - 254*factor) if factor < 1 else 0
 
                 print(r, g, b, factor)
                 color = discord.embeds.Colour.from_rgb(r, g, b)
