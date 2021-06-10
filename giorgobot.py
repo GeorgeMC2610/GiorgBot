@@ -423,7 +423,7 @@ async def on_message(message):
                     embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
 
                     embedded_message.add_field(name="Τουλάχιστον 1️⃣ Δόση", value='Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose1_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Ολοκληρωμένοι",        value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Ολοκληρωμένοι ☑",     value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
                     embedded_message.add_field(name="Αθροιστικά 💉",       value='Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί. (**' + f'{grand_total:n}'       + '** σύνολο)', inline=True)
 
                     embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage.replace('.', ',') + "** του **ενήλικου** πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.", inline=True)
