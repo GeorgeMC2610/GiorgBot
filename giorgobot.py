@@ -5,6 +5,7 @@ import requests
 import json
 import locale
 import flag
+from dateutil.parser import parse
 
 #Εφ' όσον το repository θέλουμε να 'ναι public, πρέπει να αποθηκεύσουμε το token σε ένα ξεχωριστό αρχείο, το οποίο δεν θα συμπεριληφθεί στο repository.
 f = open('token.txt', 'r')
@@ -326,16 +327,46 @@ async def on_message(message):
         if message.content.startswith(respondable_messages[2]):
             #για να βρούμε ποια πόλη θέλει ο χρήστης, πρώτα χωρίζουμε την εντολή και ύστερα την κάνουμε κεφαλαία, για το API
             city = message.content.split("giorg emvolio ")[1].upper()
+            splitted = city.split("_")
+            city = splitted[0]
             city = remove_greek_uppercase_accent(city) 
+            print(city)
 
+            date_to_show = splitted[1] if len(city) > 0 else ''
+            print(date_to_show)
+            if date_to_show == '':
+                #βάζουμε default σήμερα
+                date = datetime.date.today()
+                kataliksi = 'σήμερα'
                 
-            date = datetime.date.today()
-            kataliksi = 'σήμερα'
-            
-            #αλλά αν είναι πολύ νωρίς μέσα στην μέρα, βγάζουμε τα χθεσινά αποτελέσματα
-            if datetime.datetime.now().hour < 21:
+                #αλλά αν είναι πολύ νωρίς μέσα στην μέρα, βγάζουμε τα χθεσινά αποτελέσματα
+                if datetime.datetime.now().hour < 21:
+                    date -= datetime.timedelta(days=1)
+                    kataliksi = 'χθες'
+
+            elif date_to_show == 'ΣΉΜΕΡΑ':
+                date = datetime.date.today()
+                kataliksi = 'σήμερα'
+
+            elif date_to_show == 'ΧΘΕΣ':
+                date = datetime.date.today()
                 date -= datetime.timedelta(days=1)
                 kataliksi = 'χθες'
+
+            elif date_to_show == 'ΠΡΟΧΘΈΣ':
+                date = datetime.date.today()
+                date -= datetime.timedelta(days=2)
+                kataliksi = 'προχθές'
+            
+            else:
+                try:
+                    date = parse(date_to_show)
+                    date = date.date()
+                    kataliksi = 'την ' + str(date)
+                except Exception as e:
+                    await message.channel.send("Θα πρέπει να στείλεις μία (σωστή) ημερομηνία.")
+                    print(e.args)
+                    return
 
             if date.weekday() == 6:
                 await message.channel.send(("Χθες ήταν " if datetime.datetime.now().hour < 21 else "Σήμερα είναι ") + "**Κυριακή**, που σημαίνει ότι __δεν γίνονται εμβολιασμοί__.")
@@ -376,7 +407,7 @@ async def on_message(message):
                         grand_today_dose2_total += data["dailydose2"]
 
                     percentage = str(round(float(grand_dose2_total*100/8658460), 1)) + '%'
-                    days_left  = round((8658460*0.7 - grand_dose2_total) / grand_today_dose2_total)
+                    days_left  = round((8658460*0.7 - grand_dose2_total) / (grand_today_dose2_total if grand_dose2_total != 0 else 1))
                     rythm      = ((str(days_left // 30) + ' μήνες' if days_left // 30 != 1 else 'έναν μήνα') if days_left // 30 > 0 else '') + (' και ' if days_left - 30*(days_left // 30) > 0 and days_left // 30 > 0 else '') + ((str(days_left - 30*(days_left // 30)) + ' ημέρες' if days_left - 30*(days_left // 30) != 1 else 'μία ημέρα') if days_left - 30*(days_left // 30) > 0 else '')
 
                     factor = float(grand_dose2_total/8658460)
@@ -391,9 +422,9 @@ async def on_message(message):
                     embedded_message = discord.Embed(title=flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ", description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.", color=color)
                     embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
 
-                    embedded_message.add_field(name="Δόση 1️⃣", value='Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose1_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Δόση 2️⃣", value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Αθροιστικά 💉", value='Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί. (**' + f'{grand_total:n}'       + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Τουλάχιστον 1️⃣ Δόση", value='Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose1_total:n}' + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Ολοκληρωμένοι",        value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Αθροιστικά 💉",       value='Έγιναν **' + f'{grand_today_total:n}' + '** εμβολιασμοί. (**' + f'{grand_total:n}'       + '** σύνολο)', inline=True)
 
                     embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage.replace('.', ',') + "** του **ενήλικου** πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.", inline=True)
                     embedded_message.add_field(name="Ρυθμός 🕖", value="Με τα δεδομένα " + kataliksi + ", σε **" + rythm + "** θα έχει εμβολιαστεί το 70% του **ενήλικου** πληθυσμού.", inline=True)
@@ -411,9 +442,9 @@ async def on_message(message):
 
                 #βρίσκουμε την περιοχή με LINQ-οειδές request
                 total_vaccines = [data for data in response if data["area"] == city][0]
-                percentage = str(round(total_vaccines["totaldose2"]*100/total_vaccines["totaldistinctpersons"], 1)) + '%'
+                percentage = str(round(total_vaccines["totaldose2"]*100/(total_vaccines["totaldistinctpersons"] if total_vaccines["totaldistinctpersons"] != 0 else 0), 1)) + '%'
 
-                factor = float(total_vaccines["totaldose2"]/total_vaccines["totaldistinctpersons"])
+                factor = float(total_vaccines["totaldose2"]/total_vaccines["totaldistinctpersons"]) if total_vaccines["totaldistinctpersons"] != 0 else 0
                 r = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
                 g = round(255 - factor*64) if factor < 0.7 else round(180 - factor*64)
                 b = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
