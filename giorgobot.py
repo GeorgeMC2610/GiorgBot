@@ -331,7 +331,7 @@ async def on_message(message):
             city = splitted[0]
             city = remove_greek_uppercase_accent(city) 
 
-            date_to_show = splitted[1] if len(splitted) > 1 else ''
+            date_to_show = remove_greek_uppercase_accent(splitted[1]) if len(splitted) > 1 else ''
             if date_to_show == '':
                 #βάζουμε default σήμερα
                 date = datetime.date.today()
@@ -342,7 +342,7 @@ async def on_message(message):
                     date -= datetime.timedelta(days=1)
                     kataliksi = 'χθες'
 
-            elif date_to_show == 'ΣΉΜΕΡΑ':
+            elif date_to_show == 'ΣΗΜΕΡΑ':
                 date = datetime.date.today()
                 kataliksi = 'σήμερα'
 
@@ -351,7 +351,7 @@ async def on_message(message):
                 date -= datetime.timedelta(days=1)
                 kataliksi = 'χθες'
 
-            elif date_to_show == 'ΠΡΟΧΘΈΣ':
+            elif date_to_show == 'ΠΡΟΧΘΕΣ':
                 date = datetime.date.today()
                 date -= datetime.timedelta(days=2)
                 kataliksi = 'προχθές'
