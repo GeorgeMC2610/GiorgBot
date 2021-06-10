@@ -414,7 +414,7 @@ async def on_message(message):
 
                 factor = float(total_vaccines["totaldose2"]/total_vaccines["totaldistinctpersons"])
                 r = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
-                g = round(255 - factor*64) if factor < 0.75 else round(180 - factor*64)
+                g = round(255 - factor*64) if factor < 0.7 else round(180 - factor*64)
                 b = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
 
                 print(r,g,b,factor)
