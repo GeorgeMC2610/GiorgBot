@@ -330,10 +330,8 @@ async def on_message(message):
             splitted = city.split("_")
             city = splitted[0]
             city = remove_greek_uppercase_accent(city) 
-            print(city)
 
-            date_to_show = splitted[1] if len(city) > 0 else ''
-            print(date_to_show)
+            date_to_show = splitted[1] if len(splitted) > 1 else ''
             if date_to_show == '':
                 #βάζουμε default σήμερα
                 date = datetime.date.today()
