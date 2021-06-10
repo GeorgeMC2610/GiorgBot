@@ -376,7 +376,8 @@ async def on_message(message):
                         grand_today_dose2_total += data["dailydose2"]
 
                     percentage = str(round(float(grand_dose2_total*100/8658460), 1)) + '%'
-                    rythm      = str(round((8658460*0.7 - grand_dose2_total) / grand_today_dose2_total)) + ' μέρες'
+                    days_left  = round((8658460*0.7 - grand_dose2_total) / grand_today_dose2_total)
+                    rythm      = ((str(days_left // 30) + ' μήνες' if days_left // 30 != 1 else 'έναν μήνα') if days_left // 30 > 0 else '') + (' και ' if days_left - 30*(days_left // 30) > 0 and days_left // 30 > 0 else '') + ((str(days_left - 30*(days_left // 30)) + ' ημέρες' if days_left - 30*(days_left // 30) != 1 else 'μία ημέρα') if days_left - 30*(days_left // 30) > 0 else '')
 
                     factor = float(grand_dose2_total/8658460)
                     r = round(255 - 364*factor)
