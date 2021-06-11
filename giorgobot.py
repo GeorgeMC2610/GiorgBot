@@ -366,16 +366,16 @@ async def on_message(message):
                     print(e.args)
                     return
 
-            if date.weekday() == 6:
-                await message.channel.send(("Χθες ήταν " if datetime.datetime.now().hour < 21 else "Σήμερα είναι ") + "**Κυριακή**, που σημαίνει ότι __δεν γίνονται εμβολιασμοί__.")
-                return
-
             #φτιάχνουμε το request και παίρνουμε τα γεγονότα όπως πρέπει
             url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=' + str(date) + '&date_to=' + str(date)
             headers = {'Authorization':'Token ' + emvolioapi}
             response = requests.get(url, headers=headers)
             response = response.json()
             
+            if date.weekday() == 6 and response == []:
+                await message.channel.send(kataliksi.capitalize() + (" ήταν " if kataliksi != 'σήμερα' else " είναι ") + "**Κυριακή**, που σημαίνει ότι __δεν γίνονται εμβολιασμοί__.")
+                return
+
             #αν για οποιονδήποτε λόγο δεν έχουμε αποτελέσματα, τότε σταματάμε εδώ
             if response == []:
                 await message.channel.send("Δεν υπάρχουν στοιχεία εμβολιασμών για " + kataliksi + ".")
@@ -454,8 +454,8 @@ async def on_message(message):
                 embedded_message = discord.Embed(title='📍 ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + city, description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.", color=color)
                 embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
 
-                embedded_message.add_field(name="Δόση 1️⃣", value='Έγιναν **' + f'{total_vaccines["dailydose1"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose1"]:n}' + '** σύνολο)', inline=True)
-                embedded_message.add_field(name="Δόση 2️⃣", value='Έγιναν **' + f'{total_vaccines["dailydose2"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose2"]:n}' + '** σύνολο)', inline=True)
+                embedded_message.add_field(name="Τουλάχιστον 1️⃣ Δόση", value='Έγιναν **' + f'{total_vaccines["dailydose1"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose1"]:n}' + '** σύνολο)', inline=True)
+                embedded_message.add_field(name="Ολοκληρωμένοι ☑", value='Έγιναν **' + f'{total_vaccines["dailydose2"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose2"]:n}' + '** σύνολο)', inline=True)
                 embedded_message.add_field(name="Αθροιστικά 💉", value='Έγιναν **' + f'{total_vaccines["daytotal"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totalvaccinations"]:n}' + '** σύνολο).', inline=True)
                 embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage.replace('.', ',') + "** του **ενήλικου** πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.", inline=True)
 
