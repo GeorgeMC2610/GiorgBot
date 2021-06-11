@@ -440,7 +440,7 @@ async def on_message(message):
 
                 #βρίσκουμε την περιοχή με LINQ-οειδές request
                 total_vaccines = [data for data in response if data["area"] == city][0]
-                percentage = str(round(total_vaccines["totaldose2"]*100/(total_vaccines["totaldistinctpersons"] if total_vaccines["totaldistinctpersons"] != 0 else 0), 1)) + '%'
+                percentage = str(round(total_vaccines["totaldose2"]*100/(total_vaccines["totaldistinctpersons"] if total_vaccines["totaldistinctpersons"] != 0 else 1), 1)) + '%'
 
                 factor = float(total_vaccines["totaldose2"]/total_vaccines["totaldistinctpersons"]) if total_vaccines["totaldistinctpersons"] != 0 else 0
                 r = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
