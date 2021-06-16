@@ -1,6 +1,7 @@
 import discord
 import random
 import datetime
+from discord.flags import Intents
 import requests
 import json
 import locale
@@ -16,7 +17,9 @@ f = open('emvolioapi.txt', 'r')
 emvolioapi = f.read()
 f.close()
 
-client = discord.Client()
+intents = discord.Intents.default()
+intents.members = True
+client = discord.Client(intents=intents)
 
 #μηνύματα για την προβολή του !help
 help_dialog1 = '**ΔΙΚΕΣ ΜΟΥ ΕΝΤΟΛΕΣ:**'
