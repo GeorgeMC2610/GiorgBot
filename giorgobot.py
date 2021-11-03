@@ -428,10 +428,10 @@ async def on_message(message):
                     embedded_message = discord.Embed(title=flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ", description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.", color=color)
                     embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
 
-                    embedded_message.add_field(name="Δόση 1️⃣",     value='Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose1_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Δόση 2️⃣",     value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Δόση 3️⃣",     value='Έγιναν **' + f'{grand_today_dose3_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose3_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Αθροιστικά ",  value='Έγιναν **' + f'{grand_today_total:n}' +       '** εμβολιασμοί. (**' + f'{grand_total:n}'       + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Δόση 1️⃣",        value='Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose1_total:n}' + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Δόση 2️⃣",        value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Δόση 3️⃣",        value='Έγιναν **' + f'{grand_today_dose3_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose3_total:n}' + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Αθροιστικά 💉",  value='Έγιναν **' + f'{grand_today_total:n}' +       '** εμβολιασμοί. (**' + f'{grand_total:n}'       + '** σύνολο)', inline=True)
 
                     embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage.replace('.', ',') + "** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.", inline=True)
                     embedded_message.add_field(name="Ρυθμός 🕖", value=(("Με τα δεδομένα " + kataliksi + ", σε **" + rythm + "** θα έχει εμβολιαστεί το 70% του πληθυσμού.") if days_left > 1 else "Έχει εμβολιαστεί __πλήρως__ το **70% του πληθυσμού!** 🎉"), inline=True)
