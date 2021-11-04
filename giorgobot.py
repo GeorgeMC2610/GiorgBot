@@ -412,7 +412,8 @@ async def on_message(message):
                         grand_today_dose2_total += data["dailydose2"]
                         grand_today_dose3_total += data["dailydose3"]
 
-                    percentage = str(round(float(grand_dose3_total*100/10720000), 1)) + '%'
+                    percentage_done       = str(round(float(grand_dose2_total*100/10720000), 1)) + '%'
+                    percentage_additional = str(round(float(grand_dose3_total*100/10720000), 1)) + '%'
                     days_left  = round((10720000*0.7 - grand_dose3_total) / (grand_today_dose3_total if grand_dose3_total != 0 else 1))
                     rythm      = ((str(days_left // 30) + ' μήνες' if days_left // 30 != 1 else 'έναν μήνα') if days_left // 30 > 0 else '') + (' και ' if days_left - 30*(days_left // 30) > 0 and days_left // 30 > 0 else '') + ((str(days_left - 30*(days_left // 30)) + ' ημέρες' if days_left - 30*(days_left // 30) != 1 else 'μία ημέρα') if days_left - 30*(days_left // 30) > 0 else 'Σε λιγότερο από μία μέρα.')
 
@@ -428,12 +429,12 @@ async def on_message(message):
                     embedded_message = discord.Embed(title=flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ", description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.", color=color)
                     embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
 
-                    embedded_message.add_field(name="Δόση 1️⃣",        value='Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose1_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Δόση 2️⃣",        value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Δόση 3️⃣",        value='Έγιναν **' + f'{grand_today_dose3_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose3_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Αθροιστικά 💉",  value='Έγιναν **' + f'{grand_today_total:n}' +       '** εμβολιασμοί. (**' + f'{grand_total:n}'       + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Τουλάχιστον 1️⃣ Δόση", value='Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose1_total:n}' + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Ολοκληρωμένοι ☑",     value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Ενισχυτικοί ⏫",      value='Έγιναν **' + f'{grand_today_dose3_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose3_total:n}' + '** σύνολο)', inline=True)
+                    embedded_message.add_field(name="Αθροιστικά 💉",       value='Έγιναν **' + f'{grand_today_total:n}' +       '** εμβολιασμοί. (**' + f'{grand_total:n}'       + '** σύνολο)', inline=True)
 
-                    embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage.replace('.', ',') + "** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.", inline=True)
+                    embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage_done.replace('.', ',') + "** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό και το **" + percentage_additional.replace('.', ',') + "** έχει λάβει την __επιπρόσθετη δόση__.", inline=True)
                     embedded_message.add_field(name="Ρυθμός 🕖", value=(("Με τα δεδομένα " + kataliksi + ", σε **" + rythm + "** θα έχει εμβολιαστεί το 70% του πληθυσμού.") if days_left > 1 else "Έχει εμβολιαστεί __πλήρως__ το **70% του πληθυσμού!** 🎉"), inline=True)
 
                     embedded_message.set_footer(text="Δεδομένα από το https://emvolio.gov.gr/")
@@ -449,7 +450,8 @@ async def on_message(message):
 
                 #βρίσκουμε την περιοχή με LINQ-οειδές request
                 total_vaccines = [data for data in response if data["area"] == city][0]
-                percentage = str(round(total_vaccines["totaldose3"]*100/(total_vaccines["totaldistinctpersons"] if total_vaccines["totaldistinctpersons"] != 0 else 1), 1)) + '%'
+                percentage_done       = str(round(total_vaccines["totaldose2"]*100/(total_vaccines["totaldistinctpersons"] if total_vaccines["totaldistinctpersons"] != 0 else 1), 1)) + '%'
+                percentage_additional = str(round(total_vaccines["totaldose3"]*100/(total_vaccines["totaldistinctpersons"] if total_vaccines["totaldistinctpersons"] != 0 else 1), 1)) + '%'
 
                 factor = float(total_vaccines["totaldose3"]/total_vaccines["totaldistinctpersons"]) if total_vaccines["totaldistinctpersons"] != 0 else 0
                 r = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
@@ -463,11 +465,11 @@ async def on_message(message):
                 embedded_message = discord.Embed(title='📍 ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + city, description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.", color=color)
                 embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
 
-                embedded_message.add_field(name="Δόση 1️⃣", value='Έγιναν **' + f'{total_vaccines["dailydose1"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose1"]:n}' + '** σύνολο)', inline=True)
-                embedded_message.add_field(name="Δόση 2️⃣", value='Έγιναν **' + f'{total_vaccines["dailydose2"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose2"]:n}' + '** σύνολο)', inline=True)
-                embedded_message.add_field(name="Δόση 3️⃣", value='Έγιναν **' + f'{total_vaccines["dailydose3"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose3"]:n}' + '** σύνολο)', inline=True)
+                embedded_message.add_field(name="Τουλάχιστον 1️⃣ Δόση", value='Έγιναν **' + f'{total_vaccines["dailydose1"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose1"]:n}' + '** σύνολο)', inline=True)
+                embedded_message.add_field(name="Ολοκληρωμένοι ☑", value='Έγιναν **' + f'{total_vaccines["dailydose2"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose2"]:n}' + '** σύνολο)', inline=True)
+                embedded_message.add_field(name="Ενισχυτικοί ⏫", value='Έγιναν **' + f'{total_vaccines["dailydose3"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose3"]:n}' + '** σύνολο)', inline=True)
                 embedded_message.add_field(name="Αθροιστικά 💉", value='Έγιναν **' + f'{total_vaccines["daytotal"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totalvaccinations"]:n}' + '** σύνολο).', inline=True)
-                embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage.replace('.', ',') + "** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό.", inline=True)
+                embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage_additional.replace('.', ',') + "** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό και το **" + percentage_done.replace('.', ',') + "** έχει λάβει την __επιπρόσθετη δόση__.", inline=True)
 
                 embedded_message.set_footer(text="Δεδομένα από το https://emvolio.gov.gr/")
 
