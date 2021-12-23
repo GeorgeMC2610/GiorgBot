@@ -1,2 +1,2 @@
-py giorgobot.py
+python giorgobot.py
 pause

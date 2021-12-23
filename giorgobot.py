@@ -80,7 +80,7 @@ pm_denying = [pm_deny1, pm_deny2, pm_deny3]
 
 
 respondable_messages = ["giorg ping", "giorg help", "giorg emvolio", "giorg corona", "-", "!", "r6s"]
-admin_commands       = ["giorg display members", "giorg prune", "giorg announcegeniki", "giorg announcebot", "giorg announce"]
+admin_commands       = ["giorg display members", "giorg prune", "giorg announcegeniki", "giorg announcebot", "giorg announce", "giorg secret santa"]
 
 
 def channel_log(message):
@@ -297,6 +297,38 @@ async def on_message(message):
             except:
                 await message.channel.send("Ε, καλά, είσαι και πολύ **μαλάκας**. ΑΡΙΘΜΟ ΔΩΣΕ, ΡΕ ΠΟΥΣΤΑΡΕ. \n\n**σωστός χειρισμός:** `!prune <αριθμός μηνυμάτων (από 1-50) για σβήσιμο>`")
                 return
+        
+        elif message.content == "giorg secret santa":
+            print("got here")
+            member_1 = await server.fetch_member(155441474861924355)           
+            member_2 = await server.fetch_member(206905752613421056)
+            member_3 = await server.fetch_member(250721113729007617)
+            member_4 = await server.fetch_member(250973577761783808)
+            member_5 = await server.fetch_member(371263663748939779)
+            member_6 = await server.fetch_member(476839396293738506)
+            member_7 = await server.fetch_member(665585845167718426)
+            member_8 = await server.fetch_member(292684549119541249)
+            
+            members = [member_1, member_2, member_3, member_4, member_5, member_6, member_7, member_8]
+
+            secret_santas = members.copy()
+
+            i = 0
+            while (i < len(members)):
+                if members[i] == secret_santas[i]:
+                    random.shuffle(secret_santas)
+                    i = 0
+                else:
+                    i += 1
+
+            for i in range(0, len(members)):
+                try:
+                    user_msg_to_send = "Είσαι ο secret santa του " + secret_santas[i].name + "."
+                    await members[i].send(user_msg_to_send)
+                except Exception as e:
+                    print("unable to send message to user", members[i], "Exception:", e)
+
+            return
                 
     #Εκτέλεση εντολών κοινής χρήσης
     if [i for i in respondable_messages if message.content.startswith(i)] != []:
