@@ -191,467 +191,66 @@ async def announce(message, sender):
             await channel.send(payload["message"])
             await sender.send('**ΝΑΙ, ΑΛΛΑ ΟΧΙ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "channel":"akrives-onoma-kanaliou"}```')
 
+async def parse(command):
+
+    if not command.startswith("giorg "):
+        return
+
+    command = command[6:]
+
+    command_dict = {
+        'display_members' : None,
+        'secret_santa'    : None,
+        'ping'            : None,
+        'help'            : None,
+        'announce_bot'    : None,
+        'announce_geniki' : None,
+        'announce'        : [str],
+        'prune'           : [int],
+        'corona'          : [str, datetime],
+        'emvolio'         : [str, datetime]
+    }
+    
+    #check if command exists.
+    command_call = [i for i in command_dict if command.startswith(i)]
+    if len(command_call) == 0:
+        print("Command doesn't exist.")
+        return
+    
+    #if it exists take it.
+    command_call = command_call.pop()
+    
+    #see if it has arguments
+    if command_dict[command_call] is None:
+        print("Command has no arguments. Calling command...")
+        return
+
+    #and if it does have arguments, see if it is the right length 
+    parameters = command.split(" ")[1:]
+    if len(parameters) < 1:
+        print("wrong arguements.")
+    return
+
 @client.event
 async def on_ready():
     print('Bot online.')
 
 @client.event
 async def on_message(message):
+
     #log του μηνύματος.
     channel_log(str(message.author) + " in " + str(message.channel) + " says: " + message.content)
 
     if message.author == client.user:
         return
+
+    #εκτελούμε το command που μπορεί να έχει το μήνυμα.
+    await parse(message)
+
     
-    server = await client.fetch_guild(322050982747963392)
-
-    #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα. Επίσης σιγουρευόμαστε ότι το bot δεν θα απαντάει ποτέ στον εαυτό του.
-    if message.channel.type == discord.ChannelType.private:
-        if (str(message.author) != "GeorgeMC2610#8036" and str(message.author) != "Sotiris168#5790") and ([i for i in admin_commands if message.content.startswith(i)] != []):
-            GeorgeMC2610 = await client.fetch_user(250721113729007617)
-            await message.author.send(random.choice(pm_denying))
-            await GeorgeMC2610.send("Ο γνωστός άγνωστος " + message.author.name + " προσπάθησε ΝΑ ΜΕ ΚΑΝΕΙ ΝΑ ΚΑΝΩ ΚΑΤΙ ΠΟΥ ΔΕΝ ΠΡΕΠΕΙ.")
-            return
-        
-        if message.content.startswith("!send "):
-            await private_msg(message.content, message.author)
-            return
-        
-        elif message.content.startswith(admin_commands[2]):
-            try:
-                geniki_sizitisi = await client.fetch_channel(518905389811630087)
-                await geniki_sizitisi.send(message.content.split("!announcegeniki ")[1])
-                await message.author.send("Όλα οκ, μαν. Το 'στειλα στην **γενική συζήτηση**.")
-            except Exception as ex:
-                await message.author.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
-            return
-        
-        elif message.content.startswith(admin_commands[3]):
-            try:
-                bot_requests = await client.fetch_channel(518904659461668868)
-                await bot_requests.send(message.content.split("!announcebot ")[1])
-                await message.author.send("Όλα οκ, μαν. Το 'στειλα στα **bot requests**.")
-            except Exception as ex:
-                await message.author.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)
-            return
-
-        elif message.content.startswith(admin_commands[4]):
-            await announce(message.content, message.author)
-            return
-
-        return 
-
-    #Μετατρέπουμε κάθε μήνυμα σε πεζά γράμματα.
-    message.content = message.content.lower()
-
-    #Εκτέλεση εντολών διαχειριστών
-    if [i for i in admin_commands if message.content.startswith(i)] != []:
-        #Ελέγχουμε αν όντως ο διαχειριστής εκτελεί εντολές.
-        if identify_member_position(message.author) < 4:
-            msg_to_send = "Καλή προσπάθεια, " + message.author.mention + "! Αυτή είναι εντολή διαχειριστή. Θα 'ταν κρίμα αν το μάθαιναν οι <@&488730147894198273>, <@&821739015970619393>..."
-            await message.channel.send(msg_to_send)
-            return
-
-        if message.content == admin_commands[0]:
-            #και όλοι οι συμμετέχοντες
-            all_members      = await server.fetch_members().flatten()
-            all_member_names = [i.name for i in all_members]
-
-            #κάνουμε και καταμέτρηση των bot
-            bots             = [i for i in all_members if identify_member_position(i) == 3]
-
-            #στείλε το μήνυμα με όλα τα ονόματα στη λίστα
-            all_member_names.sort()
-            await message.channel.send("```python\n" + str(all_member_names) + "``` **\n" + str(len(all_member_names)) + " συνολικά μέλη** στον server, όπου τα **" + str(len(bots)) + " είναι bots.**")
-            return
-
-        elif message.content.startswith(admin_commands[1]):
-            #χωρίζουμε το μήνυμα ανά κενό, ώστε να πάρουμε τις φορές που πρέπει να σβήσουμε το μήνυμα.
-            message_content_by_space = message.content.split("giorg prune ")
-
-            #πρέπει να 'χει ακριβώς ένα όρισμα το prune, αλλιώς δεν θα εκτελσθεί η εντολή.
-            if len(message_content_by_space) != 2:
-                await message.channel.send("ΣΤΕΙΛΕ ΣΩΣΤΑ ΤΗΝ ΕΝΤΟΛΗ, ΡΕ ΒΛΑΚΑ. \n\n**σωστός χειρισμός:** `!prune <αριθμός μηνυμάτων (από 1-50) για σβήσιμο>`")
-                return
-            
-            #ελέγχουμε αν είναι ακέραιος η τιμή που έστειλε
-            try:
-                times = int(message_content_by_space[1])
-
-                #δεν πρέπει να 'ναι παραπάνω από πενήντα τα μηνύματα που θα σβησθούν.
-                if times == 69420 or times == 42069:
-                    await message.channel.send("Ναι ναι ναι, ΧΑ-ΧΑ. **Μαλάκα**, ε μαλάκα.")
-                    return
-                elif times > 50:
-                    await message.channel.send("Τι λέτε, κύριε; ΜΑΞ ΠΕΝΗΝΤΑ MHNYMATA. ΚΑΙ ΠΟΛΛA ΕΙΝΑΙ ΜΗ ΣΟΥ ΠΩ.")
-                    return
-                elif times < 0:
-                    await message.channel.send("Και για πες, ρε βλάκα, ΠΩΣ ΘΑ ΣΒΗΣΩ **ΑΡΝΗΤΙΚΟ** ΑΡΙΘΜΟ ΜΗΝΥΜΑΤΩΝ;")
-                    return
-
-                #αλλιώς, δεν υπάρχει κανένα πρόβλημα και σβήνουμε τα μηνύματα.
-                await message.delete()
-                async for message_to_be_deleted in message.channel.history(limit=times):
-                    await message_to_be_deleted.delete()
-                return
-            except:
-                await message.channel.send("Ε, καλά, είσαι και πολύ **μαλάκας**. ΑΡΙΘΜΟ ΔΩΣΕ, ΡΕ ΠΟΥΣΤΑΡΕ. \n\n**σωστός χειρισμός:** `!prune <αριθμός μηνυμάτων (από 1-50) για σβήσιμο>`")
-                return
-        
-        elif message.content == "giorg secret santa":
-            print("got here")
-            member_1 = await server.fetch_member(155441474861924355)           
-            member_2 = await server.fetch_member(206905752613421056)
-            member_3 = await server.fetch_member(250721113729007617)
-            member_4 = await server.fetch_member(250973577761783808)
-            member_5 = await server.fetch_member(371263663748939779)
-            member_6 = await server.fetch_member(476839396293738506)
-            member_7 = await server.fetch_member(665585845167718426)
-            member_8 = await server.fetch_member(292684549119541249)
-            
-            members = [member_1, member_2, member_3, member_4, member_5, member_6, member_7, member_8]
-
-            secret_santas = members.copy()
-
-            i = 0
-            while (i < len(members)):
-                if members[i] == secret_santas[i]:
-                    random.shuffle(secret_santas)
-                    i = 0
-                else:
-                    i += 1
-
-            for i in range(0, len(members)):
-                try:
-                    user_msg_to_send = "Είσαι ο secret santa του " + secret_santas[i].name + "."
-                    await members[i].send(user_msg_to_send)
-                except Exception as e:
-                    print("unable to send message to user", members[i], "Exception:", e)
-
-            return
-                
-    #Εκτέλεση εντολών κοινής χρήσης
-    if [i for i in respondable_messages if message.content.startswith(i)] != []:
-
-        #αν κάποιος χρήστης έχει στείλει απλά μια πάυλα στην αρχή, τότε δεν χρειάζεται να κάνουμε κάτι
-        if message.content[0] == "-" and message.content[-1] == "-":
-            return
-        
-        #Στην αρχή βλέπουμε αν το μήνυμα που εστάλη είναι στα bot requests. Αν δεν είναι, δεν εκτελείται η εντολή, σβήνεται η εντολή που εστάλη παράλληλα με το μήνυμα της ειδοποίησης με παράταση 5 δευτερολέπτων.
-        if message.channel.id != 518904659461668868:
-            #επιλέγουμε ένα τυχαίο από αυτά
-            random_deny_message = random.choice(denying_messages)
-
-            #σβήνουμε το μήνυμα του χρήστη, και μετά αυτό που στέλενει το bot
-            await message.delete()
-            await message.channel.send(random_deny_message, delete_after=8.0) 
-            return
-        
-        #Εκτέλεση των εντολών
-        #giorg ping
-        if message.content == respondable_messages[0]:
-            await message.channel.send("Pong!")
-            return
-
-        #giorg help
-        if message.content == respondable_messages[1]:
-            await message.channel.send(help_message)
-            return
-
-        #giorg emvolio
-        if message.content.startswith(respondable_messages[2]):
-            #για να βρούμε ποια πόλη θέλει ο χρήστης, πρώτα χωρίζουμε την εντολή και ύστερα την κάνουμε κεφαλαία, για το API
-            city = message.content.split("giorg emvolio ")[1].upper()
-            splitted = city.split("_")
-            city = splitted[0]
-            city = remove_greek_uppercase_accent(city) 
-
-            date_to_show = remove_greek_uppercase_accent(splitted[1]) if len(splitted) > 1 else ''
-            if date_to_show == '':
-                #βάζουμε default σήμερα
-                date = datetime.date.today()
-                kataliksi = 'σήμερα'
-                
-                #αλλά αν είναι πολύ νωρίς μέσα στην μέρα, βγάζουμε τα χθεσινά αποτελέσματα
-                if datetime.datetime.now().hour < 21:
-                    date -= datetime.timedelta(days=1)
-                    kataliksi = 'χθες'
-
-            elif date_to_show == 'ΣΗΜΕΡΑ':
-                date = datetime.date.today()
-                kataliksi = 'σήμερα'
-
-            elif date_to_show == 'ΧΘΕΣ':
-                date = datetime.date.today()
-                date -= datetime.timedelta(days=1)
-                kataliksi = 'χθες'
-
-            elif date_to_show == 'ΠΡΟΧΘΕΣ':
-                date = datetime.date.today()
-                date -= datetime.timedelta(days=2)
-                kataliksi = 'προχθές'
-            
-            else:
-                try:
-                    date = parse(date_to_show)
-                    date = date.date()
-                    kataliksi = 'την ' + str(date)
-                except Exception as e:
-                    await message.channel.send("Θα πρέπει να στείλεις μία (σωστή) ημερομηνία.")
-                    print(e.args)
-                    return
-
-            #φτιάχνουμε το request και παίρνουμε τα γεγονότα όπως πρέπει
-            url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=' + str(date) + '&date_to=' + str(date)
-            headers = {'Authorization':'Token ' + emvolioapi}
-            response = requests.get(url, headers=headers)
-            response = response.json()
-            
-            if date.weekday() == 6 and response == []:
-                await message.channel.send(kataliksi.capitalize() + (" ήταν " if kataliksi != 'σήμερα' else " είναι ") + "**Κυριακή**, που σημαίνει ότι __δεν γίνονται εμβολιασμοί__.")
-                return
-
-            #αν για οποιονδήποτε λόγο δεν έχουμε αποτελέσματα, τότε σταματάμε εδώ
-            if response == []:
-                await message.channel.send("Δεν υπάρχουν στοιχεία εμβολιασμών για " + kataliksi + ".")
-                return
-
-            locale.setlocale(locale.LC_ALL, 'el_GR')
-
-            #αλλιώς προσπαθούμε να βρούμε την περιοχή
-            try:
-                #εκτός αν ο χρήστης μας έχει πει να βρούμε όλες τις περιοχές
-                if city in ["ΣΥΝΟΛΟ", "ΟΛΑ", "ΟΛΟ", "ΟΛΟΙ", "ΕΛΛΑΔΑ", "ΧΩΡΑ", "ΣΥΝΟΛΙΚΑ", "ΠΑΝΤΕΣ"]:
-                    #στην οποία περίπτωση κάνουμε κάτι τέτοιο χειροκίνητα
-                    grand_total = 0
-                    grand_dose1_total = 0
-                    grand_dose2_total = 0
-                    grand_dose3_total = 0
-
-                    grand_today_total = 0
-                    grand_today_dose1_total = 0
-                    grand_today_dose2_total = 0
-                    grand_today_dose3_total = 0
-                    for data in response:
-                        grand_total += data["totalvaccinations"]
-                        grand_dose1_total += data["totaldose1"]
-                        grand_dose2_total += data["totaldose2"]
-                        grand_dose3_total += data["totaldose3"]
-
-
-                        grand_today_total += data["daytotal"]
-                        grand_today_dose1_total += data["dailydose1"]
-                        grand_today_dose2_total += data["dailydose2"]
-                        grand_today_dose3_total += data["dailydose3"]
-
-                    percentage_done       = str(round(float(grand_dose2_total*100/10720000), 1)) + '%'
-                    percentage_additional = str(round(float(grand_dose3_total*100/10720000), 1)) + '%'
-                    days_left  = round((10720000*0.7 - grand_dose3_total) / (grand_today_dose3_total if grand_dose3_total != 0 else 1))
-                    rythm      = ((str(days_left // 30) + ' μήνες' if days_left // 30 != 1 else 'έναν μήνα') if days_left // 30 > 0 else '') + (' και ' if days_left - 30*(days_left // 30) > 0 and days_left // 30 > 0 else '') + ((str(days_left - 30*(days_left // 30)) + ' ημέρες' if days_left - 30*(days_left // 30) != 1 else 'μία ημέρα') if days_left - 30*(days_left // 30) > 0 else 'Σε λιγότερο από μία μέρα.')
-
-                    factor = float(grand_dose3_total/10720000)
-                    r = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
-                    g = round(255 - factor*64) if factor < 0.7 else round(180 - factor*64)
-                    b = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
-
-                    print(r,g,b,factor)
-
-                    color = discord.embeds.Colour.from_rgb(r, g, b)
-                     
-                    embedded_message = discord.Embed(title=flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ", description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.", color=color)
-                    embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
-
-                    embedded_message.add_field(name="Τουλάχιστον 1️⃣ Δόση", value='Έγιναν **' + f'{grand_today_dose1_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose1_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Ολοκληρωμένοι ☑",     value='Έγιναν **' + f'{grand_today_dose2_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose2_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Ενισχυτικοί ⏫",      value='Έγιναν **' + f'{grand_today_dose3_total:n}' + '** εμβολιασμοί. (**' + f'{grand_dose3_total:n}' + '** σύνολο)', inline=True)
-                    embedded_message.add_field(name="Αθροιστικά 💉",       value='Έγιναν **' + f'{grand_today_total:n}' +       '** εμβολιασμοί. (**' + f'{grand_total:n}'       + '** σύνολο)', inline=True)
-
-                    embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage_done.replace('.', ',') + "** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό και το **" + percentage_additional.replace('.', ',') + "** έχει λάβει την __επιπρόσθετη δόση__.", inline=True)
-                    embedded_message.add_field(name="Ρυθμός 🕖", value=(("Με τα δεδομένα " + kataliksi + ", σε **" + rythm + "** θα έχει εμβολιαστεί το 70% του πληθυσμού.") if days_left > 1 else "Έχει εμβολιαστεί __πλήρως__ το **70% του πληθυσμού!** 🎉"), inline=True)
-
-                    embedded_message.set_footer(text="Δεδομένα από το https://emvolio.gov.gr/")
-
-                    await message.channel.send(embed=embedded_message)
-                    return
-
-                elif city in ["ΠΕΡΙΦΕΡΕΙΕΣ", "ΠΕΡΙΦΕΡΕΙΑΚΕΣ ΕΝΟΤΗΤΕΣ", "ΛΙΣΤΑ", "ΕΝΟΤΗΤΕΣ", "ΠΕΡΙΟΧΕΣ"]:
-                    total_cities = [data["area"] for data in response]
-                    await message.channel.send('```py\n ' + str(total_cities) + '```\n ● **' + str(len(total_cities)) + '** συνολικές περιφερειακές ενότητες.')
-
-                    return
-
-                #βρίσκουμε την περιοχή με LINQ-οειδές request
-                total_vaccines = [data for data in response if data["area"] == city][0]
-                percentage_done       = str(round(total_vaccines["totaldose2"]*100/(total_vaccines["totaldistinctpersons"] if total_vaccines["totaldistinctpersons"] != 0 else 1), 1)) + '%'
-                percentage_additional = str(round(total_vaccines["totaldose3"]*100/(total_vaccines["totaldistinctpersons"] if total_vaccines["totaldistinctpersons"] != 0 else 1), 1)) + '%'
-
-                factor = float(total_vaccines["totaldose3"]/total_vaccines["totaldistinctpersons"]) if total_vaccines["totaldistinctpersons"] != 0 else 0
-                r = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
-                g = round(255 - factor*64) if factor < 0.7 else round(180 - factor*64)
-                b = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
-
-                print(r,g,b,factor)
-                color = discord.embeds.Colour.from_rgb(r, g, b)
-
-                #μαζεύουμε το μήνυμα σε embed
-                embedded_message = discord.Embed(title='📍 ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + city, description="Αναλυτικοί εμβολιασμοί **__για " + kataliksi + "__**.", color=color)
-                embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
-
-                embedded_message.add_field(name="Τουλάχιστον 1️⃣ Δόση", value='Έγιναν **' + f'{total_vaccines["dailydose1"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose1"]:n}' + '** σύνολο)', inline=True)
-                embedded_message.add_field(name="Ολοκληρωμένοι ☑", value='Έγιναν **' + f'{total_vaccines["dailydose2"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose2"]:n}' + '** σύνολο)', inline=True)
-                embedded_message.add_field(name="Ενισχυτικοί ⏫", value='Έγιναν **' + f'{total_vaccines["dailydose3"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totaldose3"]:n}' + '** σύνολο)', inline=True)
-                embedded_message.add_field(name="Αθροιστικά 💉", value='Έγιναν **' + f'{total_vaccines["daytotal"]:n}' + '** εμβολιασμοί. (**' + f'{total_vaccines["totalvaccinations"]:n}' + '** σύνολο).', inline=True)
-                embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage_additional.replace('.', ',') + "** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό και το **" + percentage_done.replace('.', ',') + "** έχει λάβει την __επιπρόσθετη δόση__.", inline=True)
-
-                embedded_message.set_footer(text="Δεδομένα από το https://emvolio.gov.gr/")
-
-                #και στέλνουμε το μήνυμα
-                await message.channel.send(embed=embedded_message)
-            except Exception as e:
-                #αλλιώς, λογικά δεν θα υπάρχει αυτή η περιοχή
-                await message.channel.send('Δεν βρήκα αυτήν την περιφερειακή ενότητα. 😫 Δες τις διαθέσιμες περιοχές με την εντολή `giorg emvolio λίστα`.')
-                print(e.args)
-            
-            return
-
-        #giorg corona
-        if message.content.startswith(respondable_messages[3]):
-            country  = message.content.split("giorg corona ")[1]
-
-            #κάνουμε την κατάληξη να 'ναι σήμερα εξ αρχής
-            kataliksi = "σήμερα"
-            yesterday = False
-            
-            #αλλά αν είναι πολύ νωρίς μέσα στην μέρα, βγάζουμε τα χθεσινά αποτελέσματα
-            if datetime.datetime.now().hour < 18:
-                kataliksi = "χθες"
-                yesterday = True
-
-            #φτιάχνουμε το request και παίρνουμε τα γεγονότα όπως πρέπει
-            url = 'https://disease.sh/v3/covid-19/countries?yesterday=' + str(yesterday).lower() + '&twoDaysAgo=false&sort=cases&allowNull=false'
-            response = requests.get(url)
-            response = response.json()
-
-            #αν ο χρήστης θέλει λίστα με όλες τις χώρες, δεν πηγαίνουμε παρακάτω, και απλά του τις προβάλλουμε
-            if country.casefold() in ['List'.casefold(), 'ALL'.casefold(), 'Countries'.casefold()]:
-                countries = [data["country"] for data in response]
-                countries.sort()
-                await message.channel.send('```python\n' + str(countries[:len(countries)//2]) + '```')
-                await message.channel.send('```python\n' + str(countries[len(countries)//2:]) + '```\n ● **' + str(len(countries)) + '** συνολικές διαθέσιμες χώρες-κλειδιά.')
-                return
-
-            try:
-                locale.setlocale(locale.LC_ALL, 'el_GR')
-                country_info = ''
-
-                #ανάλογα με το πόσα γράμματα είχε η χώρα που έβαλε ο χρήστης, ψάχνουμε και την ανάλογη χώρα
-                if len(country) == 2:
-                    country_info = [data for data in response if data["countryInfo"]["iso2"] == country.upper()].pop()
-                elif len(country) == 3:
-                    country_info = [data for data in response if data["countryInfo"]["iso3"] == country.upper()].pop()
-                else:
-                    country_info = [data for data in response if data["country"].casefold() == country.casefold()].pop()
-                
-                #ανακτάμε το εμότζι και το όνομα της χώρας για να το βάλουμε στο συγχωνευμένο μήνυμα
-                country       = country_info["country"]
-
-                CurrentTotalTests = country_info["tests"]
-
-                #ΜΕΤΑ ΑΠΟ ΠΟΛΛΗ ΣΚΕΨΗ (οχι) ο yesterday ύστερα γίνεται το αντίθετο με πριν και το προχθές γίνεται το ίδιο με το yesterday πριν. Δουλεύει, πίστεψέ με.
-                url = 'https://disease.sh/v3/covid-19/countries/' + country_info["countryInfo"]["iso3"] + '?yesterday=' + str((not yesterday)).lower() + '&twoDaysAgo=' + str(yesterday).lower() + '&sort=cases&allowNull=false'
-                response = requests.get(url)
-                PreviousData = response.json()
-                
-                PreviousTotalTests = PreviousData["tests"]
-
-                #στατιστικά για τα κρούσματα
-                if country_info["todayCases"] is None:
-                    cases_stats = ("Δεν υπάρχουν στοιχεία.")
-                elif country_info["todayCases"] > 1:
-                    cases_stats = ("**" + f'{country_info["todayCases"]:n}' + "** νοσούντες.")
-                elif country_info["todayCases"] == 1:
-                    cases_stats = ("Μονάχα **ένα κρούσμα**.")
-                else:
-                    cases_stats = ("**Κανένα** κρούσμα! 😄")
-
-                cases_stats += " (**" + f'{country_info["cases"]:n}' + "** συνολικά)" if country_info["cases"] > 1 else " (**Ένα** κρούσμα συνολικά)" if country_info["cases"] == 1 else " (**Κανένα** κρούσμα συνολικά ‼)"
-                
-                #στατιστικά για τους θανάτους
-                if country_info["todayDeaths"] is None:
-                    death_stats = ("Δεν υπάρχουν στοιχεία.")
-                elif country_info["todayDeaths"] > 1:
-                    death_stats = ("**" + f'{country_info["todayDeaths"]:n}' + "** απώλειες.")
-                elif country_info["todayDeaths"] == 1:
-                    death_stats = ("Μονάχα **ένας θάνατος**.")
-                else:
-                    death_stats = ("**Κανένας** θάνατος! 🥳")
-
-                death_stats += " (**" + f'{country_info["deaths"]:n}' + "** συνολικά)" if country_info["deaths"] > 1 else " (**Ένας** θάνατος συνολικά)" if country_info["deaths"] == 1 else " (**Κανένας** θάνατος συνολικά 🎊)"
-
-                #στατιστικά για διασωληνωμένους
-                if country_info["critical"] is None:
-                    active_stats = "Δεν υπάρχουν στοιχεία."
-                elif country_info["critical"] > 1:
-                    active_stats = "**" + f'{country_info["critical"]:n}' + "** βρίσκονται σε Μ.Ε.Θ."
-                elif country_info["critical"] == 1:
-                    active_stats = "**Ένας** νοσηλεύεται σε Μ.Ε.Θ."
-                else:
-                    active_stats = "**Κανένας** σε κρίσιμη κατάσταση! 😁"
-
-                #στατιστικά για τεστ
-                TotalTests = CurrentTotalTests - PreviousTotalTests
-                if CurrentTotalTests is None or PreviousTotalTests is None or country_info["todayCases"] is None or TotalTests == 0:
-                    print(CurrentTotalTests, PreviousTotalTests, country_info["todayCases"])
-                    tests_stats = "Δεν υπάρχουν στοιχεία."
-                else:
-                    tests_stats = "Το **" + str(round(country_info["todayCases"]*100/TotalTests, 5)).replace('.', ',') + "%** των τεστ βγήκαν θετικά. (**" + f'{TotalTests:n}' + "** δοκιμές)"
-
-                factor = float(country_info["active"]/country_info["casesPerOneMillion"]) if country_info["casesPerOneMillion"] != 0 else 0
-                r = round(254 - factor*2) if factor*2 < 130 else 125
-                g = round(255 - 254*factor) if factor < 1 else 0
-                b = round(255 - 254*factor) if factor < 1 else 0
-
-                print(r, g, b, factor)
-                color = discord.embeds.Colour.from_rgb(r, g, b)
-
-                embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.", color=color)
-                embedded_message.set_thumbnail(url=country_info["countryInfo"]["flag"])
-
-                embedded_message.add_field(name="Κρούσματα 🦠",      value=cases_stats,  inline=False)
-                embedded_message.add_field(name="Θάνατοι ☠"   ,      value=death_stats,  inline=False)
-
-                embedded_message.add_field(name="Διασωληνωμένοι 🏥", value=active_stats, inline=False)
-                embedded_message.add_field(name="Τεστ 🧪",           value=tests_stats,  inline=False)
-
-                embedded_message.set_footer(text="Στοιχεία από https://corona.lmao.ninja/")
-
-                #αποστολή μηνύματος με συγχώνευση των παραπάνω
-                await message.channel.send(embed=embedded_message)
-            except IndexError as e:
-                await message.channel.send('Δεν βρήκα αυτήν την χώρα. 😫 (Η χώρα που ψάχνεις, θα πρέπει να είναι υποχρεωτικά στα Αγγλικά. Π.χ. "GR" ή "GRC" ή "Greece")')
-            except Exception as e:
-                print(e.args)
-                await message.channel.send('Κάτι πήγε λάθος με αυτήν τη χώρα. 🙄 (Δοκίμασε να γράψεις την χώρα με ολόκληρο το όνομά της, π.χ. "Greece")')
-
-            return
-            
-    #Εδώ ελέγχουμε αν έχει σταλεί κάποιο μήνυμα σε library χωρίς φωτογραφία
-    if message.channel.category_id == 749958245203836939 and not message.attachments:
-        random_warning_message = random.choice(warning_messages)
-        await message.delete()
-        await message.channel.send(random_warning_message, delete_after=8.0)
-        return
-
-    #Το bot πλέον απαντάει όταν το κάνει mention κάποιος.
-    if "<@!640605837102022696>" in message.content:
-        random_complaint = random.choice(complaints)
-        await message.channel.send(random_complaint)
-
-    if "nibbaebi" in message.content.lower():
-        await message.delete()
-        await message.author.move_to(None)
-        channel_log("Attempted to disconnect " + message.author.name + " from a voice channel (Nibbaebi.)")
-        await message.channel.send("Give this mothafucka a 27 minute ban for being toxic, I'm French. (Κατουράω το Miliobot)")
+    
+    
+    
         
 #Το μέρος, όπου οι χρήστες παίρνουν ρόλο βάσει των reactions τους.
 @client.event
