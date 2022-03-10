@@ -1,4 +1,5 @@
 from datetime import date
+from commands.admin import Admin
 from commands.common import Common
 from skoil.skoil import Skoil
 
@@ -40,11 +41,11 @@ def parser(command : str, caller):
     if len(common_command_call) != 0:
         
         #take the command
-        command = common_command_call.pop()
+        common_command_call = common_command_call.pop()
 
         #take the command and examine any possible parameters. If there aren't any, then call the command.
-        if common_dict[command] is None:
-            getattr(Common, command)()
+        if common_dict[common_command_call] is None:
+            getattr(Common, common_command_call)()
 
         #if there are parameters, make sure they're right
         else:
@@ -52,8 +53,22 @@ def parser(command : str, caller):
             if len(parameters) < 1:
                 print("wrong arguements.")
                 return
-            
-            getattr
-    
+
+            getattr(Common, common_command_call)(parameters)
+    else:
+
+        #again, take the command
+        admin_command_call = admin_command_call.pop()
+
+        #take the command and examine any possible parameters. If there aren't any, call the command.
+        if admin_dict[admin_command_call] is None:
+            getattr(Admin, admin_command_call)()
+
+        #if there are parameters, make sure they're right
+        else:
+            parameters = command.split(" ")[1:]
+            if len(parameters) < 1:
+                print("wrong arguements.")
+                return
 
 parser(command, "foo")
