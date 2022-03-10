@@ -10,8 +10,8 @@ class Common:
         'emvolio'         : [str, datetime]
     }
 
-    async def ping(ctx):
-        await ctx.channel.send("Pong!")
+    def ping():
+        print("lamayonnaise it works")    
 
     async def help(ctx):
         help_dialog1 = '**ΔΙΚΕΣ ΜΟΥ ΕΝΤΟΛΕΣ:**'
