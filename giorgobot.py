@@ -7,6 +7,9 @@ import json
 import locale
 import flag
 from dateutil.parser import parse
+from commands.admin import Admin
+
+from commands.common import Common
 
 #Εφ' όσον το repository θέλουμε να 'ναι public, πρέπει να αποθηκεύσουμε το token σε ένα ξεχωριστό αρχείο, το οποίο δεν θα συμπεριληφθεί στο repository.
 f = open('token.txt', 'r')
@@ -98,32 +101,6 @@ async def remove_role(member, role):
         await member.remove_roles(role)
         channel_log("Successfully removed role " + role.name + " from member " + member.name)
 
-#η συνάρτηση που αναγνωρίζει την θέση του μέμπερ
-def identify_member_position(member):
-    server = client.get_guild(322050982747963392)
-    
-    metzi_tou_neoukti = server.get_role(488730147894198273)
-    if member.top_role == metzi_tou_neoukti:
-        return 5
-
-    skase = server.get_role(821739015970619393)
-    if member.top_role == skase:
-        return 4
-
-    bots = server.get_role(456219306468966410)
-    if member.top_role == bots:
-        return 3
-
-    pcmci = server.get_role(456219306468966410)
-    if member.top_role == pcmci:
-        return 2
-
-    me_meson = server.get_role(654344275412385793)
-    if member.top_role == me_meson:
-        return 1
-    
-    return 0
-
 async def private_msg(message, sender):
     if '{' in message and message[-1] == '}' and '"target"' in message and '"message"' in message:
         payload = 0
@@ -180,50 +157,75 @@ async def announce(message, sender):
 async def on_ready():
     print('Bot online.')
 
-async def parser(command : str):
+async def parser(command : str, author):
 
+    #in order to call the command, it must have the correct symbol.
     command_symbol = "giorg "
-
     if not command.startswith(command_symbol):
         return
 
     command = command[len(command_symbol):]
 
-    command_dict = {
-        'display_members' : None,
-        'secret_santa'    : None,
+    #commands for common use
+    common_dict = {
         'ping'            : None,
         'help'            : None,
+        'corona'          : [str, datetime],
+        'emvolio'         : [str, datetime]
+    }
+
+    #commands for admins only
+    admin_dict = {
         'announce_bot'    : None,
         'announce_geniki' : None,
         'announce'        : [str],
         'prune'           : [int],
-        'corona'          : [str, datetime],
-        'emvolio'         : [str, datetime]
+        'display_members' : None,
+        'secret_santa'    : None,
     }
     
     #check if command exists.
-    command_call = [i for i in command_dict if command.startswith(i)]
-    if len(command_call) == 0:
-        print("Command doesn't exist.")
-        return
-    
-    #if it exists take it.
-    command_call = command_call.pop()
-    
-    #see if it has arguments
-    if command_dict[command_call] is None:
-        print("Command has no arguments. Calling command...")
-        return
+    common_command_call = [i for i in common_dict if command.startswith(i)]
+    admin_command_call  = [i for i in admin_dict if command.startswith(i)]
 
-    #and if it does have arguments, see if it is the right length 
-    parameters = command.split(" ")[1:]
-    if len(parameters) < 1:
-        print("wrong arguements.")
-        return
+    #if the command is common use
+    if len(common_command_call) != 0:
+        
+        #take the command
+        common_command_call = common_command_call.pop()
 
-    print(command_call)
-    getattr(Common, command_call)()
+        #take the command and examine any possible parameters. If there aren't any, then call the command.
+        if common_dict[common_command_call] is None:
+            await getattr(Common, common_command_call)()
+
+        #if there are parameters, make sure they're right
+        else:
+            parameters = command.split(" ")[1:]
+            if len(parameters) < 1:
+                print("wrong arguements.")
+                return
+
+            await getattr(Common, common_command_call)(parameters)
+    else:
+
+        #again, take the command
+        admin_command_call = admin_command_call.pop()
+
+        #take the command and examine any possible parameters. If there aren't any, call the command.
+        if admin_dict[admin_command_call] is None:
+            await getattr(Admin, admin_command_call)()
+
+        #if there are parameters, make sure they're right
+        else:
+            parameters = command.split(" ")[1:]
+            if len(parameters) < 1:
+                print("wrong arguements.")
+                return
+            
+            await getattr(Admin, admin_command_call)(parameters)
+
+    
+possible_command_symbols = ['!', '/', 'pm!', 'skoil ']
 
 @client.event
 async def on_message(message):
@@ -235,7 +237,7 @@ async def on_message(message):
         return
 
     #εκτελούμε το command που μπορεί να έχει το μήνυμα.
-    if message.content.startswith(command_symbol):
+    await parse(message.content, message.author)
 
     
         

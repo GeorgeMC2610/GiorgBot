@@ -3,6 +3,9 @@ import datetime
 
 class Common:
 
+    #ctx is going to be the message we sent.
+    ctx = None
+
     command_dict = {
         'ping'            : None,
         'help'            : None,
@@ -10,10 +13,10 @@ class Common:
         'emvolio'         : [str, datetime]
     }
 
-    def ping():
-        print("lamayonnaise it works")    
+    async def ping():
+        await Common.ctx.channel.send("Pong!")
 
-    async def help(ctx):
+    async def help():
         help_dialog1 = '**ΔΙΚΕΣ ΜΟΥ ΕΝΤΟΛΕΣ:**'
         help_dialog2 = '`giorg help` → Δείχνει το παρόν μενού.'
         help_dialog3 = '`giorg ping` → Ανταπόκριση του μποτ με "Pong!"'
@@ -30,7 +33,12 @@ class Common:
         help_dialog99 = '`giorg announce {"channel":"<ακριβές όνομα καναλιού>", "message":"<μήνυμα>"}` → Άμεση αποστολή μηνύματος, από εμένα, σε συγκεκριμένο κανάλι που ορίζεται στο πεδίο `channel`.'
 
         help_message = help_dialog1 + '\n' + help_dialog2 + '\n' + help_dialog3 + '\n' + help_dialog4 + '\n' + help_dialog5 + '\n' + help_dialog6 + '\n' +  help_dialog7 + '\n' + help_dialog8 + '\n\n' + help_dialog9 + '\n' + help_dialog95  + '\n' + help_dialog96 + '\n' + help_dialog97  + '\n' + help_dialog98 + '\n' + help_dialog99
-        await ctx.channel.send(help_message)
+        await Common.ctx.channel.send(help_message)
 
-    def corona():
-        print("lmao it works")
+    async def corona(country):
+        #this needs parsing.
+        return
+        
+    async def emvolio(perif):
+        #this also needs parsing.
+        return

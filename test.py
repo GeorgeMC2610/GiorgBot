@@ -70,5 +70,7 @@ def parser(command : str, caller):
             if len(parameters) < 1:
                 print("wrong arguements.")
                 return
+            
+            getattr(Admin, admin_command_call)(parameters)
 
 parser(command, "foo")
