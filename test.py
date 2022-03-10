@@ -1,4 +1,7 @@
 from datetime import date
+from commands.common import Common
+
+from skoil.skoil import Skoil
 
 
 command = "giorg corona gr"
@@ -43,9 +46,10 @@ def parser(command : str):
     parameters = command.split(" ")[1:]
     if len(parameters) < 1:
         print("wrong arguements.")
+        return
 
-    print(parameters)
-
-
+    print(command_call)
+    getattr(Common, command_call)()
     
+
 parser(command)
