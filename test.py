@@ -1,14 +1,16 @@
 from datetime import date
 
 
-command = "giorg ping"
+command = "giorg corona gr"
 
 def parser(command : str):
 
-    if not command.startswith("giorg "):
+    command_symbol = "giorg "
+
+    if not command.startswith(command_symbol):
         return
 
-    command = command[6:]
+    command = command[len(command_symbol):]
 
     command_dict = {
         'display_members' : None,
@@ -42,6 +44,7 @@ def parser(command : str):
     if len(parameters) < 1:
         print("wrong arguements.")
 
+    print(parameters)
 
 
     

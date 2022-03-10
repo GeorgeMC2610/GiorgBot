@@ -2,6 +2,8 @@ import discord
 
 class Skoil:
     
+    command = ''
+    
     client = discord.Client()
     intents = discord.Intents.default()
     intents.members = True
