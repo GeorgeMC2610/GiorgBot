@@ -157,7 +157,7 @@ async def announce(message, sender):
 async def on_ready():
     print('Bot online.')
 
-async def parser(command : str, author):
+async def parse_command(command : str, ctx):
 
     #in order to call the command, it must have the correct symbol.
     command_symbol = "giorg "
@@ -189,14 +189,15 @@ async def parser(command : str, author):
     admin_command_call  = [i for i in admin_dict if command.startswith(i)]
 
     #if the command is common use
-    if len(common_command_call) != 0:
-        
+    if len(common_command_call) != 0:       
+
         #take the command
         common_command_call = common_command_call.pop()
+        common = Common(ctx)
 
         #take the command and examine any possible parameters. If there aren't any, then call the command.
         if common_dict[common_command_call] is None:
-            await getattr(Common, common_command_call)()
+            await getattr(common, common_command_call)()
 
         #if there are parameters, make sure they're right
         else:
@@ -205,15 +206,16 @@ async def parser(command : str, author):
                 print("wrong arguements.")
                 return
 
-            await getattr(Common, common_command_call)(parameters)
+            await getattr(common, common_command_call)(parameters)
     else:
 
         #again, take the command
         admin_command_call = admin_command_call.pop()
+        admin = Admin(ctx)
 
         #take the command and examine any possible parameters. If there aren't any, call the command.
         if admin_dict[admin_command_call] is None:
-            await getattr(Admin, admin_command_call)()
+            await getattr(admin, admin_command_call)()
 
         #if there are parameters, make sure they're right
         else:
@@ -222,7 +224,7 @@ async def parser(command : str, author):
                 print("wrong arguements.")
                 return
             
-            await getattr(Admin, admin_command_call)(parameters)
+            await getattr(admin, admin_command_call)(parameters)
 
     
 possible_command_symbols = ['!', '/', 'pm!', 'skoil ']
@@ -237,7 +239,7 @@ async def on_message(message):
         return
 
     #εκτελούμε το command που μπορεί να έχει το μήνυμα.
-    await parse(message.content, message.author)
+    await parse_command(message.content, message)
 
     
         
