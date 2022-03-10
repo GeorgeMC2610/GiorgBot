@@ -10,6 +10,7 @@ from dateutil.parser import parse
 from commands.admin import Admin
 
 from commands.common import Common
+from skoil.skoil import Skoil
 
 #Εφ' όσον το repository θέλουμε να 'ναι public, πρέπει να αποθηκεύσουμε το token σε ένα ξεχωριστό αρχείο, το οποίο δεν θα συμπεριληφθεί στο repository.
 f = open('token.txt', 'r')
@@ -24,7 +25,7 @@ intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
 
-#μηνύματα για την προβολή του !help
+skoil = None
 
 #Λίστα μηνυμάτων απόρριψης
 deny1 = "Ξέρεις κάτι; **Όχι**, δεν θα κάνω αυτό που θες... τι το 'χουμε το " + '<#518904659461668868>' + " ΒΡΕ ΜΑΛΑΚΑ; Αν θες πραγματικά να γίνει αυτό που θες, στείλ' το εκεί."
@@ -198,16 +199,22 @@ async def parse_command(command : str, ctx):
         #take the command and examine any possible parameters. If there aren't any, then call the command.
         if common_dict[common_command_call] is None:
             await getattr(common, common_command_call)()
+            return
 
         #if there are parameters, make sure they're right
         else:
             parameters = command.split(" ")[1:]
             if len(parameters) < 1:
                 print("wrong arguements.")
+                await ctx.channel.send("Ξέχασες κάτι, βλαμμένε.")
                 return
 
             await getattr(common, common_command_call)(parameters)
-    else:
+            return
+    elif len(admin_command_call) != 0:
+
+        #if Skoil.identify_member_position(ctx.author) < 4:
+        #   await ctx.send("ΧΑ! Είδα, τι πήγαινες να κάνεις εκεί, " + ctx.author.mention + "! Θα 'ταν κρίμα να το μάθαιναν οι admins...")
 
         #again, take the command
         admin_command_call = admin_command_call.pop()
@@ -216,15 +223,20 @@ async def parse_command(command : str, ctx):
         #take the command and examine any possible parameters. If there aren't any, call the command.
         if admin_dict[admin_command_call] is None:
             await getattr(admin, admin_command_call)()
+            return
 
         #if there are parameters, make sure they're right
         else:
             parameters = command.split(" ")[1:]
             if len(parameters) < 1:
                 print("wrong arguements.")
+                await ctx.channel.send("Υποτίθεται ότι είσαι και admin/mod και ξέρεις να χρησιμοποιείς και commands 🤡.")
                 return
             
             await getattr(admin, admin_command_call)(parameters)
+            return
+    
+    await ctx.channel.send("Δεν υπάρχει αυτό που λες, ηλίθιε.")
 
     
 possible_command_symbols = ['!', '/', 'pm!', 'skoil ']
@@ -237,6 +249,8 @@ async def on_message(message):
 
     if message.author == client.user:
         return
+
+    #skoil = Skoil()
 
     #εκτελούμε το command που μπορεί να έχει το μήνυμα.
     await parse_command(message.content, message)

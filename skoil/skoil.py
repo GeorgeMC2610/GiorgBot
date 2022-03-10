@@ -9,6 +9,7 @@ class Skoil:
     intents.members = True
 
     guild = client.get_guild(322050982747963392)
+        
 
     def identify_member_position(member):
 
