@@ -177,8 +177,8 @@ async def parse_command(command : str, ctx):
 
     #commands for admins only
     admin_dict = {
-        'announce_bot'    : None,
-        'announce_geniki' : None,
+        'announce_bot'    : [str],
+        'announce_geniki' : [str],
         'announce'        : [str],
         'prune'           : [int],
         'display_members' : None,

@@ -6,6 +6,7 @@ class Admin:
     def __init__(self, ctx):
         self.ctx = ctx
 
+
     async def prune(ctx, times):
 
         #the number of times must be an integer.
@@ -31,3 +32,11 @@ class Admin:
         await ctx.delete()
         async for message_to_be_deleted in ctx.channel.history(limit=times):
             await message_to_be_deleted.delete()
+
+
+    async def display_members(self):
+        pass
+
+
+    async def secret_santa(self):
+        pass
