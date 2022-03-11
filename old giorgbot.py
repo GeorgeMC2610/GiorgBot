@@ -207,7 +207,7 @@ async def on_message(message):
 
     #αν το μήνυμα είναι σε προσωπική συζήτηση, δεν χρειάζονται τα παρακάτω σε τίποτα. Επίσης σιγουρευόμαστε ότι το bot δεν θα απαντάει ποτέ στον εαυτό του.
     if message.channel.type == discord.ChannelType.private:
-        if (str(message.author) != "GeorgeMC2610#8036" and str(message.author) != "Sotiris168#5790") and ([i for i in admin_commands if message.content.startswith(i)] != []):
+        if (str(message.author) != "GeorgeMC2610#8036") and ([i for i in admin_commands if message.content.startswith(i)] != []):
             GeorgeMC2610 = await client.fetch_user(250721113729007617)
             await message.author.send(random.choice(pm_denying))
             await GeorgeMC2610.send("Ο γνωστός άγνωστος " + message.author.name + " προσπάθησε ΝΑ ΜΕ ΚΑΝΕΙ ΝΑ ΚΑΝΩ ΚΑΤΙ ΠΟΥ ΔΕΝ ΠΡΕΠΕΙ.")
@@ -220,7 +220,7 @@ async def on_message(message):
         elif message.content.startswith(admin_commands[2]):
             try:
                 geniki_sizitisi = await client.fetch_channel(518905389811630087)
-                await geniki_sizitisi.send(message.content.split("!announcegeniki ")[1])
+                await geniki_sizitisi.send(message.content.split("giorg announcegeniki ")[1])
                 await message.author.send("Όλα οκ, μαν. Το 'στειλα στην **γενική συζήτηση**.")
             except Exception as ex:
                 await message.author.send("ΩΠΑ, ΚΑΤΣΕ, ΚΑΤΙ ΔΕΝ Μ' ΑΡΕΣΕΙ ΕΔΩ. " + ex.args)

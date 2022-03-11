@@ -8,7 +8,6 @@ import locale
 import flag
 from dateutil.parser import parse
 from commands.admin import Admin
-
 from commands.common import Common
 from skoil.skoil import Skoil
 
@@ -192,9 +191,12 @@ async def parse_command(command : str, ctx):
     #if the command is common use
     if len(common_command_call) != 0:       
 
+        skoil = Skoil('common', client)
+        await skoil.initiate()
+
         #take the command
         common_command_call = common_command_call.pop()
-        common = Common(ctx)
+        common = Common(ctx, skoil)
 
         #take the command and examine any possible parameters. If there aren't any, then call the command.
         if common_dict[common_command_call] is None:
@@ -210,14 +212,15 @@ async def parse_command(command : str, ctx):
 
             await getattr(common, common_command_call)(parameters)
             return
+    #if the command is admin only
     elif len(admin_command_call) != 0:
 
-        #if Skoil.identify_member_position(ctx.author) < 4:
-        #   await ctx.send("ΧΑ! Είδα, τι πήγαινες να κάνεις εκεί, " + ctx.author.mention + "! Θα 'ταν κρίμα να το μάθαιναν οι admins...")
+        skoil = Skoil('admin', client)
+        await skoil.initiate()
 
         #again, take the command
         admin_command_call = admin_command_call.pop()
-        admin = Admin(ctx)
+        admin = Admin(ctx, skoil)      #the object called here will check to see if the message author has admin previleges.
 
         #take the command and examine any possible parameters. If there aren't any, call the command.
         if admin_dict[admin_command_call] is None:

@@ -1,36 +1,39 @@
 import discord
 
 class Skoil:
-    
-    command = ''
-    
-    client = discord.Client()
-    intents = discord.Intents.default()
-    intents.members = True
-
-    guild = client.get_guild(322050982747963392)
         
+    def __init__(self, sender, client):
+        self.client = client
+        self.sender = sender
 
-    def identify_member_position(member):
+    async def initiate(self):
+        self.guild = await self.client.fetch_guild(322050982747963392)
 
-        metzi_tou_neoukti = Skoil.guild.get_role(488730147894198273)
-        if member.top_role == metzi_tou_neoukti:
+        if self.sender == 'admin':
+            self.GeorgeMC2610 = await self.client.fetch_user(250721113729007617)
+            self.Sotiris168   = await self.client.fetch_user(250973577761783808)
+            self.metzi_tou_neoukti = self.guild.get_role(488730147894198273)
+        
+    def identify_member_position(self, member):
+
+        self.metzi_tou_neoukti = self.guild.get_role(488730147894198273)
+        if member.top_role == self.metzi_tou_neoukti:
             return 5
 
-        skase = Skoil.guild.get_role(821739015970619393)
-        if member.top_role == skase:
+        self.skase = self.guild.get_role(821739015970619393)
+        if member.top_role == self.skase:
             return 4
 
-        bots = Skoil.guild.get_role(456219306468966410)
-        if member.top_role == bots:
+        self.bots = self.guild.get_role(456219306468966410)
+        if member.top_role == self.bots:
             return 3
 
-        pcmci = Skoil.guild.get_role(456219306468966410)
-        if member.top_role == pcmci:
+        self.pcmci = self.guild.get_role(456219306468966410)
+        if member.top_role == self.pcmci:
             return 2
 
-        me_meson = Skoil.get_role(654344275412385793)
-        if member.top_role == me_meson:
+        self.me_meson = self.get_role(654344275412385793)
+        if member.top_role == self.me_meson:
             return 1
         
         return 0

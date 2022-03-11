@@ -5,6 +5,9 @@ class Common:
 
     #ctx is going to be the message we sent.
     def __init__(self, ctx):
+        
+        #if ctx.message.channel =  
+
         self.ctx = ctx
 
     async def ping(self):
