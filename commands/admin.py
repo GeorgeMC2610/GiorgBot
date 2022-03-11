@@ -6,6 +6,17 @@ class Admin:
     def __init__(self, ctx):
         self.ctx = ctx
 
+    async def announce_bot(self, message):
+        pass
+
+
+    async def announce_geniki(self, message):
+        pass
+
+
+    async def announce(self, message):
+        pass
+
 
     async def prune(ctx, times):
 
