@@ -205,7 +205,6 @@ async def parse_command(command : str, ctx):
         else:
             parameters = command.split(" ")[1:]
             if len(parameters) < 1:
-                print("wrong arguements.")
                 await ctx.channel.send("Ξέχασες κάτι, βλαμμένε.")
                 return
 
@@ -229,7 +228,6 @@ async def parse_command(command : str, ctx):
         else:
             parameters = command.split(" ")[1:]
             if len(parameters) < 1:
-                print("wrong arguements.")
                 await ctx.channel.send("Υποτίθεται ότι είσαι και admin/mod και ξέρεις να χρησιμοποιείς και commands 🤡.")
                 return
             
