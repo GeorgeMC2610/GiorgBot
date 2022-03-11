@@ -18,7 +18,7 @@ class Admin:
 
         #otherwise, at this point, it's safe to execute the admin command.
         self.ctx = ctx
-        
+
 
     async def announce_bot(self, message):
         pass
@@ -34,10 +34,9 @@ class Admin:
 
     async def prune(self, times):
 
-        
-
+        #times is initially a list. it should have exactly one item, otherwise it's not correct.
         if len(times) > 1:
-            await self.ctx.channel.send("Όχι. Μάθε να γράφεις σωστά το command")
+            await self.ctx.channel.send("Όχι. Μάθε να γράφεις σωστά το command, βλάκα. (δες `/help` άμα είσαι άχρηστος)")
             return
 
         times = times.pop()

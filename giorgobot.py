@@ -24,7 +24,7 @@ intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
 
-skoil = None
+skoil = Skoil(client)
 
 #Λίστα μηνυμάτων απόρριψης
 deny1 = "Ξέρεις κάτι; **Όχι**, δεν θα κάνω αυτό που θες... τι το 'χουμε το " + '<#518904659461668868>' + " ΒΡΕ ΜΑΛΑΚΑ; Αν θες πραγματικά να γίνει αυτό που θες, στείλ' το εκεί."
@@ -155,6 +155,7 @@ async def announce(message, sender):
 
 @client.event
 async def on_ready():
+    await skoil.initiate()
     print('Bot online.')
 
 async def parse_command(command : str, ctx):
@@ -191,9 +192,6 @@ async def parse_command(command : str, ctx):
     #if the command is common use
     if len(common_command_call) != 0:       
 
-        skoil = Skoil('common', client)
-        await skoil.initiate()
-
         #take the command
         common_command_call = common_command_call.pop()
         common = Common(ctx, skoil)
@@ -214,9 +212,6 @@ async def parse_command(command : str, ctx):
             return
     #if the command is admin only
     elif len(admin_command_call) != 0:
-
-        skoil = Skoil('admin', client)
-        await skoil.initiate()
 
         #again, take the command
         admin_command_call = admin_command_call.pop()

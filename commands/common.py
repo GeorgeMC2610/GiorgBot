@@ -4,10 +4,13 @@ import datetime
 class Common:
 
     #ctx is going to be the message we sent.
-    def __init__(self, ctx):
+    def __init__(self, ctx, skoil):
         
-        #if ctx.message.channel =  
-
+        #the message has to be in bot_requests
+        if ctx.channel != skoil.bot_requests:
+            self.ctx = None
+            return None
+        
         self.ctx = ctx
 
     async def ping(self):
