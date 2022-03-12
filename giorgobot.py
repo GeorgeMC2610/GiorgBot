@@ -26,7 +26,7 @@ client = discord.Client(intents=intents)
 
 skoil = Skoil(client)
 
-#Λίστα μηνυμάτων απόρριψης για την κατηγορία των βιβλιοθηκών
+#library complaints
 warning1 = "Σσσσσσσσσσσσσσσσσσσσσς! ***ΨΥΘΙΡΣΤΑ*** εδώ είναι βιβλιοθήκη! Δεν κάνει να μιλάμε εδώ..."
 warning2 = "Ρε κλόουν. Όχι μηνύματα εδώ. ΜΟΝΟ ΦΩΤΟΓΡΑΦΙΕΣ/ΒΙΝΤΕΟ."
 warning3 = "🚓 ΣΥΛΛΑΜΒΑΝΕΣΑΙ, ΒΛΑΚΑΚΟ. ΜΙΛΟΥΣΕΣ ΣΤΗ ΒΙΒΛΙΟΘΗΚΗ. 10 μέρες φυλακή μέχρι να μάθεις να στέλνεις μόνο φωτογραφίες ή βίντεο."
@@ -34,7 +34,7 @@ warning4 = "Εδώ. Φωτογραφίες/Βίντεο. ***__ΜΟΝΟ__***. Ε�
 
 warning_messages = [warning1, warning2, warning3, warning4]
 
-#Παράπονα του μποτ, όταν το κάνουν μένσιον
+#complaints for mentions
 plaint1 = "Τιιιιι;"
 plaint2 = "ΤΙ ΘΕΕΕΕΣ;"
 plaint3 = "Τι έκανα πάλι;"
@@ -67,16 +67,6 @@ def remove_greek_uppercase_accent(x):
     x = x.replace("Ϋ́", "Ϋ")
     return x
 
-#συναρτήσεις που ευθύνονται για τους ρόλους
-async def give_role(member, role):
-    if member is not None and role is not None:
-        await member.add_roles(role)
-        channel_log("Successfully gave role " + role.name + " to member " + member.name)
-
-async def remove_role(member, role):
-    if member is not None and role is not None:
-        await member.remove_roles(role)
-        channel_log("Successfully removed role " + role.name + " from member " + member.name)
 
 
 @client.event
@@ -206,119 +196,90 @@ async def parse_command(command : str, ctx):
     
     await ctx.channel.send("Δεν υπάρχει αυτό που λες, ηλίθιε.")
     
-        
+
+### COROUTINES FOR ROLE ASSIGNMENTS / REMOVALS ###
+
+def get_reaction_role(emoji : str) -> int:
+
+    if emoji == "rainbow_six_siege":
+        return 760755925535031357
+    
+    elif emoji == "rocket_league":
+        return 760839558655901767
+
+    elif emoji == "minecraft":
+        return 761471771450015755
+
+    elif emoji == "forza_horizon4":
+        return 761471931631009792
+
+    elif emoji == "gtaV":
+        return 813411557341921341
+
+    elif emoji == "among_us":
+        return 761472151152230411
+    
+    elif emoji == "league_of_legends":
+        return 761472271239217183
+
+    elif emoji == "euro_truck_sim2":
+        return 761472440395497493
+
+    elif emoji == "wow":
+        return 770018540618907669
+
+    elif emoji == "sea_of_thieves":
+        return 778608259925803009
+
+    elif emoji == "phasmophobia":
+        return 780112959811616788
+
+    elif emoji == "pubeg":
+        return 813411722903552062
+    
+    elif emoji == "politics":
+        return 819861063213645854
+
+    elif emoji == "valorant":
+        return 834504650509254749
+
+    elif emoji == "payday2":
+        return 946869439578669089 
+
 @client.event
 async def on_raw_reaction_add(payload):
-    #αν δεν αντιστοιχεί το μήνυμα του reaction στο συγκεκριμένο reaction Που θέλουμε, τότε δεν μας ενδιαφέρει καθολου
+
+    #this is for assigning roles with corresponding emojis. if the message is not the one we're looking for, pass.
     if payload.message_id != 761204434670714912:
         return
 
-    #αποθηκεύουμε σε μεταβλητή τον σέρβερ μας
-    server  = client.get_guild(payload.guild_id)   
-    reactor = payload.member 
-
-    #και μετά ελέγχουμε κάθε πιθανό σενάριο
-    if payload.emoji.name == "rainbow_six_siege":
-        role = server.get_role(760755925535031357)
-    
-    elif payload.emoji.name == "rocket_league":
-        role = server.get_role(760839558655901767)
-
-    elif payload.emoji.name == "minecraft":
-        role = server.get_role(761471771450015755)
-    
-    elif payload.emoji.name == "forza_horizon4":
-        role = server.get_role(761471931631009792)
-
-    elif payload.emoji.name == "gtaV":
-        role = server.get_role(813411557341921341)
-
-    elif payload.emoji.name == "among_us":
-        role = server.get_role(761472151152230411)
-    
-    elif payload.emoji.name == "league_of_legends":
-        role = server.get_role(761472271239217183)
-
-    elif payload.emoji.name == "euro_truck_sim2":
-        role = server.get_role(761472440395497493)
-
-    elif payload.emoji.name == "wow":
-        role = server.get_role(770018540618907669)
-
-    elif payload.emoji.name == "sea_of_thieves":
-        role = server.get_role(778608259925803009)
-
-    elif payload.emoji.name == "phasmophobia":
-        role = server.get_role(780112959811616788)
-
-    elif payload.emoji.name == "pubeg":
-        role = server.get_role(813411722903552062)
-    
-    elif payload.emoji.name == "politics":
-        role = server.get_role(819861063213645854)
-
-    elif payload.emoji.name == "valorant":
-        role = server.get_role(834504650509254749)
-
-    #ύστερα, δίνουμε τον ρόλο σε αυτόν που έκανε το react με την φτιαχτή συνάρτησή μας
-    await give_role(reactor, role)
+    role = skoil.guild.get_role(get_reaction_role(payload.emoji.name))
+    await give_role(payload.member, role)
 
 @client.event
 async def on_raw_reaction_remove(payload):
-    #αν δεν αντιστοιχεί το μήνυμα του reaction στο συγκεκριμένο reaction Που θέλουμε, τότε δεν μας ενδιαφέρει καθολου
+    
+    #this is for removing roles with corresponding emojis. if the message is not the one we're looking for, pass.
     if payload.message_id != 761204434670714912:
         return
 
-    #αποθηκεύουμε σε μεταβλητή τον σέρβερ μας
-    server  = client.get_guild(payload.guild_id)
+    #for some reason, the reactor cannot be retrieved as easily as above. we have to use the coroutine function in order to get it.
+    reactor = await skoil.guild.fetch_member(payload.user_id)
+    role = skoil.guild.get_role(get_reaction_role(payload.emoji.name))
 
-    #είναι διαφορετικός ο τρόπος, σε σχέση με πάνω, που παίρνουμε τον reactor.   
-    reactor = await server.fetch_member(payload.user_id)
-
-    #και μετά ελέγχουμε κάθε πιθανό σενάριο
-    if payload.emoji.name == "rainbow_six_siege":
-        role = server.get_role(760755925535031357)
-    
-    elif payload.emoji.name == "rocket_league":
-        role = server.get_role(760839558655901767)
-
-    elif payload.emoji.name == "minecraft":
-        role = server.get_role(761471771450015755)
-    
-    elif payload.emoji.name == "forza_horizon4":
-        role = server.get_role(761471931631009792)
-    
-    elif payload.emoji.name == "gtaV":
-        role = server.get_role(813411557341921341)
-
-    elif payload.emoji.name == "among_us":
-        role = server.get_role(761472151152230411)
-    
-    elif payload.emoji.name == "league_of_legends":
-        role = server.get_role(761472271239217183)
-
-    elif payload.emoji.name == "euro_truck_sim2":
-        role = server.get_role(761472440395497493)
-
-    elif payload.emoji.name == "wow":
-        role = server.get_role(770018540618907669)
-
-    elif payload.emoji.name == "sea_of_thieves":
-        role = server.get_role(778608259925803009)
-
-    elif payload.emoji.name == "phasmophobia":
-        role = server.get_role(780112959811616788)
-
-    elif payload.emoji.name == "pubeg":
-        role = server.get_role(813411722903552062)
-    
-    elif payload.emoji.name == "politics":
-        role = server.get_role(819861063213645854)
-
-    elif payload.emoji.name == "valorant":
-        role = server.get_role(834504650509254749)
-
-    #ύστερα, βγάζουμε τον ρόλο σε αυτόν που έκανε το react με την φτιαχτή συνάρτησή μας
     await remove_role(reactor, role)
 
+#coroutine for giving roles
+async def give_role(member, role):
+    if member is not None and role is not None:
+        await member.add_roles(role)
+        channel_log("Successfully gave role " + role.name + " to member " + member.name)
+
+#coroutine for removing roles
+async def remove_role(member, role):
+    if member is not None and role is not None:
+        await member.remove_roles(role)
+        channel_log("Successfully removed role " + role.name + " from member " + member.name)
+
+#run the bot
 client.run(token)
