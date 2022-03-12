@@ -161,8 +161,6 @@ async def parse_command(command : str, ctx):
         'display_members' : None,
         'secret_santa'    : None,
     }
-
-    print(command)
     
     #check if command exists.
     common_command_call = [i for i in common_dict if command.startswith(i)]
@@ -210,7 +208,6 @@ async def parse_command(command : str, ctx):
             return
 
         #again, take the command
-        print(admin_command_call)
         admin_command_call = admin_command_call.pop()
         admin = Admin(ctx, skoil)      #the object called here will check to see if the message author has admin previleges.
 
@@ -222,9 +219,8 @@ async def parse_command(command : str, ctx):
         #if there are parameters, make sure they're right
         else:
             parameters = command[(len(admin_command_call) + 1):]
-            print(parameters)
             if len(parameters) < 1:
-                await ctx.channel.send("Υποτίθεται ότι είσαι και admin/mod και ξέρεις να χρησιμοποιείς και commands 🤡.")
+                await ctx.channel.send("Υποτίθεται ότι είσαι και admin/mod και ξέρεις να χρησιμοποιείς και commands 🤡. (δες `/help` αν είσαι εντελώς άχρηστος)")
                 return
             
             await getattr(admin, admin_command_call)(parameters)
