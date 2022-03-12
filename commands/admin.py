@@ -70,6 +70,10 @@ class Admin:
 
     async def prune(self, times):
 
+        if self.ctx.channel.type == discord.ChannelType.private:
+            await self.ctx.author.send("Αυτή η εντολή εκτελείται μονάχα σε text-channel στον ΣΚΟΪΛ ΕΛΙΚΙΚΟΥ. Στείλε μου την εντολή σε ένα από αυτά τα channels.")
+            return
+
         #the number of times must be an integer.
         try:
             times = int(times)
