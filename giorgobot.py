@@ -98,6 +98,13 @@ async def on_message(message):
     #execute possible commands.
     await parse_command(message.content, message)
 
+    #remove any messages from unwanted categories
+    if message.channel.category_id == 749958245203836939 and not message.attachments:
+        random_warning_message = random.choice(warning_messages)
+        await message.delete()
+        await message.channel.send(random_warning_message, delete_after=8.0)
+        return
+
 
 async def parse_command(command : str, ctx):
 
