@@ -124,9 +124,16 @@ class Admin:
             return
         
 
-
     async def display_members(self):
-        pass
+
+        #this command has no restrictions regarding private messages or text-channels. It can be executed in either one of those types.
+
+        members = await self.skoil.guild.fetch_members().flatten()
+
+        try:
+            await self.ctx.channel.send("```python\n" + str([member.name for member in members]) + "```\n\n**" + str(len(members)) + " συνολικά μέλη,** όπου τα " + str(len([member for member in members if self.skoil.identify_member_position(member) == 3])) + " είναι bots.")
+        except:
+            await self.ctx.author.send("```python\n" + str([member.name for member in members]) + "```\n\n**" + str(len(members)) + " συνολικά μέλη,** όπου τα " + str(len([member for member in members if self.skoil.identify_member_position(member) == 3])) + " είναι bots.")
 
 
     async def secret_santa(self):
