@@ -4,8 +4,9 @@ import datetime
 class Common:
 
     #ctx is going to be the message we sent.
-    def __init__(self, ctx):
+    def __init__(self, ctx, skoil):
         self.ctx = ctx
+        self.skoil = skoil
 
     async def ping(self):
         await self.ctx.channel.send("Pong!")

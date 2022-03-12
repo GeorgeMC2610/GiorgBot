@@ -1,33 +1,76 @@
 import discord
+import json
 from skoil.skoil import Skoil
 
 class Admin:
 
     #ctx is going to be the message
-    def __init__(self, ctx):
+    def __init__(self, ctx, skoil):
         self.ctx = ctx
+        self.skoil = skoil
 
 
     async def announce_bot(self, message):
-        pass
+
+        #this command is pm only. Abort if the command is not sent in pm.
+        if self.ctx.channel.type != discord.ChannelType.private:
+            await self.ctx.author.send("Αυτή η εντολή εκτελείται μονάχα σε private channel. Στείλε μου την εντολή σε pm.")
+            return
+
+        #send the message in the geniki-sizitisi channel
+        await self.skoil.bot_requests.send(message)
 
 
     async def announce_geniki(self, message):
-        pass
+        
+        #this command is pm only. Abort if the command is not sent in pm.
+        if self.ctx.channel.type != discord.ChannelType.private:
+            await self.ctx.author.send("Αυτή η εντολή εκτελείται μονάχα σε private channel. Στείλε μου την εντολή σε pm.")
+            return
+
+        #send the message in the geniki-sizitisi channel
+        await self.skoil.geniki_sizitisi.send(message)
 
 
     async def announce(self, message):
-        pass
+
+        #this command is pm only. Abort if the command is not sent in pm.
+        if self.ctx.channel.type != discord.ChannelType.private:
+            await self.ctx.author.send("Αυτή η εντολή εκτελείται μονάχα σε private channel. Στείλε μου την εντολή σε pm.")
+            return
+
+        #the message item is initially a list. Join all the words to make the string.
+        message = ''.join([word for word in message])
+
+        #check if the message has the right json syntax
+        if '{' in message and message[-1] == '}' and '"channel"' in message and '"message"' in message:
+            payload = 0
+            try:
+                payload  = json.loads(message)
+            except:
+                await self.ctx.author.send("Είσαι πολύ ηλίθιος, αν δεν ξέρεις ούτε σωστή **JSON** να γράφεις 🙄")
+                return
+
+            #the target ID will be the corresponding channel.
+            targetID = False
+            channels = await self.skoil.guild.fetch_channels()
+
+            try:
+                #from all the channels select the right one.
+                targetID = [i.id for i in channels if i.name == payload["channel"]].pop()
+                await self.ctx.author.send("Εννοείται πως θα το ανακοινώσω στο <#" + str(targetID) + ">")
+            except Exception as e:
+                #if the channel doesn't exist.
+                print("Unable to decode dictionary.", e.args)
+                await self.ctx.author.send("Δεν το βρήκα αυτό ρε φίλε :(")
+            
+            if targetID:
+                channel = self.skoil.client.get_channel(targetID)
+                await channel.send(payload["message"])
+                await self.ctx.author.send('**ΝΑΙ, ΑΛΛΑ ΟΧΙ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "channel":"akrives-onoma-kanaliou"}```')
 
 
     async def prune(self, times):
-
-        #times is initially a list. it should have exactly one item, otherwise it's not correct.
-        if len(times) > 1:
-            await self.ctx.channel.send("Όχι. Μάθε να γράφεις σωστά το command, βλάκα. (δες `/help` άμα είσαι άχρηστος)")
-            return
-
-        times = times.pop()
 
         #the number of times must be an integer.
         try:

@@ -154,13 +154,15 @@ async def parse_command(command : str, ctx):
 
     #commands for admins only
     admin_dict = {
+        'announce'        : [str],
         'announce_bot'    : [str],
         'announce_geniki' : [str],
-        'announce'        : [str],
         'prune'           : [int],
         'display_members' : None,
         'secret_santa'    : None,
     }
+
+    print(command)
     
     #check if command exists.
     common_command_call = [i for i in common_dict if command.startswith(i)]
@@ -177,8 +179,7 @@ async def parse_command(command : str, ctx):
 
         #take the command
         common_command_call = common_command_call.pop()
-        common = Common(ctx)
-
+        common = Common(ctx, skoil)
 
         #take the command and examine any possible parameters. If there aren't any, then call the command.
         if common_dict[common_command_call] is None:
@@ -187,7 +188,7 @@ async def parse_command(command : str, ctx):
 
         #if there are parameters, make sure they're right
         else:
-            parameters = command.split(" ")[1:]
+            parameters = command[(len(common_command_call) + 1):]
             if len(parameters) < 1:
                 await ctx.channel.send("Ξέχασες κάτι, βλαμμένε.")
                 return
@@ -209,8 +210,9 @@ async def parse_command(command : str, ctx):
             return
 
         #again, take the command
+        print(admin_command_call)
         admin_command_call = admin_command_call.pop()
-        admin = Admin(ctx)      #the object called here will check to see if the message author has admin previleges.
+        admin = Admin(ctx, skoil)      #the object called here will check to see if the message author has admin previleges.
 
         #take the command and examine any possible parameters. If there aren't any, call the command.
         if admin_dict[admin_command_call] is None:
@@ -219,7 +221,8 @@ async def parse_command(command : str, ctx):
 
         #if there are parameters, make sure they're right
         else:
-            parameters = command.split(" ")[1:]
+            parameters = command[(len(admin_command_call) + 1):]
+            print(parameters)
             if len(parameters) < 1:
                 await ctx.channel.send("Υποτίθεται ότι είσαι και admin/mod και ξέρεις να χρησιμοποιείς και commands 🤡.")
                 return
@@ -241,9 +244,6 @@ async def on_message(message):
     #never respond to the bot itself.
     if message.author == client.user:
         return
-
-    #turn the message into lowercase.
-    message.content = message.content.lower()
 
     #execute possible commands.
     await parse_command(message.content, message)
