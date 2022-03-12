@@ -83,7 +83,7 @@ async def remove_role(member, role):
 async def on_ready():
     await skoil.initiate()
     print('Bot online.')
-    
+
 
 @client.event
 async def on_message(message):
@@ -135,7 +135,7 @@ async def parse_command(command : str, ctx):
     if len(common_command_call) != 0:       
 
         #the message has to be inside the bot requests channel. If it's not, delete it.
-        if ctx.channel != skoil.bot_requests:
+        if ctx.channel.type != discord.ChannelType.private and ctx.channel != skoil.bot_requests:
             await ctx.delete()
             await ctx.channel.send(random.choice(skoil.denying_messages), delete_after=8.0)
             return
