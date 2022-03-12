@@ -78,62 +78,26 @@ async def remove_role(member, role):
         await member.remove_roles(role)
         channel_log("Successfully removed role " + role.name + " from member " + member.name)
 
-async def private_msg(message, sender):
-    if '{' in message and message[-1] == '}' and '"target"' in message and '"message"' in message:
-        payload = 0
-        try:
-            payload  = json.loads(message.split("!send ")[1])
-        except:
-            await sender.send("Είσαι πολύ ηλίθιος, αν δεν ξέρεις ούτε σωστή **JSON** να γράφεις. 😣")
-            return
-
-        targetID = False
-
-        server   = client.get_guild(322050982747963392)
-        users    = await server.fetch_members().flatten()
-
-        try:
-            targetID = [i.id for i in users if str(i) == payload["target"]].pop()
-            await sender.send("Αμέσως! Στέλνω μήνυμα προς **" + payload["target"] + "**.")
-        except Exception as e:
-            print("Unable to decode dictionary.", e.args)
-            await sender.send('**ΚΑΤΙ ΠΑΕΙ ΛΑΘΟΣ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "target":"<Χρήστης#1234>"}```')
-        
-        if targetID:
-            user_to_send = client.get_user(targetID)
-            await user_to_send.send(payload["message"])
-            await sender.send("Έφτασε το μήνυμα!")
-
-async def announce(message, sender):
-    if '{' in message and message[-1] == '}' and '"channel"' in message and '"message"' in message:
-        payload = 0
-        try:
-            payload  = json.loads(message.split("!send ")[1])
-        except:
-            await sender.send("Είσαι πολύ ηλίθιος, αν δεν ξέρεις ούτε σωστή **JSON** να γράφεις 🙄")
-            return
-        targetID = False
-
-        server   = client.get_guild(322050982747963392)
-        channels = await server.fetch_channels()
-
-        try:
-            targetID = [i.id for i in channels if i.name == payload["channel"]].pop()
-            await sender.send("Εννοείται πως θα το ανακοινώσω στο <#" + str(targetID) + ">")
-        except Exception as e:
-            print("Unable to decode dictionary.", e.args)
-            await sender.send("Δεν το βρήκα αυτό ρε φίλε :(")
-        
-        if targetID:
-            channel = client.get_channel(targetID)
-            await channel.send(payload["message"])
-            await sender.send('**ΝΑΙ, ΑΛΛΑ ΟΧΙ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "channel":"akrives-onoma-kanaliou"}```')
-
 
 @client.event
 async def on_ready():
     await skoil.initiate()
     print('Bot online.')
+    
+
+@client.event
+async def on_message(message):
+
+    #message log.
+    channel_log(str(message.author) + " in " + str(message.channel) + " says: " + message.content)
+
+    #never respond to the bot itself.
+    if message.author == client.user:
+        return
+
+    #execute possible commands.
+    await parse_command(message.content, message)
+
 
 async def parse_command(command : str, ctx):
 
@@ -154,6 +118,7 @@ async def parse_command(command : str, ctx):
 
     #commands for admins only
     admin_dict = {
+        'send'            : [str],
         'announce'        : [str],
         'announce_bot'    : [str],
         'announce_geniki' : [str],
@@ -227,26 +192,8 @@ async def parse_command(command : str, ctx):
             return
     
     await ctx.channel.send("Δεν υπάρχει αυτό που λες, ηλίθιε.")
-
-    
-possible_command_symbols = ['!', '/', 'pm!', 'skoil ']
-
-@client.event
-async def on_message(message):
-
-    #message log.
-    channel_log(str(message.author) + " in " + str(message.channel) + " says: " + message.content)
-
-    #never respond to the bot itself.
-    if message.author == client.user:
-        return
-
-    #execute possible commands.
-    await parse_command(message.content, message)
-
     
         
-#Το μέρος, όπου οι χρήστες παίρνουν ρόλο βάσει των reactions τους.
 @client.event
 async def on_raw_reaction_add(payload):
     #αν δεν αντιστοιχεί το μήνυμα του reaction στο συγκεκριμένο reaction Που θέλουμε, τότε δεν μας ενδιαφέρει καθολου

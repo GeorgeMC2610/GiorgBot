@@ -10,6 +10,31 @@ class Admin:
         self.skoil = skoil
 
 
+    async def send(self, message):
+        if '{' in message and message[-1] == '}' and '"target"' in message and '"message"' in message:
+            payload = 0
+            try:
+                payload = json.loads(message)
+            except:
+                await self.ctx.author.send("Είσαι πολύ ηλίθιος, αν δεν ξέρεις ούτε σωστή **JSON** να γράφεις. 😣")
+                return
+
+            targetID = False
+            users    = await self.skoil.guild.fetch_members().flatten()
+
+            try:
+                targetID = [i.id for i in users if str(i) == payload["target"]].pop()
+                await self.ctx.author.send("Αμέσως! Στέλνω μήνυμα προς **" + payload["target"] + "**.")
+            except Exception as e:
+                print("Unable to decode dictionary.", e.args)
+                await self.ctx.author.send('**ΚΑΤΙ ΠΑΕΙ ΛΑΘΟΣ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "target":"Χρήστης#1234"}```')
+            
+            if targetID:
+                user_to_send = self.skoil.client.get_user(targetID)
+                await user_to_send.send(payload["message"])
+                await self.ctx.author.send("Έφτασε το μήνυμα!")
+
+
     async def announce_bot(self, message):
 
         #this command is pm only. Abort if the command is not sent in pm.
