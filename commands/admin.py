@@ -39,9 +39,6 @@ class Admin:
             await self.ctx.author.send("Αυτή η εντολή εκτελείται μονάχα σε private channel. Στείλε μου την εντολή σε pm.")
             return
 
-        #the message item is initially a list. Join all the words to make the string.
-        message = ''.join([word for word in message])
-
         #check if the message has the right json syntax
         if '{' in message and message[-1] == '}' and '"channel"' in message and '"message"' in message:
             payload = 0
@@ -67,6 +64,7 @@ class Admin:
             if targetID:
                 channel = self.skoil.client.get_channel(targetID)
                 await channel.send(payload["message"])
+            else:
                 await self.ctx.author.send('**ΝΑΙ, ΑΛΛΑ ΟΧΙ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "channel":"akrives-onoma-kanaliou"}```')
 
 
