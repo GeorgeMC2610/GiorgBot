@@ -4,19 +4,7 @@ from skoil.skoil import Skoil
 class Admin:
 
     #ctx is going to be the message
-    def __init__(self, ctx, skoil):
-
-        #check to see if the admin command to be executed is in private messages. If it is, only GeorgeMC2610 and Sotiris168 should be able to execute it.
-        if ctx.channel.type == discord.ChannelType.private:
-            if not(ctx.author == skoil.GeorgeMC2610 or ctx.author == skoil.Sotiris168):
-                self.ctx = None
-                return None
-        #check to see if the admin command to be executed is sent by a member with admin/mod previleges.
-        elif skoil.identify_member_position(ctx.author) < 4:
-            self.ctx = None
-            return None
-
-        #otherwise, at this point, it's safe to execute the admin command.
+    def __init__(self, ctx):
         self.ctx = ctx
 
 

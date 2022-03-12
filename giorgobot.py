@@ -45,23 +45,13 @@ plaint7 = "Πω, ρε μαλάκα αλήθεια σκάσε..."
 
 complaints = [plaint1, plaint2, plaint3, plaint4, plaint5, plaint6, plaint7]
 
-#Εντολής απόρριψης εντολής
-pm_deny1 = "Απλά άσ' το. ΔΕΝ ΤΟ 'ΧΕΙΣ."
-pm_deny2 = "Μην είσαι σίγουρος ότι δεν θα το μάθει ο GeorgeMC2610."
-pm_deny3 = "ΧΑΧΑΧΑΧΑΧΑΧΑΧΑΝΑΙΚΑΛΑ"
-
-pm_denying = [pm_deny1, pm_deny2, pm_deny3]
-
-
-respondable_messages = ["giorg ping", "giorg help", "giorg emvolio", "giorg corona", "-", "!", "r6s"]
-admin_commands       = ["giorg display members", "giorg prune", "giorg announcegeniki", "giorg announcebot", "giorg announce", "giorg secret santa"]
-
 
 def channel_log(message):
     f = open('log.txt', 'a', encoding='utf-8')
     f.write("[" + str(datetime.datetime.now())[:19] + "]: " + message + "\n")
     print("[" + str(datetime.datetime.now())[:19] + "]: " + message)
     f.close()
+
 
 def remove_greek_uppercase_accent(x):
     x = x.replace("Ά", "Α")
@@ -187,7 +177,7 @@ async def parse_command(command : str, ctx):
 
         #take the command
         common_command_call = common_command_call.pop()
-        common = Common(ctx, skoil)
+        common = Common(ctx)
 
 
         #take the command and examine any possible parameters. If there aren't any, then call the command.
@@ -207,9 +197,20 @@ async def parse_command(command : str, ctx):
     #if the command is admin only
     elif len(admin_command_call) != 0:
 
+        #in private messages only GeorgeMC2610 and Sotiris168 can execute pm commands.
+        if ctx.channel.type == discord.ChannelType.private:
+            if not(ctx.author == skoil.GeorgeMC2610 or ctx.author == skoil.Sotiris168):
+                await ctx.author.send(random.choice(skoil.pm_denying))
+                await skoil.GeorgeMC2610.send("Για δες τι κάνει ο " + ctx.author.name + "... Δεν μ' αρέσουν αυτά.")
+                return
+        #but admin commands can be executed by mods also. So we need a member position of at least 4.
+        elif skoil.identify_member_position(ctx.author) < 4:
+            await ctx.channel.send("Καλή προσπάθεια, " + ctx.author.mention + "! Αυτή είναι εντολή διαχειριστή. Θα 'ταν κρίμα να το μάθαιναν οι " + skoil.metzi_tou_neoukti.mention + "...")
+            return
+
         #again, take the command
         admin_command_call = admin_command_call.pop()
-        admin = Admin(ctx, skoil)      #the object called here will check to see if the message author has admin previleges.
+        admin = Admin(ctx)      #the object called here will check to see if the message author has admin previleges.
 
         #take the command and examine any possible parameters. If there aren't any, call the command.
         if admin_dict[admin_command_call] is None:
@@ -234,15 +235,17 @@ possible_command_symbols = ['!', '/', 'pm!', 'skoil ']
 @client.event
 async def on_message(message):
 
-    #log του μηνύματος.
+    #message log.
     channel_log(str(message.author) + " in " + str(message.channel) + " says: " + message.content)
 
+    #never respond to the bot itself.
     if message.author == client.user:
         return
 
-    #skoil = Skoil()
+    #turn the message into lowercase.
+    message.content = message.content.lower()
 
-    #εκτελούμε το command που μπορεί να έχει το μήνυμα.
+    #execute possible commands.
     await parse_command(message.content, message)
 
     

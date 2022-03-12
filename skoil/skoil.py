@@ -15,9 +15,16 @@ class Skoil:
         self.deny7 = "Θα έβαζες ποτέ το ψυγείο στο μπαλκόνι; Όχι. Μην βάζεις εντολές **έξω** του " + '<#518904659461668868>' + ", τότε **__ΒΛΑΚΑ__**."
         self.deny8 = "Έχω πει 500 135.000 φορές να τα στέλνεις στο " + '<#518904659461668868>' + "..."
         self.deny9 = "🚓🚓 **ΑΣΤΥΝΟΜΙΑ ΒΛΑΚΕΙΑΣ!** Ήμουν σίγουρος, ότι κάποιος σαν κι εσένα, θα έστελνε εντολή εκτός του " + '<#518904659461668868>' + "!"
-
         self.denying_messages = [self.deny1, self.deny2, self.deny3, self.deny4, self.deny5, self.deny6, self.deny7, self.deny8, self.deny9]
 
+        #private message denying messages.
+        self.pm_deny1 = "Κατ' αρχάς, πώς το ξέρεις ότι μπορείς να το κάνεις αυτό;"
+        self.pm_deny2 = "Μην είσαι σίγουρος ότι δεν θα το μάθει ο GeorgeMC2610."
+        self.pm_deny3 = "ΧΑΧΑΧΑΧΑΧΑΧΑΧΑΝΑΙΚΑΛΑ"
+        self.pm_denying = [self.pm_deny1, self.pm_deny2, self.pm_deny3]
+
+
+    #this function is called upon connecting. This initiates all variables that can only be retrieved with coroutines.
     async def initiate(self):
 
         #server
