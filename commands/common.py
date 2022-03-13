@@ -1,5 +1,7 @@
 import discord
 import datetime
+from dateutil import parser
+from pyparsing import RecursiveGrammarException
 import requests
 import re as regex
 
@@ -72,27 +74,66 @@ class Common:
             await self.ctx.channel.send('```py\n ' + str(periferies) + '```\n ● **' + str(len(periferies)) + '** συνολικές περιφερειακές ενότητες.')
             return
         
-        #search with regex if the user wants the total vaccination records.
-        everything = regex.search(r"(ΟΛΟ)|(ΟΛΟΙ)|(ΟΛΑ)|(ΣΥΝΟΛΟ)|(ΣΥΝΟΛΙΚΑ)|(ΕΛΛΑΔΑ)|(ΧΩΡΑ)|(ΠΑΝΤΕΣ)", perif)
-        periferia = None
-        
-        #search with regex if the user wants vaccination records of one area only.
-        for data in response:
-            if not regex.match(data["area"], perif):
-                continue
+        everything = self.recognize_area_and_date(perif, r"(ΟΛΟ)|(ΟΛΟΙ)|(ΟΛΑ)|(ΣΥΝΟΛΟ)|(ΣΥΝΟΛΙΚΑ)|(ΕΛΛΑΔΑ)|(ΧΩΡΑ)|(ΠΑΝΤΕΣ)", 0)  #get all vaccination records.
+        periferia = [self.recognize_area_and_date(perif, data["area"], 0) for data in response if self.recognize_area_and_date(perif, data["area"], 0) is not None]  #get only the records that match the area the user is looking for.
 
-            #the area must be first.
-            if regex.match(data["area"], perif).start() != 0:
-                continue
-
-            periferia = data["area"]
-
-
-        if (everything is None or everything.start() != 0) and periferia is None:
-            await self.ctx.channel.send("Λάθος μήνυμα. Για να δείτε όλους τους συνολικούς εμβολιασμούς, πατήστε `giorg emvolio όλο|όλοι|όλα|σύνολο|συνολικά|ελλάδα|χώρα|πάντες [ημερομηνία]`\nΑλλιώς, για να δείτε όλες τις περιφερειακές ενότητες, πατήστε `giorg emvolio λίστα`")
+        #if nothing was found, then inform the user and abort.
+        if everything is None and periferia == []:
+            await self.ctx.channel.send("Δεν υπάρχει αυτό που γράφεις. Δες `/help` για τον χειρισμό.")
             return
+        #the second element of the tuple is the date. if the date is none, inform the user and abort.
+        elif (everything is not None and everything[1] is None) or (periferia != [] and periferia.pop()[1] is None):
+            await self.ctx.channel.send("Θα πρέπει να στείλεις μία σωστή ημερομηνία.")
+            return
+        
+        #get the date
+        date = everything[1] if everything is not None else periferia.pop()[1]
+
+        #get the vaccination records
+        url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=' + str(date) + ' &date_to=' + str(date)
+        headers = {'Authorization':'Token ' + emvolioapi}
+        response = requests.get(url, headers=headers)
+        response = response.json()
+
 
         await self.ctx.channel.send("Θα σου δείξω αμέσως.")
+
+
+    def recognize_area_and_date(self, ipt, rgx, index):
+
+        match = regex.search(rgx, ipt)
+        if match is None:
+            return None
+        
+        elif match.start() != index:
+            return None
+        
+        #the area is nothing but the regex we found
+        area = ipt[match.start() : match.end()]
+        #the date is anything after the regex
+        date = ipt[match.end() + 1 : ]
+
+        #the default date is today.
+        if len(date) == 0:
+            return area, datetime.date.today()
+        #the day before yesterday
+        elif date == "ΠΡΟΧΘΕΣ" or date == "ΠΡΟΧΤΕΣ":
+            return area, datetime.date.today() - datetime.timedelta(days=2)
+        #yesterday
+        elif date == "ΧΘΕΣ" or date == "ΧΤΕΣ":
+            return area, datetime.date.today() - datetime.timedelta(days=1)
+        #today
+        elif date == "ΣΗΜΕΡΑ":
+            return area, datetime.date.today()
+        #else it must be a datetime.
+        else:
+            try:
+                date = parser.parse(date)
+                return area, date
+            except:
+                return area, None
+
+
 
 
             

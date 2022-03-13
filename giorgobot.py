@@ -85,7 +85,6 @@ async def on_message(message):
     await parse_command(message.content, message)
 
 
-
 async def parse_command(command : str, ctx):
 
     #in order to call the command, it must have the correct symbol.
