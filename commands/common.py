@@ -73,7 +73,7 @@ class Common:
         
         #if the user wants to see total vaccinations, gather all data from all vaccinations and send the embedded message.
         elif perif in ["ΣΥΝΟΛΟ", "ΟΛΑ", "ΟΛΟ", "ΟΛΟΙ", "ΕΛΛΑΔΑ", "ΧΩΡΑ", "ΣΥΝΟΛΙΚΑ", "ΠΑΝΤΕΣ"]:
-            pass
+            pass #μήπως να κάναμε κάτι με REGEX?
 
     
     #this function removes correctly any greek uppercase accent.
