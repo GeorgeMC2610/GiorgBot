@@ -1,6 +1,7 @@
 import discord
 import datetime
 import requests
+import re as regex
 
 class Common:
 
@@ -60,7 +61,7 @@ class Common:
         perif = self.remove_greek_uppercase_accent(perif)
 
         #get all the available cities.
-        url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=2020-31-12&date_to=2020-31-12'
+        url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=2020-12-30&date_to=2020-12-30'
         headers = {'Authorization':'Token ' + emvolioapi}
         response = requests.get(url, headers=headers)
         response = response.json()
@@ -71,13 +72,36 @@ class Common:
             await self.ctx.channel.send('```py\n ' + str(periferies) + '```\n ● **' + str(len(periferies)) + '** συνολικές περιφερειακές ενότητες.')
             return
         
-        #if the user wants to see total vaccinations, gather all data from all vaccinations and send the embedded message.
-        elif perif in ["ΣΥΝΟΛΟ", "ΟΛΑ", "ΟΛΟ", "ΟΛΟΙ", "ΕΛΛΑΔΑ", "ΧΩΡΑ", "ΣΥΝΟΛΙΚΑ", "ΠΑΝΤΕΣ"]:
-            pass #μήπως να κάναμε κάτι με REGEX?
+        #search with regex if the user wants the total vaccination records.
+        everything = regex.search(r"(ΟΛΟ)|(ΟΛΟΙ)|(ΟΛΑ)|(ΣΥΝΟΛΟ)|(ΣΥΝΟΛΙΚΑ)|(ΕΛΛΑΔΑ)|(ΧΩΡΑ)|(ΠΑΝΤΕΣ)", perif)
+        periferia = None
+        
+        #search with regex if the user wants vaccination records of one area only.
+        for data in response:
+            if not regex.match(data["area"], perif):
+                continue
+
+            #the area must be first.
+            if regex.match(data["area"], perif).start() != 0:
+                continue
+
+            periferia = data["area"]
+
+
+        if (everything is None or everything.start() != 0) and periferia is None:
+            await self.ctx.channel.send("Λάθος μήνυμα. Για να δείτε όλους τους συνολικούς εμβολιασμούς, πατήστε `giorg emvolio όλο|όλοι|όλα|σύνολο|συνολικά|ελλάδα|χώρα|πάντες [ημερομηνία]`\nΑλλιώς, για να δείτε όλες τις περιφερειακές ενότητες, πατήστε `giorg emvolio λίστα`")
+            return
+
+        await self.ctx.channel.send("Θα σου δείξω αμέσως.")
+
+
+            
+
+
 
     
     #this function removes correctly any greek uppercase accent.
-    def remove_greek_uppercase_accent(x):
+    def remove_greek_uppercase_accent(self, x):
         x = x.replace("Ά", "Α")
         x = x.replace("Έ", "Ε")
         x = x.replace("Ή", "Η")
