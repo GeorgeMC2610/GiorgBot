@@ -84,16 +84,20 @@ async def on_message(message):
     #never respond to the bot itself.
     if message.author == client.user:
         return
+    
+    #log the message for pm's
+    if message.channel.type == discord.ChannelType.private and message.author != skoil.GeorgeMC2610:
+        await skoil.GeorgeMC2610.send("📨 **__PM with " + str(message.author) + "__**: " + message.content)
 
     #remove any messages from unwanted categories
-    if message.channel.category_id == 749958245203836939 and not message.attachments:
+    if message.channel.type != discord.ChannelType.private and message.channel.category_id == 749958245203836939 and not message.attachments:
         random_warning_message = random.choice(warning_messages)
         await message.delete()
         await message.channel.send(random_warning_message, delete_after=8.0)
         return
 
     #send random complaints if the bot is mentioned
-    if client.user.mentioned_in(message) and message.channel.type != discord.ChannelType.private:
+    if message.channel.type != discord.ChannelType.private and client.user.mentioned_in(message):
         await message.channel.send(random.choice(complaints))
         return
 

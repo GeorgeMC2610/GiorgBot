@@ -24,15 +24,15 @@ class Admin:
 
             try:
                 targetID = [i.id for i in users if str(i) == payload["target"]].pop()
-                await self.ctx.author.send("Αμέσως! Στέλνω μήνυμα προς **" + payload["target"] + "**.")
+                await self.ctx.author.send("🔔 Αμέσως! Στέλνω μήνυμα προς **" + payload["target"] + "**.")
             except Exception as e:
                 print("Unable to decode dictionary.", e.args)
-                await self.ctx.author.send('**ΚΑΤΙ ΠΑΕΙ ΛΑΘΟΣ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "target":"Χρήστης#1234"}```')
+                await self.ctx.author.send('❌ **ΚΑΤΙ ΠΑΕΙ ΛΑΘΟΣ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "target":"Χρήστης#1234"}```')
             
             if targetID:
                 user_to_send = self.skoil.client.get_user(targetID)
                 await user_to_send.send(payload["message"])
-                await self.ctx.author.send("Έφτασε το μήνυμα!")
+                await self.ctx.author.send("Έφτασε το μήνυμα! ✅")
 
 
     async def announce_bot(self, message):
@@ -80,17 +80,18 @@ class Admin:
             try:
                 #from all the channels select the right one.
                 targetID = [i.id for i in channels if i.name == payload["channel"]].pop()
-                await self.ctx.author.send("Εννοείται πως θα το ανακοινώσω στο <#" + str(targetID) + ">")
+                await self.ctx.author.send("🔔 Εννοείται πως θα το ανακοινώσω στο <#" + str(targetID) + ">")
             except Exception as e:
                 #if the channel doesn't exist.
                 print("Unable to decode dictionary.", e.args)
-                await self.ctx.author.send("Δεν το βρήκα αυτό ρε φίλε :(")
+                await self.ctx.author.send("❌ Δεν το βρήκα αυτό ρε φίλε :(")
             
             if targetID:
                 channel = self.skoil.client.get_channel(targetID)
                 await channel.send(payload["message"])
+                await self.ctx.author.send("Έφτασε! ✅")
             else:
-                await self.ctx.author.send('**ΝΑΙ, ΑΛΛΑ ΟΧΙ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "channel":"akrives-onoma-kanaliou"}```')
+                await self.ctx.author.send('❌ **ΝΑΙ, ΑΛΛΑ ΟΧΙ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "channel":"akrives-onoma-kanaliou"}```')
 
 
     async def prune(self, times):
