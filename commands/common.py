@@ -15,11 +15,13 @@ class Common:
 
     async def safe_send(self, message, embed=None):
 
+        #safe send will send a message both to a pm and server channel
         if embed is None:
             try:
                 await self.ctx.channel.send(message)
             except:
                 await self.ctx.author.send(message)
+        #also supports embeds
         else:
             try:
                 await self.ctx.channel.send(message, embed=embed)
@@ -180,13 +182,6 @@ class Common:
                 return area, date
             except:
                 return area, None
-
-
-
-
-            
-
-
 
     
     #this function removes correctly any greek uppercase accent.

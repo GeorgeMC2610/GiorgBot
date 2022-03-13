@@ -81,8 +81,6 @@ async def on_message(message):
         await message.channel.send(random.choice(complaints))
         return
 
-
-
     #execute possible commands.
     await parse_command(message.content, message)
 

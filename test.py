@@ -1,6 +1,8 @@
-from datetime import date
+from datetime import datetime
+from dateutil import parser
+import re
 
-message_list = ['hey ', 'guys', " what's", " up?"]
-message_list = ''.join([word for word in message_list])
+perif = "ΧΩΡΑ 22/02/2022"
+reg = re.search(r"(ΟΛΟ)|(ΟΛΟΙ)|(ΟΛΑ)|(ΣΥΝΟΛΟ)|(ΣΥΝΟΛΙΚΑ)|(ΕΛΛΑΔΑ)|(ΧΩΡΑ)|(ΠΑΝΤΕΣ)", perif)
 
-print(message_list)
+print( len(perif[ reg.end() + 1 : ]) ) 

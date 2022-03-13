@@ -9,8 +9,30 @@ class Admin:
         self.ctx = ctx
         self.skoil = skoil
 
+    async def safe_send(self, message, embed=None):
+
+        #safe send will send a message both to a pm and server channel
+        if embed is None:
+            try:
+                await self.ctx.channel.send(message)
+            except:
+                await self.ctx.author.send(message)
+        #also supports embeds
+        else:
+            try:
+                await self.ctx.channel.send(message, embed=embed)
+            except:
+                await self.ctx.author.send(message, embed=embed)
+
 
     async def send(self, message):
+
+        #this command is pm only. Abort if the command is not sent in pm.
+        if self.ctx.channel.type != discord.ChannelType.private:
+            await self.ctx.author.send("Αυτή η εντολή εκτελείται μονάχα σε private channel. Στείλε μου την εντολή σε pm.")
+            return
+
+        #test for json syntax
         if '{' in message and message[-1] == '}' and '"target"' in message and '"message"' in message:
             payload = 0
             try:
@@ -19,9 +41,11 @@ class Admin:
                 await self.ctx.author.send("Είσαι πολύ ηλίθιος, αν δεν ξέρεις ούτε σωστή **JSON** να γράφεις. 😣")
                 return
 
+            #initialize paylods
             targetID = False
-            users    = await self.skoil.guild.fetch_members().flatten()
+            users = await self.skoil.guild.fetch_members().flatten()
 
+            #try to send
             try:
                 targetID = [i.id for i in users if str(i) == payload["target"]].pop()
                 await self.ctx.author.send("🔔 Αμέσως! Στέλνω μήνυμα προς **" + payload["target"] + "**.")
@@ -130,11 +154,7 @@ class Admin:
         #this command has no restrictions regarding private messages or text-channels. It can be executed in either one of those types.
 
         members = await self.skoil.guild.fetch_members().flatten()
-
-        try:
-            await self.ctx.channel.send("```python\n" + str([member.name for member in members]) + "```\n\n**" + str(len(members)) + " συνολικά μέλη,** όπου τα " + str(len([member for member in members if self.skoil.identify_member_position(member) == 3])) + " είναι bots.")
-        except:
-            await self.ctx.author.send("```python\n" + str([member.name for member in members]) + "```\n\n**" + str(len(members)) + " συνολικά μέλη,** όπου τα " + str(len([member for member in members if self.skoil.identify_member_position(member) == 3])) + " είναι bots.")
+        await self.safe_send("```python\n" + str([member.name for member in members]) + "```\n\n**" + str(len(members)) + " συνολικά μέλη,** όπου τα " + str(len([member for member in members if self.skoil.identify_member_position(member) == 3])) + " είναι bots.")
 
 
     async def secret_santa(self):
