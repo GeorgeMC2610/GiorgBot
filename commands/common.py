@@ -1,8 +1,9 @@
 import discord
 import datetime
 from dateutil import parser
-from pyparsing import RecursiveGrammarException
+import flag
 import requests
+import locale
 import re as regex
 
 class Common:
@@ -12,14 +13,23 @@ class Common:
         self.ctx = ctx
         self.skoil = skoil
 
+    async def safe_send(self, message, embed=None):
+
+        if embed is None:
+            try:
+                await self.ctx.channel.send(message)
+            except:
+                await self.ctx.author.send(message)
+        else:
+            try:
+                await self.ctx.channel.send(message, embed=embed)
+            except:
+                await self.ctx.author.send(message, embed=embed)
+
     async def ping(self):
 
         #this command can be executed either in a pm or server channel.
-
-        try:
-            await self.ctx.channel.send("Pong!")
-        except:
-            await self.ctx.author.send("Pong!")
+        await self.safe_send("Pong!")
 
     async def help(self):
 
@@ -43,10 +53,7 @@ class Common:
 
         help_message = help_dialog1 + '\n' + help_dialog2 + '\n' + help_dialog3 + '\n' + help_dialog4 + '\n' + help_dialog5 + '\n' + help_dialog6 + '\n' +  help_dialog7 + '\n' + help_dialog8 + '\n\n' + help_dialog9 + '\n' + help_dialog94 + '\n' + help_dialog95  + '\n' + help_dialog96 + '\n' + help_dialog97  + '\n' + help_dialog98 + '\n' + help_dialog99
         
-        try:
-            await self.ctx.channel.send(help_message)
-        except:
-            await self.ctx.author.send(help_message)
+        await self.safe_send(help_message)
 
     async def corona(self, country):
         #this needs parsing.
@@ -71,32 +78,69 @@ class Common:
         #if the user wants to see just the cities available, show all cities and refer to the number of cities.
         periferies = [data["area"] for data in response]
         if perif in ["ΠΕΡΙΦΕΡΕΙΕΣ", "ΠΕΡΙΦΕΡΕΙΑΚΕΣ ΕΝΟΤΗΤΕΣ", "ΛΙΣΤΑ", "ΕΝΟΤΗΤΕΣ", "ΠΕΡΙΟΧΕΣ"]:
-            await self.ctx.channel.send('```py\n ' + str(periferies) + '```\n ● **' + str(len(periferies)) + '** συνολικές περιφερειακές ενότητες.')
+            await self.safe_send('```py\n ' + str(periferies) + '```\n ● **' + str(len(periferies)) + '** συνολικές περιφερειακές ενότητες.')
             return
         
         everything = self.recognize_area_and_date(perif, r"(ΟΛΟ)|(ΟΛΟΙ)|(ΟΛΑ)|(ΣΥΝΟΛΟ)|(ΣΥΝΟΛΙΚΑ)|(ΕΛΛΑΔΑ)|(ΧΩΡΑ)|(ΠΑΝΤΕΣ)", 0)  #get all vaccination records.
         periferia = [self.recognize_area_and_date(perif, data["area"], 0) for data in response if self.recognize_area_and_date(perif, data["area"], 0) is not None]  #get only the records that match the area the user is looking for.
+        periferia = periferia.pop() if periferia != [] else None
 
         #if nothing was found, then inform the user and abort.
-        if everything is None and periferia == []:
-            await self.ctx.channel.send("Δεν υπάρχει αυτό που γράφεις. Δες `/help` για τον χειρισμό.")
+        if everything is None and periferia is None:
+            await self.safe_send("Δεν υπάρχει αυτό που γράφεις. Δες `/help` για τον χειρισμό.")
             return
         #the second element of the tuple is the date. if the date is none, inform the user and abort.
-        elif (everything is not None and everything[1] is None) or (periferia != [] and periferia.pop()[1] is None):
-            await self.ctx.channel.send("Θα πρέπει να στείλεις μία σωστή ημερομηνία.")
+        elif (everything is not None and everything[1] is None) or (periferia is not None and periferia[1] is None):
+            await self.safe_send("Θα πρέπει να στείλεις μία σωστή ημερομηνία.")
             return
         
         #get the date
-        date = everything[1] if everything is not None else periferia.pop()[1]
+        date = everything[1] if everything is not None else periferia[1]
 
-        #get the vaccination records
+        #get the vaccination records from the specific date
         url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=' + str(date) + ' &date_to=' + str(date)
         headers = {'Authorization':'Token ' + emvolioapi}
         response = requests.get(url, headers=headers)
         response = response.json()
 
+        locale.setlocale(locale.LC_ALL, 'el_GR')
 
-        await self.ctx.channel.send("Θα σου δείξω αμέσως.")
+        #get the vaccinations
+        total = sum([data["totalvaccinations"] for data in response]) if everything is not None else [data["totalvaccinations"] for data in response if data["area"] == periferia[0]].pop()
+        dose1 = sum([data["totaldose1"] for data in response]) if everything is not None else [data["totaldose1"] for data in response if data["area"] == periferia[0]].pop()
+        dose2 = sum([data["totaldose2"] for data in response]) if everything is not None else [data["totaldose2"] for data in response if data["area"] == periferia[0]].pop()
+        dose3 = sum([data["totaldose3"] for data in response]) if everything is not None else [data["totaldose3"] for data in response if data["area"] == periferia[0]].pop()
+
+        #get the daily vaccinations
+        daily_total = sum([data["daytotal"] for data in response]) if everything is not None else [data["daytotal"] for data in response if data["area"] == periferia[0]].pop()
+        daily_dose1 = sum([data["dailydose1"] for data in response]) if everything is not None else [data["dailydose1"] for data in response if data["area"] == periferia[0]].pop()
+        daily_dose2 = sum([data["dailydose2"] for data in response]) if everything is not None else [data["dailydose2"] for data in response if data["area"] == periferia[0]].pop()
+        daily_dose3 = sum([data["dailydose3"] for data in response]) if everything is not None else [data["dailydose3"] for data in response if data["area"] == periferia[0]].pop()
+
+        #get the percentage of people done with the vaccination.
+        percentage_done       = str(round(float(dose2*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == periferia]) ), 1)) + '%'
+        percentage_additional = str(round(float(dose3*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == periferia]) ), 1)) + '%'
+
+        #factor will make more and more green the embedded message's color
+        factor = float(dose3/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == periferia]))
+        r = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
+        g = round(255 - factor*64) if factor < 0.7 else round(180 - factor*64)
+        b = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
+
+
+        #construct the embedded message
+        color = discord.embeds.Colour.from_rgb(r,g,b)
+        embedded_message = discord.Embed(title=(flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ") if everything is not None else ('📍 ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + periferia[0]), description="Αναλυτικοί εμβολιασμοί **__για " + str(date) + "__**.", color=color)
+        embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
+        embedded_message.add_field(name="Τουάχιστον 1️⃣ Δόση", value='Έγιναν **' + str(daily_dose1) + '** εμβολιασμοί. (**' + str(dose1) + '** σύνολο)', inline=True)
+        embedded_message.add_field(name="Ολοκληρωμένοι ☑",    value='Έγιναν **' + str(daily_dose2) + '** εμβολιασμοί. (**' + str(dose2) + '** σύνολο)', inline=True)
+        embedded_message.add_field(name="Ενισχυτικοί ⏫",     value='Έγιναν **' + str(daily_dose3) + '** εμβολιασμοί. (**' + str(dose3) + '** σύνολο)', inline=True)
+        embedded_message.add_field(name="Ενισχυτικοί ⏫",     value='Έγιναν **' + str(daily_dose3) + '** εμβολιασμοί. (**' + str(dose3) + '** σύνολο)', inline=True)
+        embedded_message.add_field(name="Αθροιστικά 💉",      value='Έγιναν **' + str(daily_total) + '** εμβολιασμοί. (**' + str(total) + '** σύνολο)', inline=True)
+        embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage_additional.replace('.', ',') + "** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό και το **" + percentage_done.replace('.', ',') + "** έχει λάβει την __επιπρόσθετη δόση__.", inline=True)
+        embedded_message.set_footer(text="Δεδομένα από το https://emvolio.gov.gr/")
+
+        await self.safe_send('', embed=embedded_message)
 
 
     def recognize_area_and_date(self, ipt, rgx, index):
