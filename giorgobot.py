@@ -250,6 +250,9 @@ def get_reaction_role(emoji : str) -> int:
     elif emoji == "payday2":
         return 946869439578669089 
 
+    elif emoji == "ktane":
+        return 952360700410490880
+
 @client.event
 async def on_raw_reaction_add(payload):
 
