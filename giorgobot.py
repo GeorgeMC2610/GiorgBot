@@ -21,6 +21,7 @@ intents.members = True
 client = discord.Client(intents=intents)
 
 skoil = Skoil(client)
+locale.setlocale(locale.LC_ALL, 'el_GR')
 
 #library complaints
 warning1 = "Σσσσσσσσσσσσσσσσσσσσσς! ***ΨΥΘΙΡΣΤΑ*** εδώ είναι βιβλιοθήκη! Δεν κάνει να μιλάμε εδώ..."

@@ -118,11 +118,11 @@ class Common:
         daily_dose3 = sum([data["dailydose3"] for data in response]) if everything is not None else [data["dailydose3"] for data in response if data["area"] == periferia[0]].pop()
 
         #get the percentage of people done with the vaccination.
-        percentage_done       = str(round(float(dose2*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == periferia].pop()) ), 1)) + '%'
-        percentage_additional = str(round(float(dose3*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == periferia].pop()) ), 1)) + '%'
+        percentage_done       = str(round(float(dose2*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == periferia[0]].pop()) ), 1)) + '%'
+        percentage_additional = str(round(float(dose3*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == periferia[0]].pop()) ), 1)) + '%'
 
         #factor will make more and more green the embedded message's color
-        factor = float(dose3/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == periferia].pop()))
+        factor = float(dose3/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == periferia[0]].pop()))
         r = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
         g = round(255 - factor*64) if factor < 0.7 else round(180 - factor*64)
         b = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
@@ -136,7 +136,7 @@ class Common:
         embedded_message.add_field(name="Ολοκληρωμένοι ☑",    value='Έγιναν **' + str(daily_dose2) + '** εμβολιασμοί. (**' + str(dose2) + '** σύνολο)', inline=True)
         embedded_message.add_field(name="Ενισχυτικοί ⏫",     value='Έγιναν **' + str(daily_dose3) + '** εμβολιασμοί. (**' + str(dose3) + '** σύνολο)', inline=True)
         embedded_message.add_field(name="Αθροιστικά 💉",      value='Έγιναν **' + str(daily_total) + '** εμβολιασμοί. (**' + str(total) + '** σύνολο)', inline=True)
-        embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage_additional.replace('.', ',') + "** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό και το **" + percentage_done.replace('.', ',') + "** έχει λάβει την __επιπρόσθετη δόση__.", inline=True)
+        embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage_done.replace('.', ',') + "** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό και το **" + percentage_additional.replace('.', ',') + "** έχει λάβει την __επιπρόσθετη δόση__.", inline=True)
         embedded_message.set_footer(text="Δεδομένα από το https://emvolio.gov.gr/")
 
         await self.safe_send('', embed=embedded_message)
