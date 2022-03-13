@@ -9,9 +9,18 @@ class Common:
         self.skoil = skoil
 
     async def ping(self):
-        await self.ctx.channel.send("Pong!")
+
+        #this command can be executed either in a pm or server channel.
+
+        try:
+            await self.ctx.channel.send("Pong!")
+        except:
+            await self.ctx.author.send("Pong!")
 
     async def help(self):
+
+        #this command can be executed either in a pm or server channel.
+
         help_dialog1 = '**ΔΙΚΕΣ ΜΟΥ ΕΝΤΟΛΕΣ:**'
         help_dialog2 = '`giorg help` → Δείχνει το παρόν μενού.'
         help_dialog3 = '`giorg ping` → Ανταπόκριση του μποτ με "Pong!"'
