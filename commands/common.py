@@ -1,5 +1,6 @@
 import discord
 import datetime
+import requests
 
 class Common:
 
@@ -49,5 +50,43 @@ class Common:
         return
         
     async def emvolio(self, perif):
-        #this also needs parsing.
-        return
+
+        #get the api token
+        f = open('emvolioapi.txt', 'r')
+        emvolioapi = f.read()
+        f.close()
+
+        perif = perif.upper()
+        perif = self.remove_greek_uppercase_accent(perif)
+
+        #get all the available cities.
+        url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=2020-31-12&date_to=2020-31-12'
+        headers = {'Authorization':'Token ' + emvolioapi}
+        response = requests.get(url, headers=headers)
+        response = response.json()
+
+        #if the user wants to see just the cities available, show all cities and refer to the number of cities.
+        periferies = [data["area"] for data in response]
+        if perif in ["ΠΕΡΙΦΕΡΕΙΕΣ", "ΠΕΡΙΦΕΡΕΙΑΚΕΣ ΕΝΟΤΗΤΕΣ", "ΛΙΣΤΑ", "ΕΝΟΤΗΤΕΣ", "ΠΕΡΙΟΧΕΣ"]:
+            await self.ctx.channel.send('```py\n ' + str(periferies) + '```\n ● **' + str(len(periferies)) + '** συνολικές περιφερειακές ενότητες.')
+            return
+        
+        #if the user wants to see total vaccinations, gather all data from all vaccinations and send the embedded message.
+        elif perif in ["ΣΥΝΟΛΟ", "ΟΛΑ", "ΟΛΟ", "ΟΛΟΙ", "ΕΛΛΑΔΑ", "ΧΩΡΑ", "ΣΥΝΟΛΙΚΑ", "ΠΑΝΤΕΣ"]:
+            pass
+
+    
+    #this function removes correctly any greek uppercase accent.
+    def remove_greek_uppercase_accent(x):
+        x = x.replace("Ά", "Α")
+        x = x.replace("Έ", "Ε")
+        x = x.replace("Ή", "Η")
+        x = x.replace("Ί", "Ι")
+        x = x.replace("Ό", "Ο")
+        x = x.replace("Ύ", "Υ")
+        x = x.replace("Ώ", "Ω")
+        x = x.replace("΅Ι", "Ϊ")
+        x = x.replace("Ϊ́", "Ϊ")
+        x = x.replace("΅Υ", "Ϋ")
+        x = x.replace("Ϋ́", "Ϋ")
+        return x

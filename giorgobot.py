@@ -16,10 +16,6 @@ f = open('token.txt', 'r')
 token = f.read()
 f.close()
 
-f = open('emvolioapi.txt', 'r')
-emvolioapi = f.read()
-f.close()
-
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
@@ -51,22 +47,6 @@ def channel_log(message):
     f.write("[" + str(datetime.datetime.now())[:19] + "]: " + message + "\n")
     print("[" + str(datetime.datetime.now())[:19] + "]: " + message)
     f.close()
-
-
-def remove_greek_uppercase_accent(x):
-    x = x.replace("Ά", "Α")
-    x = x.replace("Έ", "Ε")
-    x = x.replace("Ή", "Η")
-    x = x.replace("Ί", "Ι")
-    x = x.replace("Ό", "Ο")
-    x = x.replace("Ύ", "Υ")
-    x = x.replace("Ώ", "Ω")
-    x = x.replace("΅Ι", "Ϊ")
-    x = x.replace("Ϊ́", "Ϊ")
-    x = x.replace("΅Υ", "Ϋ")
-    x = x.replace("Ϋ́", "Ϋ")
-    return x
-
 
 
 @client.event
