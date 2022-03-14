@@ -65,21 +65,34 @@ async def on_message(message):
     if message.author == client.user:
         return
     
-    #log the message for pm's
-    if message.channel.type == discord.ChannelType.private and message.author != skoil.GeorgeMC2610:
-        await skoil.GeorgeMC2610.send("📨 **__PM with " + str(message.author) + "__**: " + message.content)
+    #messages in server
+    if message.channel.type != discord.ChannelType.private:
 
-    #remove any messages from unwanted categories
-    if message.channel.type != discord.ChannelType.private and message.channel.category_id == 749958245203836939 and not message.attachments:
-        random_warning_message = random.choice(warning_messages)
-        await message.delete()
-        await message.channel.send(random_warning_message, delete_after=8.0)
-        return
+        #delete every message in unwated categories.
+        if message.channel.category_id == 749958245203836939 and not message.attachments:
+            random_warning_message = random.choice(warning_messages)
+            await message.delete()
+            await message.channel.send(random_warning_message, delete_after=8.0)
+            return  #don't execute possible commands.
 
-    #send random complaints if the bot is mentioned
-    if message.channel.type != discord.ChannelType.private and client.user.mentioned_in(message):
-        await message.channel.send(random.choice(complaints))
-        return
+        #random meme with backstory.
+        elif 'nibbaebi' in message.content:
+            await message.author.move_to(None)
+            await message.reply("Give this mothafucka a 27 minute ban for being toxic. I'm French. (Κατουράω το Miliobot).", mention_author=True)
+            return
+
+        #send a random meme complaint if the bot is mentioned.
+        elif client.user.mentioned_in(message):
+            await message.reply(random.choice(complaints), mention_author=True)
+            return
+
+
+    #private messages
+    else:
+
+        #for every message author that is not GeorgeMC2610, send pm to GeorgeMC2610 containing the author's message content.
+        if message.author != skoil.GeorgeMC2610:
+            await skoil.GeorgeMC2610.send("📨 **__PM with " + str(message.author) + "__**: " + message.content)
 
     #execute possible commands.
     await parse_command(message.content, message)
