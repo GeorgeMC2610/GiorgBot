@@ -100,6 +100,8 @@ class Common:
         area = everything[0] if everything is not None else periferia[0]
         date = everything[1] if everything is not None else periferia[1]
 
+        print(str(date))
+
         #get the vaccination records from the specific date
         url = 'https://data.gov.gr/api/v1/query/mdg_emvolio?date_from=' + str(date) + ' &date_to=' + str(date)
         headers = {'Authorization':'Token ' + emvolioapi}
@@ -174,7 +176,7 @@ class Common:
 
         #the default date depends on today's hour.
         if len(date) == 0:     
-            return area, datetime.date.today() - datetime.timedelta(days=1) if datetime.datetime.today().hour < 21 else area, datetime.date.today()
+            return (area, datetime.date.today() - datetime.timedelta(days=1)) if datetime.datetime.today().hour < 21 else (area, datetime.date.today())
         #the day before yesterday
         elif date == "ΠΡΟΧΘΕΣ" or date == "ΠΡΟΧΤΕΣ":
             return area, datetime.date.today() - datetime.timedelta(days=2)
