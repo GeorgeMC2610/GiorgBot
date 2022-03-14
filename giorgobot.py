@@ -76,7 +76,7 @@ async def on_message(message):
             return  #don't execute possible commands.
 
         #random meme with backstory.
-        elif 'nibbaebi' in message.content:
+        elif 'nibbaebi'.casefold() in message.content.casefold():
             await message.author.move_to(None)
             await message.reply("Give this mothafucka a 27 minute ban for being toxic. I'm French. (Κατουράω το Miliobot).", mention_author=True)
             return
