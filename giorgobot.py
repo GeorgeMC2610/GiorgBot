@@ -184,53 +184,27 @@ async def parse_command(command : str, ctx):
 
 def get_reaction_role(emoji : str) -> int:
 
-    if emoji == "rainbow_six_siege":
-        return 760755925535031357
-    
-    elif emoji == "rocket_league":
-        return 760839558655901767
+    roles = {
+        "rainbow_six_siege" : 760755925535031357,
+        "rocket_league"     : 760839558655901767,
+        "minecraft"         : 761471771450015755,
+        "forza_horizon4"    : 761471931631009792,
+        "gtaV"              : 813411557341921341,
+        "among_us"          : 761472151152230411,
+        "league_of_legends" : 761472271239217183,
+        "euro_truck_sim2"   : 761472440395497493,
+        "wow"               : 770018540618907669,
+        "sea_of_thieves"    : 778608259925803009,
+        "phasmophobia"      : 780112959811616788,
+        "pubeg"             : 813411722903552062,
+        "politics"          : 819861063213645854,
+        "valorant"          : 834504650509254749,
+        "payday2"           : 946869439578669089,
+        "ktane"             : 952360700410490880
+    }
 
-    elif emoji == "minecraft":
-        return 761471771450015755
+    return roles.get(emoji, None)
 
-    elif emoji == "forza_horizon4":
-        return 761471931631009792
-
-    elif emoji == "gtaV":
-        return 813411557341921341
-
-    elif emoji == "among_us":
-        return 761472151152230411
-    
-    elif emoji == "league_of_legends":
-        return 761472271239217183
-
-    elif emoji == "euro_truck_sim2":
-        return 761472440395497493
-
-    elif emoji == "wow":
-        return 770018540618907669
-
-    elif emoji == "sea_of_thieves":
-        return 778608259925803009
-
-    elif emoji == "phasmophobia":
-        return 780112959811616788
-
-    elif emoji == "pubeg":
-        return 813411722903552062
-    
-    elif emoji == "politics":
-        return 819861063213645854
-
-    elif emoji == "valorant":
-        return 834504650509254749
-
-    elif emoji == "payday2":
-        return 946869439578669089 
-
-    elif emoji == "ktane":
-        return 952360700410490880
 
 @client.event
 async def on_raw_reaction_add(payload):
@@ -249,7 +223,7 @@ async def on_raw_reaction_remove(payload):
     if payload.message_id != 761204434670714912:
         return
 
-    #for some reason, the reactor cannot be retrieved as easily as above. we have to use the coroutine function in order to get it.
+    #for some unknown reason, the reactor cannot be retrieved as easily as above. we have to use the coroutine function in order to get it.
     reactor = await skoil.guild.fetch_member(payload.user_id)
     role = skoil.guild.get_role(get_reaction_role(payload.emoji.name))
 
