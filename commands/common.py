@@ -133,19 +133,23 @@ class Common:
         color = discord.embeds.Colour.from_rgb(r,g,b)
         embedded_message = discord.Embed(title=(flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ") if everything is not None else ('📍 ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + periferia[0]), description="Αναλυτικοί εμβολιασμοί **__για " + str(date) + "__**.", color=color)
         embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
-        embedded_message.add_field(name="Τουάχιστον 1️⃣ Δόση", value='Έγιναν **' + f'{daily_dose1:n}' + '** εμβολιασμοί. (**' + f'{dose1:n}' + '** σύνολο)', inline=True)
-        embedded_message.add_field(name="Ολοκληρωμένοι ☑",    value='Έγιναν **' + f'{daily_dose2:n}' + '** εμβολιασμοί. (**' + f'{dose2:n}' + '** σύνολο)', inline=True)
-        embedded_message.add_field(name="Ενισχυτικοί ⏫",     value='Έγιναν **' + f'{daily_dose3:n}' + '** εμβολιασμοί. (**' + f'{dose3:n}' + '** σύνολο)', inline=True)
-        embedded_message.add_field(name="Αθροιστικά 💉",      value='Έγιναν **' + f'{daily_total:n}' + '** εμβολιασμοί. (**' + f'{total:n}' + '** σύνολο)', inline=True)
+        embedded_message.add_field(name="Τουάχιστον 1️⃣ Δόση", value=('Έγιναν **' + f'{daily_dose1:n}' + '** εμβολιασμοί.)' if daily_dose1 > 1 else 'Μόνον **ένας** εμβολιασμός.' if daily_dose1 == 1 else '**Κανένας** εμβολιασμός.') + '(**' + f'{dose1:n}' + '** σύνολο)', inline=True)
+        embedded_message.add_field(name="Ολοκληρωμένοι ☑",    value=('Έγιναν **' + f'{daily_dose2:n}' + '** εμβολιασμοί.)' if daily_dose2 > 1 else 'Μόνον **ένας** εμβολιασμός.' if daily_dose2 == 1 else '**Κανένας** εμβολιασμός.') + '(**' + f'{dose2:n}' + '** σύνολο)', inline=True)
+        embedded_message.add_field(name="Ενισχυτικοί ⏫",     value=('Έγιναν **' + f'{daily_dose3:n}' + '** εμβολιασμοί.)' if daily_dose3 > 1 else 'Μόνον **ένας** εμβολιασμός.' if daily_dose3 == 1 else '**Κανένας** εμβολιασμός.') + '(**' + f'{dose3:n}' + '** σύνολο)', inline=True)
+        embedded_message.add_field(name="Αθροιστικά 💉",      value=('Έγιναν **' + f'{daily_total:n}' + '** εμβολιασμοί.)' if daily_total > 1 else 'Μόνον **ένας** εμβολιασμός.' if daily_total == 1 else '**Κανένας** εμβολιασμός.') + '(**' + f'{total:n}' + '** σύνολο)', inline=True)
 
         if everything is not None:
-            days_left = round((10720000*0.7 - daily_dose3) / (daily_dose3 if daily_dose3 != 0 else 1))
-            tempo = ((str(days_left // 30) + ' μήνες' if days_left // 30 != 1 else 'έναν μήνα') if days_left // 30 > 0 else '') + (' και ' if days_left - 30*(days_left // 30) > 0 and days_left // 30 > 0 else '') + ((str(days_left - 30*(days_left // 30)) + ' ημέρες' if days_left - 30*(days_left // 30) != 1 else 'μία ημέρα') if days_left - 30*(days_left // 30) > 0 else ' λιγότερο από μία μέρα')
-            embedded_message.add_field(name="Ρυθμός 🕗", value=(("Με αυτά τα δεδομένα, σε **" + tempo + "** θα έχει εμβολιαστεί το 70% του πληθυσμού.") if days_left > 1 else "Έχει εμβολιαστεί __πλήρως__ το **70% του πληθυσμού!** 🎉"), inline=True)
+            #if i were you, i wouldn't try to understand this by myself.
+            #this field checks if the tempo can be added as a field. it can only be added if the user has selected to see all vaccinations.
+
+            days_left = round((10720000*0.7 - daily_dose3) / daily_dose3 if daily_dose3 != 0 else 1) if daily_dose3 != 0 else None  #days left are calculated through a divsion operation. if the denominator is zero, the whole variable turns to none.
+            tempo = ((str(days_left // 30) + ' μήνες' if days_left // 30 != 1 else 'έναν μήνα') if days_left // 30 > 0 else '') + (' και ' if days_left - 30*(days_left // 30) > 0 and days_left // 30 > 0 else '') + ((str(days_left - 30*(days_left // 30)) + ' ημέρες' if days_left - 30*(days_left // 30) != 1 else 'μία ημέρα') if days_left - 30*(days_left // 30) > 0 else ' λιγότερο από μία μέρα') if days_left is not None else 'όχι'
+            embedded_message.add_field(name="Ρυθμός 🕗", value=("Δεν μπορεί να υπολογισθεί ο ρυθμός, με βάση τα παρόντα δεδομένα." if days_left is None else "Έχει εμβολιαστεί __πλήρως__ το **70% του πληθυσμού!** 🎉" if days_left < 1 else ("Με αυτά τα δεδομένα, σε **" + tempo + "** θα έχει εμβολιαστεί το 70% του πληθυσμού.")), inline=True)
 
         embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage_done.replace('.', ',') + "** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό και το **" + percentage_additional.replace('.', ',') + "** έχει λάβει την __επιπρόσθετη δόση__.", inline=True)
         embedded_message.set_footer(text="Δεδομένα από το https://emvolio.gov.gr/")
 
+        #send the embedded message safely, as this can be called through dm's or server channels.
         await self.safe_send('', embed=embedded_message)
 
 
