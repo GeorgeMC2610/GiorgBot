@@ -96,7 +96,8 @@ class Common:
             await self.safe_send("Θα πρέπει να στείλεις μία σωστή ημερομηνία.")
             return
         
-        #get the date
+        #get the date and the area depending on which of these values are none.
+        area = everything[0] if everything is not None else periferia[0]
         date = everything[1] if everything is not None else periferia[1]
 
         #get the vaccination records from the specific date
@@ -106,23 +107,27 @@ class Common:
         response = response.json()
 
         #get the vaccinations
-        total = sum([data["totalvaccinations"] for data in response]) if everything is not None else [data["totalvaccinations"] for data in response if data["area"] == periferia[0]].pop()
-        dose1 = sum([data["totaldose1"] for data in response]) if everything is not None else [data["totaldose1"] for data in response if data["area"] == periferia[0]].pop()
-        dose2 = sum([data["totaldose2"] for data in response]) if everything is not None else [data["totaldose2"] for data in response if data["area"] == periferia[0]].pop()
-        dose3 = sum([data["totaldose3"] for data in response]) if everything is not None else [data["totaldose3"] for data in response if data["area"] == periferia[0]].pop()
+        total = sum([data["totalvaccinations"] for data in response]) if everything is not None else [data["totalvaccinations"] for data in response if data["area"] == area].pop()
+        dose1 = sum([data["totaldose1"] for data in response]) if everything is not None else [data["totaldose1"] for data in response if data["area"] == area].pop()
+        dose2 = sum([data["totaldose2"] for data in response]) if everything is not None else [data["totaldose2"] for data in response if data["area"] == area].pop()
+        dose3 = sum([data["totaldose3"] for data in response]) if everything is not None else [data["totaldose3"] for data in response if data["area"] == area].pop()
 
         #get the daily vaccinations
-        daily_total = sum([data["daytotal"] for data in response]) if everything is not None else [data["daytotal"] for data in response if data["area"] == periferia[0]].pop()
-        daily_dose1 = sum([data["dailydose1"] for data in response]) if everything is not None else [data["dailydose1"] for data in response if data["area"] == periferia[0]].pop()
-        daily_dose2 = sum([data["dailydose2"] for data in response]) if everything is not None else [data["dailydose2"] for data in response if data["area"] == periferia[0]].pop()
-        daily_dose3 = sum([data["dailydose3"] for data in response]) if everything is not None else [data["dailydose3"] for data in response if data["area"] == periferia[0]].pop()
+        daily_total = sum([data["daytotal"] for data in response]) if everything is not None else [data["daytotal"] for data in response if data["area"] == area].pop()
+        daily_dose1 = sum([data["dailydose1"] for data in response]) if everything is not None else [data["dailydose1"] for data in response if data["area"] == area].pop()
+        daily_dose2 = sum([data["dailydose2"] for data in response]) if everything is not None else [data["dailydose2"] for data in response if data["area"] == area].pop()
+        daily_dose3 = sum([data["dailydose3"] for data in response]) if everything is not None else [data["dailydose3"] for data in response if data["area"] == area].pop()
+
+        if total == 0 and daily_total == 0:
+            await self.safe_send("Δεν υπάρχουν στοιχεία εμβολιασμών για αυτήν την ημέρα. **(" + str(date) + ")**")
+            return
 
         #get the percentage of people done with the vaccination.
-        percentage_done       = str(round(float(dose2*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == periferia[0]].pop()) ), 1)) + '%'
-        percentage_additional = str(round(float(dose3*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == periferia[0]].pop()) ), 1)) + '%'
+        percentage_done       = str(round(float(dose2*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == area].pop()) ), 1)) + '%'
+        percentage_additional = str(round(float(dose3*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == area].pop()) ), 1)) + '%'
 
         #factor will make more and more green the embedded message's color
-        factor = float(dose3/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == periferia[0]].pop()))
+        factor = float(dose3/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == area].pop()))
         r = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
         g = round(255 - factor*64) if factor < 0.7 else round(180 - factor*64)
         b = round(255 - 364*factor) if 255 - 364*factor > 0 else 0
@@ -131,7 +136,7 @@ class Common:
 
         #construct the embedded message
         color = discord.embeds.Colour.from_rgb(r,g,b)
-        embedded_message = discord.Embed(title=(flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ") if everything is not None else ('📍 ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + periferia[0]), description="Αναλυτικοί εμβολιασμοί **__για " + str(date) + "__**.", color=color)
+        embedded_message = discord.Embed(title=(flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ") if everything is not None else ('📍 ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + area), description="Αναλυτικοί εμβολιασμοί **__για " + str(date) + "__**.", color=color)
         embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
         embedded_message.add_field(name="Τουάχιστον 1️⃣ Δόση", value=('Έγιναν **' + f'{daily_dose1:n}' + '** εμβολιασμοί. ' if daily_dose1 > 1 else 'Μόνον **ένας** εμβολιασμός. ' if daily_dose1 == 1 else '**Κανένας** εμβολιασμός. ') + '(**' + f'{dose1:n}' + '** σύνολο)', inline=True)
         embedded_message.add_field(name="Ολοκληρωμένοι ☑",    value=('Έγιναν **' + f'{daily_dose2:n}' + '** εμβολιασμοί. ' if daily_dose2 > 1 else 'Μόνον **ένας** εμβολιασμός. ' if daily_dose2 == 1 else '**Κανένας** εμβολιασμός. ') + '(**' + f'{dose2:n}' + '** σύνολο)', inline=True)
