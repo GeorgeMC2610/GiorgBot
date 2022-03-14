@@ -133,10 +133,10 @@ class Common:
         color = discord.embeds.Colour.from_rgb(r,g,b)
         embedded_message = discord.Embed(title=(flag.flag('gr') + " ΣΥΝΟΛΙΚΟΙ ΕΜΒΟΛΙΑΣΜΟΙ") if everything is not None else ('📍 ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ ' + periferia[0]), description="Αναλυτικοί εμβολιασμοί **__για " + str(date) + "__**.", color=color)
         embedded_message.set_thumbnail(url="https://www.gov.gr/gov_gr-thumb-1200.png")
-        embedded_message.add_field(name="Τουάχιστον 1️⃣ Δόση", value=('Έγιναν **' + f'{daily_dose1:n}' + '** εμβολιασμοί.)' if daily_dose1 > 1 else 'Μόνον **ένας** εμβολιασμός.' if daily_dose1 == 1 else '**Κανένας** εμβολιασμός.') + '(**' + f'{dose1:n}' + '** σύνολο)', inline=True)
-        embedded_message.add_field(name="Ολοκληρωμένοι ☑",    value=('Έγιναν **' + f'{daily_dose2:n}' + '** εμβολιασμοί.)' if daily_dose2 > 1 else 'Μόνον **ένας** εμβολιασμός.' if daily_dose2 == 1 else '**Κανένας** εμβολιασμός.') + '(**' + f'{dose2:n}' + '** σύνολο)', inline=True)
-        embedded_message.add_field(name="Ενισχυτικοί ⏫",     value=('Έγιναν **' + f'{daily_dose3:n}' + '** εμβολιασμοί.)' if daily_dose3 > 1 else 'Μόνον **ένας** εμβολιασμός.' if daily_dose3 == 1 else '**Κανένας** εμβολιασμός.') + '(**' + f'{dose3:n}' + '** σύνολο)', inline=True)
-        embedded_message.add_field(name="Αθροιστικά 💉",      value=('Έγιναν **' + f'{daily_total:n}' + '** εμβολιασμοί.)' if daily_total > 1 else 'Μόνον **ένας** εμβολιασμός.' if daily_total == 1 else '**Κανένας** εμβολιασμός.') + '(**' + f'{total:n}' + '** σύνολο)', inline=True)
+        embedded_message.add_field(name="Τουάχιστον 1️⃣ Δόση", value=('Έγιναν **' + f'{daily_dose1:n}' + '** εμβολιασμοί. ' if daily_dose1 > 1 else 'Μόνον **ένας** εμβολιασμός. ' if daily_dose1 == 1 else '**Κανένας** εμβολιασμός. ') + '(**' + f'{dose1:n}' + '** σύνολο)', inline=True)
+        embedded_message.add_field(name="Ολοκληρωμένοι ☑",    value=('Έγιναν **' + f'{daily_dose2:n}' + '** εμβολιασμοί. ' if daily_dose2 > 1 else 'Μόνον **ένας** εμβολιασμός. ' if daily_dose2 == 1 else '**Κανένας** εμβολιασμός. ') + '(**' + f'{dose2:n}' + '** σύνολο)', inline=True)
+        embedded_message.add_field(name="Ενισχυτικοί ⏫",     value=('Έγιναν **' + f'{daily_dose3:n}' + '** εμβολιασμοί. ' if daily_dose3 > 1 else 'Μόνον **ένας** εμβολιασμός. ' if daily_dose3 == 1 else '**Κανένας** εμβολιασμός. ') + '(**' + f'{dose3:n}' + '** σύνολο)', inline=True)
+        embedded_message.add_field(name="Αθροιστικά 💉",      value=('Έγιναν **' + f'{daily_total:n}' + '** εμβολιασμοί. ' if daily_total > 1 else 'Μόνον **ένας** εμβολιασμός. ' if daily_total == 1 else '**Κανένας** εμβολιασμός. ') + '(**' + f'{total:n}' + '** σύνολο)', inline=True)
 
         if everything is not None:
             #if i were you, i wouldn't try to understand this by myself.
@@ -167,9 +167,9 @@ class Common:
         #the date is anything after the regex
         date = ipt[match.end() + 1 : ]
 
-        #the default date is today.
-        if len(date) == 0:
-            return area, datetime.date.today()
+        #the default date depends on today's hour.
+        if len(date) == 0:     
+            return area, datetime.date.today() - datetime.timedelta(days=1) if datetime.datetime.today().hour < 21 else area, datetime.date.today()
         #the day before yesterday
         elif date == "ΠΡΟΧΘΕΣ" or date == "ΠΡΟΧΤΕΣ":
             return area, datetime.date.today() - datetime.timedelta(days=2)
