@@ -2,6 +2,7 @@ import discord
 import datetime
 from dateutil import parser
 import flag
+from numpy import who
 import requests
 import locale
 import re as regex
@@ -65,7 +66,9 @@ class Common:
         url = 'https://disease.sh/v3/covid-19/countries?yesterday=false&twoDaysAgo=false&sort=cases&allowNull=false'
         response = requests.get(url)
         response = response.json()
-        countries = [data["country"] for data in response if len(data["country"]) < 4]
+        countries = [data["country"] for data in response]
+        iso2      = [data["countryInfo"]["iso2"] for data in response]
+        iso3      = [data["countryInfo"]["iso3"] for data in response]
 
         #if the user wants to see all available countries
         if country in ["all", "countries", "list"]:
@@ -75,21 +78,33 @@ class Common:
             await self.ctx.channel.send('```python\n' + str(countries[len(countries)//2:]) + '```\n ● **' + str(len(countries)) + '** συνολικές διαθέσιμες χώρες-κλειδιά.')
             return
 
-        country = [self.recognize_country_and_date(country, data["country"], 0) for data in response if self.recognize_country_and_date(country, data["country"], 0) is not None]  #get only the records that match the area the user is looking for.
-        country = country.pop() if country != [] else None
+        #get all possible country formats
+        whole_country = [self.recognize_country_and_date(country, data["country"], 0) for data in response if self.recognize_country_and_date(country, data["country"], 0) is not None]
+        iso3 = [self.recognize_country_and_date(country, data["countryInfo"]["iso3"], 0) for data in response if self.recognize_country_and_date(country, data["countryInfo"]["iso3"], 0) is not None]
+        iso2 = [self.recognize_country_and_date(country, data["countryInfo"]["iso2"], 0) for data in response if self.recognize_country_and_date(country, data["countryInfo"]["iso2"], 0) is not None]
 
-        country = [self.recognize_country_and_date(country, data["country"], 0) for data in response if self.recognize_country_and_date(country, data["country"], 0) is not None]  #get only the records that match the area the user is looking for.
-        country = country.pop() if country != [] else None
+        #if all are none, then there must be a mistake.
+        if whole_country == [] and iso3 == [] and iso2 == []:
+            await self.safe_send("Αυτή η χώρα δεν υπάρχει. Δες όλες τις διαθέσιμες χώρες πατώντας `giorg corona list`.")
+            return
+        
+        #if we've gotten to this point, at least ONE of them has to have the data.
+        data = whole_country.pop() if whole_country != [] else iso3.pop() if iso3 != [] else iso2.pop()
+        country = data[0]
+        yesterday = data[1]
+        twoDaysAgo = data[2]
 
-        country = [self.recognize_country_and_date(country, data["country"], 0) for data in response if self.recognize_country_and_date(country, data["country"], 0) is not None]  #get only the records that match the area the user is looking for.
-        country = country.pop() if country != [] else None
+        await self.safe_send("Αμέσως, να σου δείξω.")   
         
 
-    
     def recognize_country_and_date(self, ipt, rgx, index):
         
-        #first we must match the input with the regex given.
-        match = regex.search(rgx, ipt)
+        #sometimes iso2 and iso3 can be none, so return none if so.
+        if rgx is None:
+            return None
+
+        #rgx is the country or iso3 or iso2 we're looking for 
+        match = regex.search(rgx, ipt, regex.IGNORECASE)
         if match is None:
             return None
         
@@ -97,7 +112,7 @@ class Common:
         elif match.start() != index:
             return None
         
-        #the area is nothing but the regex we found
+        #the country is nothing but the regex we found
         area = ipt[match.start() : match.end()]
         #the date is anything after the regex
         date = ipt[match.end() + 1 : ]
@@ -106,7 +121,7 @@ class Common:
         #RETURN PATTERN: area, yesterday, twoDaysAgo
         #the default date depends on today's hour.
         if len(date) == 0:     
-            return (area, True, False) if datetime.datetime.today().time < 18 else (area, False, False)
+            return (area, True, False) if datetime.datetime.today().hour < 18 else (area, False, False)
         #the day before yesterday
         elif date == "ΠΡΟΧΘΕΣ" or date == "ΠΡΟΧΤΕΣ":
             return area, False, True
