@@ -85,8 +85,7 @@ async def on_message(message):
         elif client.user.mentioned_in(message):
             await message.reply(random.choice(complaints), mention_author=True)
             return
-
-
+            
     #private messages
     else:
 

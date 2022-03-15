@@ -9,7 +9,7 @@ import re as regex
 class Common:
 
     #ctx is going to be the message we sent.
-    def __init__(self, ctx, skoil):
+    def __init__(self, ctx : discord.Message, skoil):
         self.ctx = ctx
         self.skoil = skoil
 
@@ -57,10 +57,70 @@ class Common:
         
         await self.safe_send(help_message)
 
-    async def corona(self, country):
-        #this needs parsing.
-        return
+    async def corona(self, country : str):
         
+        country = country.lower()
+
+        #get all the available countries
+        url = 'https://disease.sh/v3/covid-19/countries?yesterday=false&twoDaysAgo=false&sort=cases&allowNull=false'
+        response = requests.get(url)
+        response = response.json()
+        countries = [data["country"] for data in response if len(data["country"]) < 4]
+
+        #if the user wants to see all available countries
+        if country in ["all", "countries", "list"]:
+            countries.sort()    #sort all countries
+            #break the message in two, as it is too large to be sent in one.
+            await self.ctx.channel.send('```python\n' + str(countries[:len(countries)//2]) + '```')
+            await self.ctx.channel.send('```python\n' + str(countries[len(countries)//2:]) + '```\n ● **' + str(len(countries)) + '** συνολικές διαθέσιμες χώρες-κλειδιά.')
+            return
+
+        country = [self.recognize_country_and_date(country, data["country"], 0) for data in response if self.recognize_country_and_date(country, data["country"], 0) is not None]  #get only the records that match the area the user is looking for.
+        country = country.pop() if country != [] else None
+
+        country = [self.recognize_country_and_date(country, data["country"], 0) for data in response if self.recognize_country_and_date(country, data["country"], 0) is not None]  #get only the records that match the area the user is looking for.
+        country = country.pop() if country != [] else None
+
+        country = [self.recognize_country_and_date(country, data["country"], 0) for data in response if self.recognize_country_and_date(country, data["country"], 0) is not None]  #get only the records that match the area the user is looking for.
+        country = country.pop() if country != [] else None
+        
+
+    
+    def recognize_country_and_date(self, ipt, rgx, index):
+        
+        #first we must match the input with the regex given.
+        match = regex.search(rgx, ipt)
+        if match is None:
+            return None
+        
+        #it must also be at the selected index
+        elif match.start() != index:
+            return None
+        
+        #the area is nothing but the regex we found
+        area = ipt[match.start() : match.end()]
+        #the date is anything after the regex
+        date = ipt[match.end() + 1 : ]
+        date = self.remove_greek_uppercase_accent(date.upper())
+
+        #RETURN PATTERN: area, yesterday, twoDaysAgo
+        #the default date depends on today's hour.
+        if len(date) == 0:     
+            return (area, True, False) if datetime.datetime.today().time < 18 else (area, False, False)
+        #the day before yesterday
+        elif date == "ΠΡΟΧΘΕΣ" or date == "ΠΡΟΧΤΕΣ":
+            return area, False, True
+        #yesterday
+        elif date == "ΧΘΕΣ" or date == "ΧΤΕΣ":
+            return area, True, False
+        #today
+        elif date == "ΣΗΜΕΡΑ":
+            return area, False, False
+        #else it's something that can't be interpreted.
+        else:
+            return area, None
+
+
     async def emvolio(self, perif):
 
         #get the api token
@@ -162,10 +222,12 @@ class Common:
 
     def recognize_area_and_date(self, ipt, rgx, index):
 
+        #first we must match the input with the regex given.
         match = regex.search(rgx, ipt)
         if match is None:
             return None
         
+        #it must also be at the selected index
         elif match.start() != index:
             return None
         
