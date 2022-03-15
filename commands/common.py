@@ -58,8 +58,10 @@ class Common:
         
         await self.safe_send(help_message)
 
+
     async def corona(self, country : str):
         
+        #this command can be executed either in a pm or a server channel
         country = country.lower()
 
         #get all the available countries
@@ -94,7 +96,38 @@ class Common:
         yesterday = data[1]
         twoDaysAgo = data[2]
 
-        await self.safe_send("Αμέσως, να σου δείξω.")   
+        #this is how we refer to the day.
+        if yesterday:
+            kataliksi = 'χθες'
+        elif twoDaysAgo:
+            kataliksi = 'προχθές'
+        else:
+            kataliksi = 'σήμερα'
+
+        #get the current stats
+        url = 'https://disease.sh/v3/covid-19/countries/' + country + '?yesterday=' + str((yesterday)).lower() + '&twoDaysAgo=' + str(twoDaysAgo).lower() + '&sort=cases&allowNull=false'
+        response = requests.get(url)
+        response = response.json()
+
+        print(response)
+
+        factor = float(response["active"]/response["casesPerOneMillion"]) if response["casesPerOneMillion"] != 0 else 0
+        r = round(254 - factor*2) if factor*2 < 130 else 125
+        g = round(255 - 254*factor) if factor < 1 else 0
+        b = round(255 - 254*factor) if factor < 1 else 0
+
+        print(r, g, b, factor)
+        color = discord.embeds.Colour.from_rgb(r, g, b)
+
+        embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.", color=color)
+        embedded_message.set_thumbnail(url=response["countryInfo"]["flag"])
+        embedded_message.add_field(name="Κρούσματα 🦠",      value=cases_stats,  inline=False)
+        embedded_message.add_field(name="Θάνατοι ☠"   ,      value=death_stats,  inline=False)
+        embedded_message.add_field(name="Διασωληνωμένοι 🏥", value=active_stats, inline=False)
+        embedded_message.add_field(name="Τεστ 🧪",           value=tests_stats,  inline=False)
+        embedded_message.set_footer(text="Στοιχεία από https://corona.lmao.ninja/")
+
+        await self.safe_send('', embed=embedded_message)   
         
 
     def recognize_country_and_date(self, ipt, rgx, index):
