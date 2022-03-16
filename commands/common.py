@@ -90,6 +90,12 @@ class Common:
         
         #if we've gotten to this point, at least ONE of them has to have the data.
         data = whole_country.pop() if whole_country != [] else iso3.pop() if iso3 != [] else iso2.pop()
+        
+        #one last check for the data to be right.
+        if data[1] is None:
+            await self.safe_send("Κάτι πήγε στραβά με αυτήν τη χώρα. Σιγουρέψου ότι την έχεις γράψει σωστά.")
+            return
+
         country = data[0]
         yesterday = data[1]
         twoDaysAgo = data[2]
@@ -197,6 +203,8 @@ class Common:
         #the date is anything after the regex
         date = ipt[len(rgx) + 1: ]
         date = self.remove_greek_uppercase_accent(date.upper())
+
+        print(area)
 
         #RETURN PATTERN: area, yesterday, twoDaysAgo
         #the default date depends on today's hour.
@@ -308,7 +316,7 @@ class Common:
             tempo = ((str(days_left // 30) + ' μήνες' if days_left // 30 != 1 else 'έναν μήνα') if days_left // 30 > 0 else '') + (' και ' if days_left - 30*(days_left // 30) > 0 and days_left // 30 > 0 else '') + ((str(days_left - 30*(days_left // 30)) + ' ημέρες' if days_left - 30*(days_left // 30) != 1 else 'μία ημέρα') if days_left - 30*(days_left // 30) > 0 else ' λιγότερο από μία μέρα') if days_left is not None else 'όχι'
             embedded_message.add_field(name="Ρυθμός 🕗", value=("Δεν μπορεί να υπολογισθεί ο ρυθμός, με βάση τα παρόντα δεδομένα." if days_left is None else "Έχει εμβολιαστεί __πλήρως__ το **70% του πληθυσμού!** 🎉" if days_left < 1 else ("Με αυτά τα δεδομένα, σε **" + tempo + "** θα έχει εμβολιαστεί το 70% του πληθυσμού.")), inline=True)
 
-        embedded_message.add_field(name="Πληρότητα ✅", value="Το **" + percentage_done.replace('.', ',') + "** του πληθυσμού έχει __τελειώσει__ με τον εμβολιασμό και το **" + percentage_additional.replace('.', ',') + "** έχει λάβει την __επιπρόσθετη δόση__.", inline=True)
+        embedded_message.add_field(name="Πληρότητα ✅", value=("Το **" + percentage_done.replace('.', ',') if percentage_done < 100 else "**Όλος ο πληθυσμός**") + " έχει __τελειώσει__ με τον εμβολιασμό και " + ( "το **" + percentage_additional.replace('.', ',') ) + "** έχει λάβει την __επιπρόσθετη δόση__.", inline=True)
         embedded_message.set_footer(text="Δεδομένα από το https://emvolio.gov.gr/")
 
         #send the embedded message safely, as this can be called through dm's or server channels.
