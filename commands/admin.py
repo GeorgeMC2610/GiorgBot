@@ -158,4 +158,5 @@ class Admin:
 
 
     async def secret_santa(self):
-        pass
+        
+        await self.safe_send("Δεν είναι η εποχή ακόμη!")
