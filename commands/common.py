@@ -133,7 +133,7 @@ class Common:
         else:
             cases = "**Κανένα** κρούσμα! 🤩"
 
-        cases += " (**" + f'{response["cases"]:n}' + "** συνολικά)" if response["cases"] > 1 else " (**Ένα** κρούσμα συνολικά!)" if response["cases"] == 1 else " (**Κανένα** κρούσμα συνολικά‼) 🤯"
+        cases += " (**" + f'{response["cases"]:n}' + "** συνολικά)" if response["cases"] > 1 else " (**Ένα** κρούσμα συνολικά!)" if response["cases"] == 1 else " (**Κανένα** κρούσμα συνολικά!!) 🤯"
 
         #total and today's covid deaths.
         if response["todayDeaths"] is None or (response["todayDeaths"] == 0 and testdiff == 0):
@@ -145,7 +145,7 @@ class Common:
         else:
             deaths = "**Κανένας** θάνατος! 🥳"
 
-        deaths += " (**" + f'{response["deaths"]:n}' + "** συνολικά)" if response["deaths"] > 1 else " (**Ένας** θάνατος συνολικά!)" if response["deaths"] == 1 else " (**Κανένας** θάνατος συνολικά‼) 🎊"
+        deaths += " (**" + f'{response["deaths"]:n}' + "** συνολικά)" if response["deaths"] > 1 else " (**Ένας** θάνατος συνολικά!)" if response["deaths"] == 1 else " (**Κανένας** θάνατος συνολικά!!) 🎊"
 
         #total critical condition cases.
         if response["critical"] is None or (response["critical"] == 0 and testdiff == 0):
@@ -163,7 +163,6 @@ class Common:
         g = round(255 - 254*factor) if factor < 1 else 0
         b = round(255 - 254*factor) if factor < 1 else 0
 
-        print(r, g, b, factor)
         color = discord.embeds.Colour.from_rgb(r, g, b)
 
         #construct embedded message.
