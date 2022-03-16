@@ -41,10 +41,10 @@ class Common:
         help_dialog1 = '**ΔΙΚΕΣ ΜΟΥ ΕΝΤΟΛΕΣ:**\n'
         help_dialog2 = '`giorg help` → Δείχνει το παρόν μενού.\n'
         help_dialog3 = '`giorg ping` → Ανταπόκριση του μποτ με "Pong!"\n'
-        help_dialog4 = '`giorg emvolio <όνομα περιφερειακής ενότητας>` → Προβολή των συνολικών και ημερίσιων εμβολιασμών της περιφερειακής ενότητας.\n'
-        help_dialog5 = '`giorg emvolio <σύνολο|όλα|όλο|Ελλάδα|χώρα|συνολικά|πάντες>` → Προβολή των συνολικών και ημερίσιων εμβολιασμών όλης της Ελλάδας.\n'
+        help_dialog4 = '`giorg emvolio <όνομα περιφερειακής ενότητας> [κάποια ημερομηνία|σήμερα|χθες|προχθές]` → Προβολή των συνολικών και ημερίσιων εμβολιασμών της περιφερειακής ενότητας.\n'
+        help_dialog5 = '`giorg emvolio <σύνολο|όλα|όλο|Ελλάδα|χώρα|συνολικά|πάντες> [κάποια ημερομηνία|σήμερα|χθες|προχθές]` → Προβολή των συνολικών και ημερίσιων εμβολιασμών όλης της Ελλάδας.\n'
         help_dialog6 = '`giorg emvolio <περιφέρειες|περιφερειακές ενότητες|λίστα|ενότητες|περιοχές>` → Προβολή των διαθέσιμων περιοχών, για την ανάκτηση δεδομένων του εμβολίου.\n'
-        help_dialog7 = '`giorg corona <χώρα στα αγγλικά>` → Προβολή συνολικών και ημερισίων κρουσμάτων και θανάτων από την COVID-19 της επιλεγμένης χώρας.\n'
+        help_dialog7 = '`giorg corona <χώρα στα αγγλικά> [σήμερα|χθες|προχθές]` → Προβολή συνολικών και ημερισίων κρουσμάτων και θανάτων από την COVID-19 της επιλεγμένης χώρας.\n'
         help_dialog8 = '`giorg corona <list|all|countries>` → Προβολή των διαθέσιμων χωρών, για ανάκτηση στατιστικών στοιχείων περί COVID-19 (κρούσματα & θάνατοι).\n\n'
         help_dialog9 = '**ΕΝΤΟΛΕΣ ΔΙΑΧΕΙΡΙΣΤΗ:**\n'
         help_dialog94 = '`giorg display_members` → Προβολή όλων των μελών του σέρβερ.\n' 
@@ -105,7 +105,7 @@ class Common:
             kataliksi = 'σήμερα'
 
         #get the current stats
-        url = 'https://disease.sh/v3/covid-19/countries/"' + country + '"?yesterday=' + str((yesterday)).lower() + '&twoDaysAgo=' + str(twoDaysAgo).lower() + '&sort=cases&allowNull=false'
+        url = 'https://disease.sh/v3/covid-19/countries/' + country + '?yesterday=' + str((yesterday)).lower() + '&twoDaysAgo=' + str(twoDaysAgo).lower() + '&sort=cases&allowNull=false'
         response = requests.get(url)
         response = response.json()
 
@@ -117,7 +117,7 @@ class Common:
             testdiff = 0
         else:
             #with these logic values on yesterday and twodaysago, we can always get the day before.
-            url = 'https://disease.sh/v3/covid-19/countries/"' + country + '"?yesterday=' + str((not yesterday)).lower() + '&twoDaysAgo=' + str(yesterday).lower() + '&sort=cases&allowNull=false'
+            url = 'https://disease.sh/v3/covid-19/countries/' + country + '?yesterday=' + str((not yesterday)).lower() + '&twoDaysAgo=' + str(yesterday).lower() + '&sort=cases&allowNull=false'
             day_before = requests.get(url)
             day_before = day_before.json()
 
