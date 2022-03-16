@@ -62,8 +62,6 @@ class Common:
     async def corona(self, country : str):
         
         #this command can be executed either in a pm or a server channel
-        country = country.lower()
-
         #get all the available countries
         url = 'https://disease.sh/v3/covid-19/countries?yesterday=false&twoDaysAgo=false&sort=cases&allowNull=false'
         response = requests.get(url)
@@ -81,9 +79,9 @@ class Common:
             return
 
         #get all possible country formats
-        whole_country = [self.recognize_country_and_date(country, data["country"], 0) for data in response if self.recognize_country_and_date(country, data["country"], 0) is not None]
-        iso3 = [self.recognize_country_and_date(country, data["countryInfo"]["iso3"], 0) for data in response if self.recognize_country_and_date(country, data["countryInfo"]["iso3"], 0) is not None]
-        iso2 = [self.recognize_country_and_date(country, data["countryInfo"]["iso2"], 0) for data in response if self.recognize_country_and_date(country, data["countryInfo"]["iso2"], 0) is not None]
+        whole_country = [self.recognize_country_and_date(country, data["country"]) for data in response if self.recognize_country_and_date(country, data["country"]) is not None]
+        iso3 = [self.recognize_country_and_date(country, data["countryInfo"]["iso3"]) for data in response if self.recognize_country_and_date(country, data["countryInfo"]["iso3"]) is not None]
+        iso2 = [self.recognize_country_and_date(country, data["countryInfo"]["iso2"]) for data in response if self.recognize_country_and_date(country, data["countryInfo"]["iso2"]) is not None]
 
         #if all are none, then there must be a mistake.
         if whole_country == [] and iso3 == [] and iso2 == []:
@@ -181,25 +179,24 @@ class Common:
         await self.safe_send('', embed=embedded_message)   
         
 
-    def recognize_country_and_date(self, ipt, rgx, index):
+    def recognize_country_and_date(self, ipt : str, rgx : str):
         
         #sometimes iso2 and iso3 can be none, so return none if so.
         if rgx is None:
             return None
 
         #rgx is the country or iso3 or iso2 we're looking for 
-        match = regex.search(rgx, ipt, regex.IGNORECASE)
-        if match is None:
+        if rgx.casefold() not in ipt.casefold():
             return None
         
         #it must also be at the selected index
-        elif match.start() != index:
+        elif not ipt.casefold().startswith(rgx.casefold()):
             return None
         
         #the country is nothing but the regex we found
-        area = ipt[match.start() : match.end()]
+        area = rgx
         #the date is anything after the regex
-        date = ipt[match.end() + 1 : ]
+        date = ipt[len(rgx) + 1: ]
         date = self.remove_greek_uppercase_accent(date.upper())
 
         #RETURN PATTERN: area, yesterday, twoDaysAgo
