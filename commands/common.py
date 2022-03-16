@@ -120,16 +120,43 @@ class Common:
 
             testdiff = (response["tests"] - day_before["tests"]) if response["tests"] is not None and day_before["tests"] is not None else 0
 
+        tests = "Το **" + str(round(response["todayCases"]*100/testdiff, 5)).replace('.', ',') + "%** των τεστ βγήκαν θετικά. (**" + f'{testdiff:n}' + "** δοκιμές)" if testdiff != 0 else "Δεν υπάρχουν στοιχεία."
+
         #total and today's covid cases.
         if response["todayCases"] is None or testdiff == 0:
             cases = "Δεν υπάρχουν στοιχεία."
         elif response["todayCases"] > 1:
-            cases = "**" + f'{response["todayDeaths"]:n}' + "** νοσούντες."
+            cases = "**" + f'{response["todayCases"]:n}' + "** νοσούντες."
         elif response["todayCases"] == 1:
             cases = "Μονάχα **ένα κρούσμα**."
         else:
-            cases = "**Κανένας** θάνατος! 🥳"
+            cases = "**Κανένα** κρούσμα! 🤩"
 
+        cases += "(**" + f'{response["cases"]:n}' + "** συνολικά)" if response["cases"] > 1 else " (**Ένα** κρούσμα συνολικά!)" if response["cases"] == 1 else " (**Κανένα** κρούσμα συνολικά‼) 🤯"
+
+        #total and today's covid deaths.
+        if response["todayDeaths"] is None or testdiff == 0:
+            deaths = "Δεν υπάρχουν στοιχεία."
+        elif response["todayDeaths"] > 1:
+            deaths = "**" + f'{response["todayDeaths"]:n}' + "** απώλειες."
+        elif response["todayDeaths"] == 1:
+            deaths = "Μονάχα **ένας θάνατος**."
+        else:
+            deaths = "**Κανένας** θάνατος! 🥳"
+
+        deaths += " (**" + f'{response["deaths"]:n}' + "** συνολικά)" if response["deaths"] > 1 else " (**Ένας** θάνατος συνολικά!)" if response["deaths"] == 1 else " (**Κανένας** θάνατος συνολικά‼) 🎊"
+
+        #total critical condition cases.
+        if response["critical"] is None or testdiff == 0:
+            active = "Δεν υπάρχουν στοιχεία."
+        elif response["critical"] > 1:
+            active = "**" + f'{response["critical"]:n}' + "** βρίσκονται σε Μ.Ε.Θ."
+        elif response["critical"] == 1:
+            active = "**Ένας** νοσηλεύεται σε Μ.Ε.Θ."
+        else:
+            active = "**Κανένας** σε κρίσιμη κατάσταση! 😁"
+
+        #colouring factor for embedded message
         factor = float(response["active"]/response["casesPerOneMillion"]) if response["casesPerOneMillion"] != 0 else 0
         r = round(254 - factor*2) if factor*2 < 130 else 125
         g = round(255 - 254*factor) if factor < 1 else 0
@@ -138,14 +165,16 @@ class Common:
         print(r, g, b, factor)
         color = discord.embeds.Colour.from_rgb(r, g, b)
 
+        #construct embedded message.
         embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.", color=color)
         embedded_message.set_thumbnail(url=response["countryInfo"]["flag"])
         embedded_message.add_field(name="Κρούσματα 🦠",      value=cases,  inline=False)
-        embedded_message.add_field(name="Θάνατοι ☠"   ,      value=death,  inline=False)
+        embedded_message.add_field(name="Θάνατοι ☠"   ,      value=deaths,  inline=False)
         embedded_message.add_field(name="Διασωληνωμένοι 🏥", value=active, inline=False)
         embedded_message.add_field(name="Τεστ 🧪",           value=tests,  inline=False)
         embedded_message.set_footer(text="Στοιχεία από disease.sh")
 
+        #since this can be sent both in pm's and server channels, safely send it.
         await self.safe_send('', embed=embedded_message)   
         
 
