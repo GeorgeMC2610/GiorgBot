@@ -109,7 +109,26 @@ class Common:
         response = requests.get(url)
         response = response.json()
 
-        print(response)
+        #in order to get test data, we have to get the data for the day before the selected.
+        if twoDaysAgo:
+            testdiff = 0
+        else:
+            #with these logic values on yesterday and twodaysago, we can always get the day before.
+            url = 'https://disease.sh/v3/covid-19/countries/' + country + '?yesterday=' + str((not yesterday)).lower() + '&twoDaysAgo=' + str(yesterday).lower() + '&sort=cases&allowNull=false'
+            day_before = requests.get(url)
+            day_before = day_before.json()
+
+            testdiff = (response["tests"] - day_before["tests"]) if response["tests"] is not None and day_before["tests"] is not None else 0
+
+        #total and today's covid cases.
+        if response["todayCases"] is None or testdiff == 0:
+            cases = "Δεν υπάρχουν στοιχεία."
+        elif response["todayCases"] > 1:
+            cases = "**" + f'{response["todayDeaths"]:n}' + "** νοσούντες."
+        elif response["todayCases"] == 1:
+            cases = "Μονάχα **ένα κρούσμα**."
+        else:
+            cases = "**Κανένας** θάνατος! 🥳"
 
         factor = float(response["active"]/response["casesPerOneMillion"]) if response["casesPerOneMillion"] != 0 else 0
         r = round(254 - factor*2) if factor*2 < 130 else 125
@@ -121,11 +140,11 @@ class Common:
 
         embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.", color=color)
         embedded_message.set_thumbnail(url=response["countryInfo"]["flag"])
-        embedded_message.add_field(name="Κρούσματα 🦠",      value=cases_stats,  inline=False)
-        embedded_message.add_field(name="Θάνατοι ☠"   ,      value=death_stats,  inline=False)
-        embedded_message.add_field(name="Διασωληνωμένοι 🏥", value=active_stats, inline=False)
-        embedded_message.add_field(name="Τεστ 🧪",           value=tests_stats,  inline=False)
-        embedded_message.set_footer(text="Στοιχεία από https://corona.lmao.ninja/")
+        embedded_message.add_field(name="Κρούσματα 🦠",      value=cases,  inline=False)
+        embedded_message.add_field(name="Θάνατοι ☠"   ,      value=death,  inline=False)
+        embedded_message.add_field(name="Διασωληνωμένοι 🏥", value=active, inline=False)
+        embedded_message.add_field(name="Τεστ 🧪",           value=tests,  inline=False)
+        embedded_message.set_footer(text="Στοιχεία από disease.sh")
 
         await self.safe_send('', embed=embedded_message)   
         
