@@ -109,6 +109,9 @@ class Common:
         response = requests.get(url)
         response = response.json()
 
+        #set locale to greek, since the message is going to be in Greek.
+        locale.setlocale(locale.LC_ALL, 'el_GR')
+
         #in order to get test data, we have to get the data for the day before the selected.
         if twoDaysAgo:
             testdiff = 0
@@ -166,7 +169,7 @@ class Common:
         color = discord.embeds.Colour.from_rgb(r, g, b)
 
         #construct embedded message.
-        embedded_message = discord.Embed(title=country, description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.", color=color)
+        embedded_message = discord.Embed(title=response["country"], description="Στοιχεία θανάτων και κρουσμάτων COVID-19 **__για " + kataliksi + "__**.", color=color)
         embedded_message.set_thumbnail(url=response["countryInfo"]["flag"])
         embedded_message.add_field(name="Κρούσματα 🦠",      value=cases,  inline=False)
         embedded_message.add_field(name="Θάνατοι ☠"   ,      value=deaths,  inline=False)
