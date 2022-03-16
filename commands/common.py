@@ -105,7 +105,7 @@ class Common:
             kataliksi = 'σήμερα'
 
         #get the current stats
-        url = 'https://disease.sh/v3/covid-19/countries/' + country + '?yesterday=' + str((yesterday)).lower() + '&twoDaysAgo=' + str(twoDaysAgo).lower() + '&sort=cases&allowNull=false'
+        url = 'https://disease.sh/v3/covid-19/countries/"' + country + '"?yesterday=' + str((yesterday)).lower() + '&twoDaysAgo=' + str(twoDaysAgo).lower() + '&sort=cases&allowNull=false'
         response = requests.get(url)
         response = response.json()
 
@@ -117,7 +117,7 @@ class Common:
             testdiff = 0
         else:
             #with these logic values on yesterday and twodaysago, we can always get the day before.
-            url = 'https://disease.sh/v3/covid-19/countries/' + country + '?yesterday=' + str((not yesterday)).lower() + '&twoDaysAgo=' + str(yesterday).lower() + '&sort=cases&allowNull=false'
+            url = 'https://disease.sh/v3/covid-19/countries/"' + country + '"?yesterday=' + str((not yesterday)).lower() + '&twoDaysAgo=' + str(yesterday).lower() + '&sort=cases&allowNull=false'
             day_before = requests.get(url)
             day_before = day_before.json()
 
@@ -126,7 +126,7 @@ class Common:
         tests = "Το **" + str(round(response["todayCases"]*100/testdiff, 5)).replace('.', ',') + "%** των τεστ βγήκαν θετικά. (**" + f'{testdiff:n}' + "** δοκιμές)" if testdiff != 0 else "Δεν υπάρχουν στοιχεία."
 
         #total and today's covid cases.
-        if response["todayCases"] is None or testdiff == 0:
+        if response["todayCases"] is None or (response["todayCases"] == 0 and testdiff == 0):
             cases = "Δεν υπάρχουν στοιχεία."
         elif response["todayCases"] > 1:
             cases = "**" + f'{response["todayCases"]:n}' + "** νοσούντες."
@@ -135,10 +135,10 @@ class Common:
         else:
             cases = "**Κανένα** κρούσμα! 🤩"
 
-        cases += "(**" + f'{response["cases"]:n}' + "** συνολικά)" if response["cases"] > 1 else " (**Ένα** κρούσμα συνολικά!)" if response["cases"] == 1 else " (**Κανένα** κρούσμα συνολικά‼) 🤯"
+        cases += " (**" + f'{response["cases"]:n}' + "** συνολικά)" if response["cases"] > 1 else " (**Ένα** κρούσμα συνολικά!)" if response["cases"] == 1 else " (**Κανένα** κρούσμα συνολικά‼) 🤯"
 
         #total and today's covid deaths.
-        if response["todayDeaths"] is None or testdiff == 0:
+        if response["todayDeaths"] is None or (response["todayDeaths"] == 0 and testdiff == 0):
             deaths = "Δεν υπάρχουν στοιχεία."
         elif response["todayDeaths"] > 1:
             deaths = "**" + f'{response["todayDeaths"]:n}' + "** απώλειες."
@@ -150,7 +150,7 @@ class Common:
         deaths += " (**" + f'{response["deaths"]:n}' + "** συνολικά)" if response["deaths"] > 1 else " (**Ένας** θάνατος συνολικά!)" if response["deaths"] == 1 else " (**Κανένας** θάνατος συνολικά‼) 🎊"
 
         #total critical condition cases.
-        if response["critical"] is None or testdiff == 0:
+        if response["critical"] is None or (response["critical"] == 0 and testdiff == 0):
             active = "Δεν υπάρχουν στοιχεία."
         elif response["critical"] > 1:
             active = "**" + f'{response["critical"]:n}' + "** βρίσκονται σε Μ.Ε.Θ."
