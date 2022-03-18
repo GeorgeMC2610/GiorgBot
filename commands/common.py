@@ -2,7 +2,6 @@ import discord
 import datetime
 from dateutil import parser
 import flag
-from numpy import who
 import requests
 import locale
 import re as regex
