@@ -1,0 +1,8 @@
+discord
+datetime
+python-dateutil
+emoji-country-flag
+requests
+re
+random
+json5
