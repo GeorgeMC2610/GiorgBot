@@ -1,6 +1,5 @@
 import discord
 import json
-from skoil.skoil import Skoil
 
 class Admin:
 

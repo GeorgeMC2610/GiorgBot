@@ -1,11 +1,6 @@
 import discord
 import random
 import datetime
-from discord.flags import Intents
-import requests
-import json
-import locale
-import flag
 from dateutil.parser import parse
 from commands.admin import Admin
 from commands.common import Common

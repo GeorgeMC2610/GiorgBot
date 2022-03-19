@@ -287,8 +287,12 @@ class Common:
             return
 
         #get the percentage of people done with the vaccination.
-        percentage_done       = str(round(float(dose2*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == area].pop()) ), 1)) + '%'
-        percentage_additional = str(round(float(dose3*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == area].pop()) ), 1)) + '%'
+        population_done = round(float(dose2*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == area].pop()) ), 1)
+        population_additional = round(float(dose3*100/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == area].pop()) ), 1)
+
+        #construct the string with the percentages
+        percentage_done       = str(population_done).replace('.', ',') + '%'
+        percentage_additional = str(population_additional).replace('.', ',') + '%'
 
         #factor will make more and more green the embedded message's color
         factor = float(dose3/ (10720000 if everything is not None else [data["totaldistinctpersons"] for data in response if data["area"] == area].pop()))
@@ -315,7 +319,7 @@ class Common:
             tempo = ((str(days_left // 30) + ' μήνες' if days_left // 30 != 1 else 'έναν μήνα') if days_left // 30 > 0 else '') + (' και ' if days_left - 30*(days_left // 30) > 0 and days_left // 30 > 0 else '') + ((str(days_left - 30*(days_left // 30)) + ' ημέρες' if days_left - 30*(days_left // 30) != 1 else 'μία ημέρα') if days_left - 30*(days_left // 30) > 0 else ' λιγότερο από μία μέρα') if days_left is not None else 'όχι'
             embedded_message.add_field(name="Ρυθμός 🕗", value=("Δεν μπορεί να υπολογισθεί ο ρυθμός, με βάση τα παρόντα δεδομένα." if days_left is None else "Έχει εμβολιαστεί __πλήρως__ το **70% του πληθυσμού!** 🎉" if days_left < 1 else ("Με αυτά τα δεδομένα, σε **" + tempo + "** θα έχει εμβολιαστεί το 70% του πληθυσμού.")), inline=True)
 
-        embedded_message.add_field(name="Πληρότητα ✅", value=("Το **" + percentage_done.replace('.', ',') if percentage_done < 100 else "**Όλος ο πληθυσμός**") + " έχει __τελειώσει__ με τον εμβολιασμό και " + ( "το **" + percentage_additional.replace('.', ',') ) + "** έχει λάβει την __επιπρόσθετη δόση__.", inline=True)
+        embedded_message.add_field(name="Πληρότητα ✅", value=(("Το **" + percentage_done.replace('.', ',') + "** του πληθυσμού") if population_done < 100 else "**Όλος ο πληθυσμός**") + " έχει εμβολιαστεί __πλήρως__ και " + (( "το **" + percentage_additional.replace('.', ',') + "**") if population_additional < 100 else "**όλος ο πληθυσμός**") + " έχει λάβει την __αναμνηστική δόση__.", inline=True)
         embedded_message.set_footer(text="Δεδομένα από το https://emvolio.gov.gr/")
 
         #send the embedded message safely, as this can be called through dm's or server channels.

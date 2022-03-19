@@ -1,5 +1,3 @@
-import discord
-
 class Skoil:
         
     def __init__(self, client):
