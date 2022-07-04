@@ -207,7 +207,8 @@ def get_reaction_role(emoji : str) -> int:
         "politics"          : 819861063213645854,
         "valorant"          : 834504650509254749,
         "payday2"           : 946869439578669089,
-        "ktane"             : 952360700410490880
+        "ktane"             : 952360700410490880,
+        "fallguys"          : 993591056711028898
     }
 
     return roles.get(emoji, None)
