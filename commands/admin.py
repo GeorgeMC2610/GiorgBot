@@ -161,6 +161,6 @@ class Admin:
         event = await self.skoil.guild.fetch_scheduled_event(1054734957693653032)
         members = []
         async for user in event.users():
-            members.append(user)
+            members.append(user.name)
 
         await self.skoil.GeorgeMC2610.send(members)
