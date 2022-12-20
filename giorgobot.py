@@ -55,7 +55,7 @@ async def on_ready():
 async def on_message(message):
 
     #message log.
-    channel_log(str(message.author) + " in " + str(message.channel) + " says: " + message.content)
+    channel_log(message.author.name + " in " + str(message.channel) + " says: " + message.content)
 
     #never respond to the bot itself.
     if message.author == client.user:
