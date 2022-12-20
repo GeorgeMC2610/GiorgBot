@@ -43,7 +43,9 @@ class Admin:
 
             #initialize paylods
             targetID = False
-            users = await self.skoil.guild.fetch_members().flatten()
+            users = []
+            async with self.skoil.guild.fetch_members() as members:
+                users = members
 
             #try to send
             try:
