@@ -1,5 +1,6 @@
 import discord
 import json
+import random
 
 class Admin:
 
@@ -158,9 +159,24 @@ class Admin:
 
     async def secret_santa(self):
         
+        #method to ensure that no one is the secret santa of themselves.
+        def no_duplicates(list1, list2):
+            random.shuffle(list2)
+            for member1, member2 in zip(list1, list2):
+                if member1 == member2:
+                    no_duplicates(list1, list2)
+            
+            return list2
+
+        #fetch users that are present in the event.
         event = await self.skoil.guild.fetch_scheduled_event(1054734957693653032)
         members = []
         async for user in event.users():
             members.append(str(user))
 
+        #ensure that no secret santa is a duplicate.
+        santas = members.copy()
+        santas = no_duplicates(members, santas)
+
         await self.skoil.GeorgeMC2610.send(members)
+        await self.skoil.GeorgeMC2610.send(santas)
