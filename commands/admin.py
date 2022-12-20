@@ -44,8 +44,8 @@ class Admin:
             #initialize paylods
             targetID = False
             users = []
-            async with self.skoil.guild.fetch_members() as members:
-                users = members
+            async for member in self.skoil.guild.fetch_members():
+                users.append(member)
 
             #try to send
             try:
@@ -101,7 +101,9 @@ class Admin:
 
             #the target ID will be the corresponding channel.
             targetID = False
-            channels = await self.skoil.guild.fetch_channels()
+            channels = []
+            async for channel in self.skoil.guild.fetch_channels():
+                channels.append(channel)
 
             try:
                 #from all the channels select the right one.
