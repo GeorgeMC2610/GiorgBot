@@ -101,9 +101,7 @@ class Admin:
 
             #the target ID will be the corresponding channel.
             targetID = False
-            channels = []
-            async for channel in self.skoil.guild.fetch_channels():
-                channels.append(channel)
+            channels = await self.skoil.guild.fetch_channels()
 
             try:
                 #from all the channels select the right one.
