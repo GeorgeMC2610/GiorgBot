@@ -47,7 +47,7 @@ class Admin:
             async for member in self.skoil.guild.fetch_members():
                 users.append(member)
 
-            #try to send
+            #try to retrieve id to send message.
             try:
                 targetID = [i.id for i in users if str(i) == payload["target"]].pop()
                 await self.ctx.author.send("🔔 Αμέσως! Στέλνω μήνυμα προς **" + payload["target"] + "**.")
@@ -55,10 +55,16 @@ class Admin:
                 print("Unable to decode dictionary.", e.args)
                 await self.ctx.author.send('❌ **ΚΑΤΙ ΠΑΕΙ ΛΑΘΟΣ.**\n\n Σωστός χειρισμός εντολής:\n```json\n{"message":"<μήνυμα>", "target":"Χρήστης#1234"}```')
             
+            #try to send the message
             if targetID:
-                user_to_send = self.skoil.client.get_user(targetID)
-                await user_to_send.send(payload["message"])
-                await self.ctx.author.send("Έφτασε το μήνυμα! ✅")
+
+                try:
+                    user_to_send = self.skoil.client.get_user(targetID)
+                    await user_to_send.send(payload["message"])
+                    await self.ctx.author.send("Έφτασε το μήνυμα! ✅")
+                except Exception as e:
+                    print("Unable to send to user. User may have disabled bot sends", e.args)
+                    await self.ctx.author.send(f'❌ **ΚΑΤΙ ΠΑΕΙ ΛΑΘΟΣ.** Πιθανότατα το άτομο {str(user_to_send)} να έχει __απενεργοποιήσει__ μηνύματα από bots.')
 
 
     async def announce_bot(self, message):
