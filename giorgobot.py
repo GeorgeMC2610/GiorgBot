@@ -11,7 +11,7 @@ f = open('token.txt', 'r')
 token = f.read()
 f.close()
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.members = True
 client = discord.Client(intents=intents)
 
@@ -48,7 +48,6 @@ def channel_log(message):
 async def on_ready():
 
     await skoil.initiate()
-    print(skoil.geniki_sizitisi)
     print('Bot online.')
 
 
