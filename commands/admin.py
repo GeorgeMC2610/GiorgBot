@@ -158,5 +158,7 @@ class Admin:
 
     async def secret_santa(self):
         
-        members = self.skoil.pcmci.members
-        await self.skoil.GeorgeMC2610.send(members) 
+        event = await self.skoil.guild.fetch_scheduled_event(1054734957693653032)
+        members = await event.users()
+
+        await self.skoil.GeorgeMC2610.send(members)
