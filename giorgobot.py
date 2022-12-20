@@ -46,7 +46,9 @@ def channel_log(message):
 
 @client.event
 async def on_ready():
+
     await skoil.initiate()
+    print(skoil.geniki_sizitisi)
     print('Bot online.')
 
 
