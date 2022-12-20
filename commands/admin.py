@@ -180,4 +180,7 @@ class Admin:
 
         #announce secret santa events
         for member1, member2 in zip(members, santas):
-            await member1.send(f'Πες στον {str(member2)} ότι είναι όμορφος.')
+            try:
+                await member1.send(f'Πες στον {str(member2)} ότι είναι όμορφος.')
+            except:
+                await self.skoil.GeorgeMC2610.send(f'Δεν μπορώ να στείλω μήνυμα στον {str(member1)} για τον {member2}')
