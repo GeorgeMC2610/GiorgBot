@@ -172,11 +172,12 @@ class Admin:
         event = await self.skoil.guild.fetch_scheduled_event(1054734957693653032)
         members = []
         async for user in event.users():
-            members.append(str(user))
+            members.append(user)
 
         #ensure that no secret santa is a duplicate.
         santas = members.copy()
         santas = no_duplicates(members, santas)
 
-        await self.skoil.GeorgeMC2610.send(members)
-        await self.skoil.GeorgeMC2610.send(santas)
+        #announce secret santa events
+        for member1, member2 in zip(members, santas):
+            await member1.send(f'Πες στον {str(member2)} ότι είναι όμορφος.')
