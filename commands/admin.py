@@ -159,6 +159,8 @@ class Admin:
     async def secret_santa(self):
         
         event = await self.skoil.guild.fetch_scheduled_event(1054734957693653032)
-        members = await event.users()
+        members = []
+        async for user in event.users():
+            members.append(user)
 
         await self.skoil.GeorgeMC2610.send(members)
