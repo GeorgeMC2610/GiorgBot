@@ -158,4 +158,5 @@ class Admin:
 
     async def secret_santa(self):
         
-        await self.safe_send("Δεν είναι η εποχή ακόμη!")
+        members = self.skoil.pcmci.members
+        await self.skoil.GeorgeMC2610.safe_send(members) 
