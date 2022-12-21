@@ -200,16 +200,22 @@ async def assign_starting_roles():
     #get its reactions
     for reaction in message.reactions:
 
+        #fetch the role that is missing
         role = skoil.guild.get_role(get_reaction_role(reaction.emoji.name))
 
-        all_users = [user async for user in skoil.guild.fetch_members()]
+        #get all the users that HAVE reacted to this message
         users_reacted = [user async for user in reaction.users()]
+
+        #get all the users that HAVE NOT reacted to this message
+        all_users = [user async for user in skoil.guild.fetch_members()]
         users_not_reacted = list(set(all_users) - set(users_reacted))
 
-        print([user.name for user in users_reacted])
-        print("------------------------------------------")
-        print([user.name for user in users_not_reacted])
-        break
+        #handle roles respectively
+        for user in users_reacted:
+            await give_role(user, role, log=False)
+        
+        for user in users_not_reacted:
+            await remove_role(user, role, log=False)
 
     
 
@@ -264,16 +270,20 @@ async def on_raw_reaction_remove(payload):
     await remove_role(reactor, role)
 
 #coroutine for giving roles
-async def give_role(member, role):
+async def give_role(member, role, log=True):
     if member is not None and role is not None:
         await member.add_roles(role)
-        channel_log("Successfully gave role " + role.name + " to member " + member.name)
+
+        if log:
+            channel_log("Successfully gave role " + role.name + " to member " + member.name)
 
 #coroutine for removing roles
-async def remove_role(member, role):
+async def remove_role(member, role, log=True):
     if member is not None and role is not None:
         await member.remove_roles(role)
-        channel_log("Successfully removed role " + role.name + " from member " + member.name)
+
+        if log:
+            channel_log("Successfully removed role " + role.name + " from member " + member.name)
 
 #run the bot
 client.run(token)
