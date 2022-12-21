@@ -49,7 +49,7 @@ async def on_ready():
 
     await skoil.initiate()
     await assign_starting_roles()
-    
+
     print('Bot online.')
 
 
@@ -194,7 +194,8 @@ async def parse_command(command : str, ctx):
 async def assign_starting_roles():
 
     #get the correct message
-    message = await client.user.fetch_message(761204434670714912)
+    acquire_a_role = await skoil.guild.fetch_channel(760736083544637511)
+    message = await acquire_a_role.fetch_message(761204434670714912)
     
     #get its reactions
     for reaction in message.reactions:
