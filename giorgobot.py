@@ -212,11 +212,13 @@ async def assign_starting_roles():
 
         #handle roles respectively
         for user in users_reacted:
-            member = skoil.guild.fetch_member(user.id)
+
+            member = await skoil.guild.fetch_member(user.id)
             await give_role(member, role, log=False)
         
         for user in users_not_reacted:
-            member = skoil.guild.fetch_member(user.id)
+            
+            member = await skoil.guild.fetch_member(user.id)
             await remove_role(member, role, log=False)
 
     
