@@ -187,6 +187,27 @@ async def parse_command(command : str, ctx):
     
     await ctx.channel.send("Δεν υπάρχει αυτό που λες, ηλίθιε.")
     
+#assign missing roles for when the bot is offline.
+async def assign_starting_roles():
+
+    #get the correct message
+    message = await client.user.fetch_message(761204434670714912)
+    
+    #get its reactions
+    for reaction in message.reactions:
+
+        role = skoil.guild.get_role(get_reaction_role(reaction.emoji.name))
+
+        all_users = [user async for user in skoil.guild.fetch_members()]
+        users_reacted = [user async for user in reaction.users()]
+        users_not_reacted = list(set(all_users) - set(users_reacted))
+
+        print([user.name for user in users_reacted])
+        print("------------------------------------------")
+        print([user.name for user in users_not_reacted])
+        break
+
+    
 
 ### COROUTINES FOR ROLE ASSIGNMENTS / REMOVALS ###
 
