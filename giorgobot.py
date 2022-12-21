@@ -206,13 +206,10 @@ async def assign_starting_roles():
 
         #get all the users that HAVE reacted to this message
         users_reacted = [user async for user in reaction.users()]
-        print(f'Users reacted: {users_reacted}')
 
         #get all the users that HAVE NOT reacted to this message
         all_users = [user async for user in skoil.guild.fetch_members()]
         users_not_reacted = list(set(all_users) - set(users_reacted))
-
-        print(f'Users reacted: {users_not_reacted}')
 
         #handle roles respectively
         for user in users_reacted:
@@ -230,6 +227,8 @@ async def assign_starting_roles():
                 await remove_role(member, role, log=False)
             except Exception as e:
                 print(f"Error with member {user} (Possibly not found).", e.args)
+    
+    print("All done! All roles checked.")
 
     
 
