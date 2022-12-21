@@ -48,7 +48,10 @@ def channel_log(message):
 async def on_ready():
 
     await skoil.initiate()
+    await assign_starting_roles()
+    
     print('Bot online.')
+
 
 
 @client.event
