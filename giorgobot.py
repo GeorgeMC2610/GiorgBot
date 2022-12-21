@@ -213,13 +213,19 @@ async def assign_starting_roles():
         #handle roles respectively
         for user in users_reacted:
 
-            member = await skoil.guild.fetch_member(user.id)
-            await give_role(member, role, log=False)
+            try:
+                member = await skoil.guild.fetch_member(user.id)
+                await give_role(member, role, log=False)
+            except Exception as e:
+                print(f"Error with member {user} (Possibly not found).", e.args)
         
         for user in users_not_reacted:
-            
-            member = await skoil.guild.fetch_member(user.id)
-            await remove_role(member, role, log=False)
+
+            try:
+                member = await skoil.guild.fetch_member(user.id)
+                await give_role(member, role, log=False)
+            except Exception as e:
+                print(f"Error with member {user} (Possibly not found).", e.args)
 
     
 
