@@ -171,13 +171,13 @@ class Admin:
         def no_duplicates(list1, list2):
             random.shuffle(list2)
             for member1, member2 in zip(list1, list2):
-                if member1 == member2:
+                if member1 == member2 or (member1.name == "xanthosgeorge" and member2.name == "GeorgeMC2610") or (member1.name == "Sotiris168" and member2.name == "Lefteris36") or (member1.name == "Aemilius" and member2.name == "Sotiris168"):
                     no_duplicates(list1, list2)
             
             return list2
 
         #fetch users that are present in the event.
-        event = await self.skoil.guild.fetch_scheduled_event(1054734957693653032)
+        event = await self.skoil.guild.fetch_scheduled_event(1057065317379084368)
         members = []
         async for user in event.users():
             members.append(user)
@@ -189,6 +189,28 @@ class Admin:
         #announce secret santa events
         for member1, member2 in zip(members, santas):
             try:
-                await member1.send(f'Γειά σου, {member1}! Πες στον {str(member2)} να πα να γαμηθεί. :))')
+                await member1.send(f'Ήρθε η μεγάλη στιγμή, κύριε {member1.name}. **Είσαι ο secret santa του {str(member2)}.** Καλή τύχη!')
             except:
                 await self.skoil.GeorgeMC2610.send(f'Δεν μπορώ να στείλω μήνυμα στον {str(member1)} για τον {member2}')
+
+
+    async def add_library(self, id):
+
+        #this command is executed inside a server text-channel.
+        if self.ctx.channel.type == discord.ChannelType.private:
+            await self.ctx.author.send("Αυτή η εντολή εκτελείται μονάχα σε text-channel σε κάποιον server.")
+            return
+
+        try:
+
+            #turn the id into an integer.
+            id = int(id)
+
+            
+
+        except Exception as e:
+
+            #
+            await self.ctx.channel.send("ΣΤΕΙΛΕ ΑΡΙΘΜΟ, ΗΛΙΘΙΕ.")
+            print(e.args)
+            return

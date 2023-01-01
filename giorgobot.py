@@ -122,6 +122,8 @@ async def parse_command(command : str, ctx):
         'prune'           : [int],
         'display_members' : None,
         'secret_santa'    : None,
+        'add_library'     : [int],
+        'remove_library'  : [int]
     }
     
     #check if command exists.
@@ -155,6 +157,8 @@ async def parse_command(command : str, ctx):
 
             await getattr(common, common_command_call)(parameters)
             return
+
+            
     #if the command is admin only
     elif len(admin_command_call) != 0:
 
