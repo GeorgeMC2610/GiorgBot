@@ -45,3 +45,7 @@ There are not many things a common user can do with this bot. But some fun usage
 ### Displaying COVID-19 Data
 
 Using the API [disease.sh](https://disease.sh/), **I was able to draw data about the COVID-19 cases and deaths for every country in the world.** So, using the command `giorg corona <country> [date]` all the users could see all the stats that the API had available.
+
+### Displaying Vaccination Data
+
+Greece's National Digital Governance website (gov.gr) has many sectors, one of which is **data**. The data website [data.gov.gr](data.gov.gr) has many stats available for many topics about Greece. One can request an API key to draw data about all of these topics, which is what I did. **So, using this API, I was able to draw data about vaccinations from all around Greece.** Using `giorg emvolio <region>` a member could see all vaccination data for a specific day. ("Emvolio", gr: "Εμβόλιο" stands for "vaccine")
