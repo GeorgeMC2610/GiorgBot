@@ -48,4 +48,4 @@ Using the API [disease.sh](https://disease.sh/), **I was able to draw data about
 
 ### Displaying Vaccination Data
 
-Greece's National Digital Governance website (gov.gr) has many sectors, one of which is **data**. The data website [data.gov.gr](data.gov.gr) has many stats available for many topics about Greece. One can request an API key to draw data about all of these topics, which is what I did. **So, using this API, I was able to draw data about vaccinations from all around Greece.** Using `giorg emvolio <region>` a member could see all vaccination data for a specific day. ("Emvolio", gr: "Εμβόλιο" stands for "vaccine")
+Greece's National Digital Governance website (gov.gr) has many sectors, one of which is **data**. The data website [data.gov.gr](data.gov.gr) has many stats available for several topics about Greece. One can request an API key to draw data about all of these topics, which is what I did. **So, using this API, I was able to draw data about vaccinations from all around Greece.** Using `giorg emvolio <region>` a member could see all vaccination data for a specific day. ("Emvolio", gr: "Εμβόλιο" stands for "vaccine")
