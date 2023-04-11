@@ -27,3 +27,21 @@ I know this might sound cliche, but the bot is capable of giving reaction-based 
 ### Announcing Secret Santas
 
 In this server, almost every Christmas (and some New Year's Days), we run an event with secret santas. The bot announces to every user, participating in the event, their own secret santa! This happens by randomly matching all the participants in the event.
+
+### Pruning Messages
+
+Sometimes, deleting messages en masse can be a huge pain. So, I coded my bot so that **it deletes messages in a large scale**. By using the command `giorg prune <1-50>` it can delete up to 50 consecutive messages.
+
+### Other
+
+Just for fun, I implemented some commands that make the bot send messages to other users or specific channels. I usually use this to mess with some of my friends, by sending them random messages using the bot.
+
+<br>
+
+## How can common members use this bot?
+
+There are not many things a common user can do with this bot. But some fun usages were added during COVID-19 pandemic, using some public APIs.
+
+### Displaying COVID-19 Data
+
+Using the API [disease.sh](https://disease.sh/), **I was able to draw data about the COVID-19 cases and deaths for every country in the world.** So, using the command `giorg corona <country> [date]` all the users could see all the stats that the API had available.
